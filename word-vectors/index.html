@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Vectors</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --aqua:           #1baf7a;
+    --yellow:         #eda100;
+    --green:          #008300;
+    --violet:         #4a3aa7;
+    --red:            #e34948;
+    --magenta:        #e87ba4;
+    --orange:         #eb6834;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+    --blue-r: 42; --blue-g: 120; --blue-b: 214;
+    --orange-r: 235; --orange-g: 104; --orange-b: 52;
+    --violet-r: 74; --violet-g: 58; --violet-b: 167;
+    --aqua-r: 27; --aqua-g: 175; --aqua-b: 122;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #3987e5;
+      --aqua:         #199e70;
+      --yellow:       #c98500;
+      --green:        #008300;
+      --violet:       #9085e9;
+      --red:          #e66767;
+      --magenta:      #d55181;
+      --orange:       #d95926;
+      --card-bg:      #222220;
+      --card-border:  #3a3a35;
+      --narration-bg: #1e1e1c;
+      --narration-border:#333330;
+      --blue-r: 57; --blue-g: 135; --blue-b: 229;
+      --orange-r: 217; --orange-g: 89; --orange-b: 38;
+      --violet-r: 144; --violet-g: 133; --violet-b: 233;
+      --aqua-r: 25; --aqua-g: 158; --aqua-b: 112;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+  .nav-bar {
+    width: 100%; max-width: 1100px; display: flex; gap: 4px; margin-bottom: 16px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center; flex-wrap: wrap; margin-top: 16px;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+  h1 { font-size: 22px; font-weight: 700; margin: 24px 0 8px; text-align: center; }
+  .subtitle {
+    color: var(--secondary); font-size: 14px; text-align: center;
+    max-width: 640px; line-height: 1.7; margin-bottom: 20px; padding: 0 16px;
+  }
+
+  .container { width: 100%; max-width: 1100px; padding: 0 16px; }
+  .main-row { display: flex; gap: 20px; width: 100%; align-items: flex-start; }
+  .viz-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .side-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 16px;
+  }
+  .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+  .narration {
+    background: var(--narration-bg); border: 1px solid var(--narration-border);
+    border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.7; color: var(--secondary);
+  }
+  .narration strong { color: var(--primary); }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--blue); border-radius: 10px; padding: 14px 16px;
+  }
+  .formula-card h3 { color: var(--blue); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .formula {
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    font-size: 13px; text-align: center; color: var(--primary); font-weight: 600; line-height: 1.8;
+  }
+  .formula .op { color: var(--muted); font-weight: 400; }
+  .scale-note {
+    font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 8px;
+    padding-top: 8px; border-top: 1px solid var(--gridline);
+  }
+
+  /* Mode tabs */
+  .mode-tabs {
+    display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 10px; padding: 4px; margin-bottom: 8px; align-self: center;
+  }
+  .mode-tab {
+    padding: 8px 20px; border: none; background: transparent; color: var(--secondary);
+    font-family: inherit; font-size: 14px; font-weight: 500; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .mode-tab:hover { color: var(--primary); }
+  .mode-tab.active { background: var(--blue); color: #fff; }
+
+  .controls-bar {
+    display: flex; gap: 8px; justify-content: center; margin-top: 16px; width: 100%; max-width: 1100px;
+  }
+  .ctrl-btn {
+    font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 22px;
+    border-radius: 6px; border: 1px solid var(--gridline); cursor: pointer;
+    background: var(--surface); color: var(--secondary); transition: all 0.15s;
+  }
+  .ctrl-btn:hover:not(:disabled) { background: var(--gridline); color: var(--primary); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+  .ctrl-btn.primary-btn { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .ctrl-btn.primary-btn:hover:not(:disabled) { filter: brightness(1.1); }
+
+  /* 3D Scene */
+  .scene-3d {
+    width: 100%; height: 480px; perspective: 900px;
+    position: relative; overflow: hidden; cursor: grab;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 12px;
+  }
+  .scene-3d:active { cursor: grabbing; }
+  .scene-3d-inner {
+    width: 100%; height: 100%; position: absolute; left: 0; top: 0;
+    transform-style: preserve-3d;
+  }
+  .word-point-3d {
+    position: absolute; left: 50%; top: 50%;
+    font-size: 13px; font-weight: 600; padding: 4px 10px;
+    border-radius: 6px; white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .axis-3d {
+    position: absolute; left: 50%; top: 50%;
+    transform-style: preserve-3d;
+    width: 200px; height: 2px; transform-origin: 0 50%;
+    border-radius: 1px; z-index: 2;
+  }
+  .axis-label-3d {
+    position: absolute; left: 50%; top: 50%;
+    font-size: 11px; font-weight: 700; z-index: 2;
+  }
+  .vec-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+  }
+  .vec-table th {
+    font-size: 11px; font-weight: 700; color: var(--muted); padding: 4px 6px;
+    border-bottom: 2px solid var(--gridline); text-align: center;
+  }
+  .vec-table th:first-child { text-align: left; }
+  .vec-table td {
+    padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--gridline);
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace; font-size: 11px;
+  }
+  .vec-table td:first-child {
+    text-align: left; font-family: inherit; font-weight: 600;
+  }
+
+  /* 2D Scatter */
+  .scatter-2d {
+    width: 100%; height: 480px; position: relative;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 12px;
+    overflow: hidden;
+  }
+  .word-point-2d {
+    position: absolute; font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px; cursor: pointer;
+    transition: opacity 0.3s; white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .word-point-2d:hover { z-index: 10; transform: scale(1.15); }
+  .word-point-2d.selected {
+    border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); z-index: 20;
+  }
+  .word-point-2d.dimmed { opacity: 0.15; }
+  .svg-overlay {
+    position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  }
+
+  /* Legend & filters */
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 8px 0; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .filter-bar { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .filter-btn {
+    font-family: inherit; font-size: 12px; padding: 5px 12px; border-radius: 6px;
+    border: 1px solid var(--gridline); background: transparent;
+    color: var(--secondary); cursor: pointer; transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--secondary); }
+  .filter-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .coord-display {
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    font-size: 12px; color: var(--muted); text-align: center; min-height: 18px;
+  }
+
+  /* Arithmetic */
+  .arith-equation {
+    display: flex; align-items: center; gap: 12px; justify-content: center;
+    flex-wrap: wrap; padding: 20px; background: var(--surface);
+    border: 1px solid var(--gridline); border-radius: 12px;
+  }
+  .arith-word {
+    font-size: 18px; font-weight: 700; padding: 10px 20px;
+    border-radius: 10px; border: 2px solid var(--gridline);
+    min-width: 80px; text-align: center; transition: all 0.3s;
+    background: transparent; color: var(--primary);
+  }
+  .arith-word.filled { border-color: var(--blue); background: rgba(var(--blue-r),var(--blue-g),var(--blue-b),0.08); }
+  .arith-word.result { border-color: var(--aqua); color: var(--aqua); background: rgba(var(--aqua-r),var(--aqua-g),var(--aqua-b),0.08); }
+  .arith-op { font-size: 24px; font-weight: 700; color: var(--muted); }
+  .preset-bar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .preset-btn {
+    font-family: inherit; font-size: 12px; padding: 6px 14px;
+    border-radius: 6px; border: 1px solid var(--gridline);
+    background: var(--surface); color: var(--secondary);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .preset-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .preset-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .neighbors-list { margin-top: 12px; }
+  .neighbor-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .neighbor-word { font-weight: 600; width: 70px; text-align: right; font-size: 14px; }
+  .neighbor-bar-bg { flex: 1; height: 22px; background: var(--gridline); border-radius: 4px; overflow: hidden; }
+  .neighbor-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .neighbor-val { font-size: 12px; color: var(--muted); font-family: monospace; width: 40px; }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.35s ease; }
+
+  @media (max-width: 800px) {
+    .main-row { flex-direction: column; }
+    .side-panel { width: 100%; }
+    .scene-3d, .scatter-2d { height: 360px; }
+  }
+
+  /* Intro overlay */
+  .intro-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; transition: opacity 0.3s;
+  }
+  .intro-card {
+    background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 16px; max-width: 560px; width: 100%;
+    padding: 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+  .intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+  .intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+  .intro-card li { margin-bottom: 4px; }
+  .intro-start {
+    background: var(--blue); color: #fff; border: none;
+    padding: 10px 28px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: filter 0.15s;
+  }
+  .intro-start:hover { filter: brightness(1.15); }
+  .intro-reopen {
+    display: none; width: 22px; height: 22px; border-radius: 50%;
+    background: transparent; border: 2px solid var(--muted);
+    color: var(--muted); font-size: 12px; font-weight: 700;
+    padding: 0; cursor: pointer; transition: all 0.15s;
+    line-height: 18px; text-align: center; margin-left: auto;
+  }
+  .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+  .intro-wiki {
+    display: inline-block; margin-bottom: 16px;
+    color: var(--blue); font-size: 13px; text-decoration: none;
+  }
+  .intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>Word Vectors (Embeddings)</h2>
+    <p>Computers cannot understand words directly — they work with numbers. Word vectors (embeddings) solve this by representing each word as a list of numbers — a point in space.</p>
+    <p>The magic: words with similar meanings end up near each other. Even more remarkably, the directions between words capture relationships like gender, tense, and geography.</p>
+    <ul>
+      <li>3D Space — see how similar words cluster together in a hand-crafted embedding</li>
+      <li>High-Dimensional — explore a realistic projection of 50+ words from high-D space</li>
+      <li>Arithmetic — discover that king − man + woman = queen</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Word_embedding" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+<nav class="nav-bar">
+  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link active">Word Vectors</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+  <button class="intro-reopen" title="About this demo">?</button>
+</nav>
+
+<h1>Word Vectors</h1>
+<p class="subtitle">Words as points in space — similar meanings, nearby positions</p>
+
+<div style="display:flex;justify-content:center;margin-bottom:8px;">
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('3d')">3D Space</button>
+    <button class="mode-tab" onclick="switchMode('highdim')">High-Dimensional</button>
+    <button class="mode-tab" onclick="switchMode('arithmetic')">Arithmetic</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main-row">
+    <div class="viz-panel" id="vizPanel"></div>
+    <div class="side-panel" id="sidePanel"></div>
+  </div>
+</div>
+<div class="controls-bar" id="controlsBar"></div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+const CLUSTERS_3D = [
+  { name: 'Animals', color: 'blue' },
+  { name: 'Actions', color: 'orange' },
+  { name: 'Food',    color: 'aqua' },
+  { name: 'Royalty', color: 'violet' },
+];
+
+const WORDS_3D = [
+  { word:'cat',      x: 2.2, y: 2.8, z: 0.8, cluster:0 },
+  { word:'dog',      x: 2.8, y: 2.2, z: 1.2, cluster:0 },
+  { word:'fish',     x: 1.8, y: 3.4, z: 0.5, cluster:0 },
+  { word:'bird',     x: 2.5, y: 3.0, z: 1.8, cluster:0 },
+  { word:'horse',    x: 3.0, y: 2.0, z: 1.0, cluster:0 },
+  { word:'run',      x:-1.8, y: 1.2, z:-0.8, cluster:1 },
+  { word:'walk',     x:-2.2, y: 1.0, z:-0.5, cluster:1 },
+  { word:'swim',     x:-1.6, y: 2.0, z:-1.4, cluster:1 },
+  { word:'fly',      x:-2.0, y: 2.2, z:-1.8, cluster:1 },
+  { word:'jump',     x:-2.4, y: 1.5, z:-0.7, cluster:1 },
+  { word:'apple',    x: 0.2, y:-2.2, z: 2.2, cluster:2 },
+  { word:'bread',    x:-0.3, y:-2.8, z: 1.8, cluster:2 },
+  { word:'rice',     x: 0.4, y:-3.0, z: 2.4, cluster:2 },
+  { word:'water',    x:-0.4, y:-2.0, z: 1.6, cluster:2 },
+  { word:'cheese',   x: 0.1, y:-2.6, z: 2.0, cluster:2 },
+  { word:'king',     x: 3.2, y:-0.3, z:-2.2, cluster:3 },
+  { word:'queen',    x: 2.8, y: 0.5, z:-1.8, cluster:3 },
+  { word:'prince',   x: 3.4, y:-0.5, z:-2.5, cluster:3 },
+  { word:'princess', x: 2.6, y: 0.7, z:-1.5, cluster:3 },
+];
+
+const GROUPS_HD = {
+  country:   { color:'blue',    label:'Countries' },
+  capital:   { color:'aqua',    label:'Capitals' },
+  male:      { color:'orange',  label:'Male' },
+  female:    { color:'magenta', label:'Female' },
+  verb:      { color:'green',   label:'Verbs (base)' },
+  verb_past: { color:'yellow',  label:'Verbs (past)' },
+  animal:    { color:'violet',  label:'Animals' },
+};
+
+const WORDS_HD = [
+  { word:'king',     vec:[0.90,-0.70, 0.08, 0.05, 0.02, 0.03, 0.01, 0.02, 0.01, 0.04], group:'male',      px:-3.8, py: 1.2 },
+  { word:'queen',    vec:[0.90, 0.70, 0.08, 0.05, 0.02, 0.03, 0.01, 0.02, 0.01, 0.04], group:'female',    px:-3.8, py: 2.8 },
+  { word:'man',      vec:[0.05,-0.72, 0.10, 0.06, 0.01, 0.05, 0.02, 0.01, 0.02, 0.03], group:'male',      px:-5.0, py: 0.8 },
+  { word:'woman',    vec:[0.05, 0.72, 0.10, 0.06, 0.01, 0.05, 0.02, 0.01, 0.02, 0.03], group:'female',    px:-5.0, py: 2.4 },
+  { word:'boy',      vec:[0.03,-0.68, 0.12, 0.04, 0.02, 0.08, 0.01, 0.03, 0.01, 0.05], group:'male',      px:-4.4, py: 0.5 },
+  { word:'girl',     vec:[0.03, 0.68, 0.12, 0.04, 0.02, 0.08, 0.01, 0.03, 0.01, 0.05], group:'female',    px:-4.4, py: 2.1 },
+  { word:'brother',  vec:[0.04,-0.65, 0.14, 0.05, 0.01, 0.04, 0.02, 0.02, 0.01, 0.04], group:'male',      px:-3.2, py: 0.6 },
+  { word:'sister',   vec:[0.04, 0.65, 0.14, 0.05, 0.01, 0.04, 0.02, 0.02, 0.01, 0.04], group:'female',    px:-3.2, py: 2.2 },
+  { word:'father',   vec:[0.08,-0.70, 0.09, 0.07, 0.02, 0.03, 0.01, 0.02, 0.01, 0.03], group:'male',      px:-2.6, py: 1.0 },
+  { word:'mother',   vec:[0.08, 0.70, 0.09, 0.07, 0.02, 0.03, 0.01, 0.02, 0.01, 0.03], group:'female',    px:-2.6, py: 2.6 },
+  { word:'prince',   vec:[0.85,-0.68, 0.07, 0.04, 0.03, 0.02, 0.01, 0.02, 0.02, 0.03], group:'male',      px:-4.2, py: 1.4 },
+  { word:'princess', vec:[0.85, 0.68, 0.07, 0.04, 0.03, 0.02, 0.01, 0.02, 0.02, 0.03], group:'female',    px:-4.2, py: 3.0 },
+  { word:'uncle',    vec:[0.06,-0.62, 0.11, 0.06, 0.03, 0.04, 0.02, 0.03, 0.01, 0.04], group:'male',      px:-2.0, py: 0.4 },
+  { word:'aunt',     vec:[0.06, 0.62, 0.11, 0.06, 0.03, 0.04, 0.02, 0.03, 0.01, 0.04], group:'female',    px:-2.0, py: 2.0 },
+  { word:'husband',  vec:[0.07,-0.71, 0.10, 0.05, 0.01, 0.03, 0.02, 0.01, 0.01, 0.02], group:'male',      px:-1.4, py: 0.9 },
+  { word:'wife',     vec:[0.07, 0.71, 0.10, 0.05, 0.01, 0.03, 0.02, 0.01, 0.01, 0.02], group:'female',    px:-1.4, py: 2.5 },
+
+  { word:'france',   vec:[0.02, 0.03, 0.90, 0.04, 0.02, 0.01, 0.02, 0.01, 0.03, 0.02], group:'country',   px: 3.0, py: 3.4 },
+  { word:'paris',    vec:[0.02, 0.03, 0.88, 0.04, 0.72, 0.01, 0.02, 0.01, 0.03, 0.02], group:'capital',   px: 3.8, py: 3.8 },
+  { word:'japan',    vec:[0.03, 0.02, 0.05, 0.90, 0.02, 0.02, 0.01, 0.02, 0.04, 0.01], group:'country',   px: 4.8, py: 2.0 },
+  { word:'tokyo',    vec:[0.03, 0.02, 0.05, 0.88, 0.72, 0.02, 0.01, 0.02, 0.04, 0.01], group:'capital',   px: 5.6, py: 2.4 },
+  { word:'germany',  vec:[0.02, 0.04, 0.85, 0.08, 0.02, 0.02, 0.01, 0.01, 0.02, 0.03], group:'country',   px: 3.4, py: 2.8 },
+  { word:'berlin',   vec:[0.02, 0.04, 0.83, 0.08, 0.70, 0.02, 0.01, 0.01, 0.02, 0.03], group:'capital',   px: 4.2, py: 3.2 },
+  { word:'italy',    vec:[0.03, 0.03, 0.88, 0.06, 0.03, 0.01, 0.02, 0.02, 0.01, 0.04], group:'country',   px: 2.4, py: 3.0 },
+  { word:'rome',     vec:[0.03, 0.03, 0.86, 0.06, 0.71, 0.01, 0.02, 0.02, 0.01, 0.04], group:'capital',   px: 3.2, py: 3.6 },
+  { word:'spain',    vec:[0.02, 0.02, 0.87, 0.05, 0.02, 0.02, 0.01, 0.01, 0.02, 0.03], group:'country',   px: 2.0, py: 2.6 },
+  { word:'madrid',   vec:[0.02, 0.02, 0.85, 0.05, 0.70, 0.02, 0.01, 0.01, 0.02, 0.03], group:'capital',   px: 2.8, py: 3.2 },
+
+  { word:'walk',     vec:[0.02, 0.03, 0.04, 0.02, 0.01, 0.72, 0.03, 0.02, 0.05, 0.03], group:'verb',      px:-0.5, py:-3.0 },
+  { word:'walked',   vec:[0.02, 0.03, 0.04, 0.02, 0.01, 0.72, 0.70, 0.02, 0.05, 0.03], group:'verb_past', px: 0.8, py:-3.2 },
+  { word:'run',      vec:[0.03, 0.02, 0.03, 0.03, 0.02, 0.75, 0.02, 0.03, 0.04, 0.02], group:'verb',      px:-1.2, py:-2.6 },
+  { word:'ran',      vec:[0.03, 0.02, 0.03, 0.03, 0.02, 0.75, 0.70, 0.03, 0.04, 0.02], group:'verb_past', px: 0.1, py:-2.8 },
+  { word:'swim',     vec:[0.01, 0.02, 0.03, 0.02, 0.01, 0.70, 0.02, 0.01, 0.80, 0.02], group:'verb',      px:-1.0, py:-3.6 },
+  { word:'swam',     vec:[0.01, 0.02, 0.03, 0.02, 0.01, 0.70, 0.70, 0.01, 0.80, 0.02], group:'verb_past', px: 0.3, py:-3.8 },
+  { word:'talk',     vec:[0.02, 0.04, 0.05, 0.03, 0.01, 0.68, 0.02, 0.02, 0.03, 0.04], group:'verb',      px: 0.0, py:-2.2 },
+  { word:'talked',   vec:[0.02, 0.04, 0.05, 0.03, 0.01, 0.68, 0.70, 0.02, 0.03, 0.04], group:'verb_past', px: 1.3, py:-2.4 },
+  { word:'fly',      vec:[0.02, 0.03, 0.02, 0.04, 0.02, 0.72, 0.03, 0.04, 0.03, 0.01], group:'verb',      px:-0.2, py:-3.4 },
+  { word:'flew',     vec:[0.02, 0.03, 0.02, 0.04, 0.02, 0.72, 0.70, 0.04, 0.03, 0.01], group:'verb_past', px: 1.1, py:-3.6 },
+
+  { word:'cat',      vec:[0.03, 0.04, 0.05, 0.04, 0.02, 0.04, 0.01, 0.85, 0.06, 0.08], group:'animal',    px: 0.5, py: 1.5 },
+  { word:'dog',      vec:[0.04, 0.03, 0.04, 0.03, 0.01, 0.06, 0.02, 0.88, 0.04, 0.07], group:'animal',    px: 1.0, py: 1.2 },
+  { word:'fish',     vec:[0.02, 0.02, 0.03, 0.05, 0.01, 0.03, 0.01, 0.80, 0.82, 0.05], group:'animal',    px: 0.2, py: 0.6 },
+  { word:'bird',     vec:[0.03, 0.03, 0.04, 0.04, 0.02, 0.05, 0.02, 0.84, 0.05, 0.06], group:'animal',    px: 1.4, py: 1.8 },
+  { word:'horse',    vec:[0.05, 0.02, 0.06, 0.03, 0.02, 0.08, 0.01, 0.86, 0.03, 0.06], group:'animal',    px: 0.8, py: 0.8 },
+];
+
+const RELATIONSHIPS = {
+  geography: [['france','paris'],['japan','tokyo'],['germany','berlin'],['italy','rome'],['spain','madrid']],
+  gender: [['king','queen'],['man','woman'],['boy','girl'],['brother','sister'],['father','mother'],['prince','princess'],['uncle','aunt'],['husband','wife']],
+  tense: [['walk','walked'],['run','ran'],['swim','swam'],['talk','talked'],['fly','flew']],
+};
+
+const PRESETS = [
+  { a:'king', b:'man', c:'woman', expect:'queen', label:'king − man + woman' },
+  { a:'paris', b:'france', c:'japan', expect:'tokyo', label:'paris − france + japan' },
+  { a:'walked', b:'walk', c:'swim', expect:'swam', label:'walked − walk + swim' },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+let mode = '3d';
+let rotX = -20, rotY = 30;
+let zoom3D = 1, zoomHD = 1;
+let panHDx = 0, panHDy = 0;
+let isDragging = false, isDraggingHD = false;
+let dragStartX, dragStartY, dragRotX, dragRotY;
+let hdDragStartX, hdDragStartY, hdPanStartX, hdPanStartY;
+let activeFilter = 'all';
+let activePreset = null;
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+
+function getCSS(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function clusterColor(c) { return getCSS('--' + CLUSTERS_3D[c].color); }
+
+function groupColor(g) { return getCSS('--' + GROUPS_HD[g].color); }
+
+function cosineSimilarity(a, b) {
+  let dot = 0, mA = 0, mB = 0;
+  for (let i = 0; i < a.length; i++) { dot += a[i]*b[i]; mA += a[i]*a[i]; mB += b[i]*b[i]; }
+  if (mA === 0 || mB === 0) return 0;
+  return dot / (Math.sqrt(mA) * Math.sqrt(mB));
+}
+
+function vecArith(a, b, c) { return a.map((v, i) => v - b[i] + c[i]); }
+
+function findWordIdx(name) { return WORDS_HD.findIndex(w => w.word === name); }
+
+function findNearest(resultVec, excludeWords, topN) {
+  topN = topN || 5;
+  const scored = WORDS_HD.map((w, i) => ({
+    word: w.word, idx: i, group: w.group,
+    sim: excludeWords.includes(w.word) ? -Infinity : cosineSimilarity(resultVec, w.vec)
+  }));
+  scored.sort((a, b) => b.sim - a.sim);
+  return scored.slice(0, topN);
+}
+
+function mapHD(px, py, w, h, applyZoom) {
+  const pad = 50;
+  const minX = -6, maxX = 7, minY = -4.5, maxY = 4.5;
+  let x = pad + (px - minX) / (maxX - minX) * (w - 2*pad);
+  let y = pad + (1 - (py - minY) / (maxY - minY)) * (h - 2*pad);
+  if (applyZoom !== false) {
+    x = w/2 + (x - w/2) * zoomHD + panHDx;
+    y = h/2 + (y - h/2) * zoomHD + panHDy;
+  }
+  return { x, y };
+}
+
+// ── MODE SWITCHING ───────────────────────────────────────────────────────────
+
+function switchMode(m) {
+  mode = m;
+  activeFilter = 'all';
+  activePreset = null;
+  rotX = -20; rotY = 30; zoom3D = 1;
+  zoomHD = 1; panHDx = 0; panHDy = 0;
+  document.querySelectorAll('.mode-tab').forEach((t, i) => {
+    t.classList.toggle('active',
+      (i===0 && m==='3d') || (i===1 && m==='highdim') || (i===2 && m==='arithmetic'));
+  });
+  render();
+}
+
+function render() {
+  if (mode === '3d') { render3D(); side3D(); controls3D(); }
+  else if (mode === 'highdim') { renderHighDim(); sideHighDim(); controlsHighDim(); }
+  else { renderArithmetic(); sideArithmetic(); controlsArithmetic(); }
+}
+
+// ── 3D RENDERING ─────────────────────────────────────────────────────────────
+
+function render3D() {
+  const S = 60 * zoom3D;
+  const axisLen = 180 * zoom3D;
+  const billboardRot = `rotateY(${-rotY}deg) rotateX(${-rotX}deg)`;
+
+  let points = WORDS_3D.map((w, i) => {
+    const c = clusterColor(w.cluster);
+    return `<div class="word-point-3d"
+      style="transform:translate3d(${w.x*S}px,${-w.y*S}px,${w.z*S}px) ${billboardRot} translate(-50%,-50%);
+             background:color-mix(in srgb, ${c} 15%, transparent);color:${c}">${w.word}</div>`;
+  }).join('');
+
+  const axH = axisLen / 2;
+  const axes = `
+    <div class="axis-3d" style="transform:translate3d(${-axH}px,0,0);background:var(--red);width:${axisLen}px"></div>
+    <div class="axis-3d" style="transform:translate3d(0,${axH}px,0) rotateZ(-90deg);background:var(--green);width:${axisLen}px"></div>
+    <div class="axis-3d" style="transform:translate3d(0,0,${-axH}px) rotateY(-90deg);background:var(--blue);width:${axisLen}px"></div>
+    <div class="axis-label-3d" style="transform:translate3d(${axH+12}px,0,0) ${billboardRot} translate(-50%,-50%);color:var(--red)">+x</div>
+    <div class="axis-label-3d" style="transform:translate3d(0,${-axH-12}px,0) ${billboardRot} translate(-50%,-50%);color:var(--green)">+y</div>
+    <div class="axis-label-3d" style="transform:translate3d(0,0,${axH+12}px) ${billboardRot} translate(-50%,-50%);color:var(--blue)">+z</div>`;
+
+  const legend = CLUSTERS_3D.map(c =>
+    `<div class="legend-item"><div class="legend-dot" style="background:var(--${c.color})"></div>${c.name}</div>`
+  ).join('');
+
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="scene-3d" id="scene3d">
+      <div class="scene-3d-inner" id="sceneInner" style="transform:rotateX(${rotX}deg) rotateY(${rotY}deg)">
+        ${axes}${points}
+      </div>
+    </div>
+    <div class="legend">${legend}</div>`;
+
+  attachDrag3D();
+}
+
+function attachDrag3D() {
+  const el = document.getElementById('scene3d');
+  if (!el) return;
+  el.addEventListener('mousedown', e => {
+    isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY;
+    dragRotX = rotX; dragRotY = rotY;
+  });
+  el.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    isDragging = true; dragStartX = t.clientX; dragStartY = t.clientY;
+    dragRotX = rotX; dragRotY = rotY;
+  }, { passive: true });
+  el.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoom3D = Math.max(0.3, Math.min(3, zoom3D * (e.deltaY < 0 ? 1.1 : 0.9)));
+    render3D();
+  }, { passive: false });
+}
+
+document.addEventListener('mousemove', e => {
+  if (isDragging) {
+    rotY = dragRotY + (e.clientX - dragStartX) * 0.5;
+    rotX = Math.max(-90, Math.min(90, dragRotX - (e.clientY - dragStartY) * 0.5));
+    updateScene();
+  }
+  if (isDraggingHD) {
+    panHDx = hdPanStartX + (e.clientX - hdDragStartX);
+    panHDy = hdPanStartY + (e.clientY - hdDragStartY);
+    renderHighDim();
+  }
+});
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  isDraggingHD = false;
+  const el = document.getElementById('scatter2d');
+  if (el) el.style.cursor = 'grab';
+});
+document.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  const t = e.touches[0];
+  rotY = dragRotY + (t.clientX - dragStartX) * 0.5;
+  rotX = Math.max(-90, Math.min(90, dragRotX - (t.clientY - dragStartY) * 0.5));
+  updateScene();
+}, { passive: true });
+document.addEventListener('touchend', () => { isDragging = false; });
+
+function updateScene() {
+  const inner = document.getElementById('sceneInner');
+  if (!inner) return;
+  inner.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  const billboard = `rotateY(${-rotY}deg) rotateX(${-rotX}deg)`;
+  inner.querySelectorAll('.word-point-3d, .axis-label-3d').forEach(el => {
+    const t = el.style.transform;
+    const base = t.replace(/rotateY\([^)]+\)\s*rotateX\([^)]+\)/, billboard);
+    el.style.transform = base;
+  });
+}
+
+function side3D() {
+  let curCluster = -1;
+  const rows = WORDS_3D.map(w => {
+    const c = clusterColor(w.cluster);
+    let sep = '';
+    if (w.cluster !== curCluster) {
+      curCluster = w.cluster;
+      sep = `<tr><td colspan="4" style="padding:6px 0 2px;font-size:11px;font-weight:700;color:${c};border:none;">${CLUSTERS_3D[w.cluster].name}</td></tr>`;
+    }
+    return sep + `<tr>
+      <td style="color:${c}">${w.word}</td>
+      <td>${w.x.toFixed(1)}</td><td>${w.y.toFixed(1)}</td><td>${w.z.toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('sidePanel').innerHTML = `
+    <div class="narration">
+      <strong>What are word embeddings?</strong><br>
+      Each word is mapped to a list of numbers — a vector. These numbers position the word in a geometric space.
+      Words with similar meanings end up near each other.
+    </div>
+    <div class="card">
+      <h3>Vector Table</h3>
+      <table class="vec-table">
+        <tr><th>Word</th><th>x</th><th>y</th><th>z</th></tr>
+        ${rows}
+      </table>
+    </div>
+    <div class="narration">
+      Drag to rotate the 3D space.
+      Notice how semantic similarity becomes geometric proximity.
+      <div class="scale-note">Here: 3D for clarity. Real embeddings use hundreds to thousands of dimensions (Word2Vec: 300, GPT-3: 12,288).</div>
+    </div>`;
+}
+
+function controls3D() {
+  document.getElementById('controlsBar').innerHTML = `
+    <button class="ctrl-btn" onclick="rotX=-20;rotY=30;zoom3D=1;render()">Reset View</button>`;
+}
+
+// ── HIGH-DIM RENDERING ───────────────────────────────────────────────────────
+
+function renderHighDim() {
+  const W = 760, H = 480;
+  const filterBtns = ['all','geography','gender','tense'].map(f =>
+    `<button class="filter-btn${activeFilter===f?' active':''}" onclick="setFilter('${f}')">${f === 'all' ? 'All' : f[0].toUpperCase()+f.slice(1)}</button>`
+  ).join('');
+
+  const matchWords = new Set();
+  if (activeFilter !== 'all') {
+    RELATIONSHIPS[activeFilter].forEach(([a,b]) => { matchWords.add(a); matchWords.add(b); });
+  }
+
+  let svgLines = '';
+  if (activeFilter !== 'all') {
+    RELATIONSHIPS[activeFilter].forEach(([a, b]) => {
+      const wa = WORDS_HD.find(w => w.word === a);
+      const wb = WORDS_HD.find(w => w.word === b);
+      if (!wa || !wb) return;
+      const pa = mapHD(wa.px, wa.py, W, H);
+      const pb = mapHD(wb.px, wb.py, W, H);
+      svgLines += `<line x1="${pa.x}" y1="${pa.y}" x2="${pb.x}" y2="${pb.y}"
+        stroke="var(--blue)" stroke-width="1.5" stroke-opacity="0.4" stroke-dasharray="4,3"/>`;
+    });
+  }
+
+  const points = WORDS_HD.map((w, i) => {
+    const p = mapHD(w.px, w.py, W, H);
+    const c = groupColor(w.group);
+    const dimmed = activeFilter !== 'all' && !matchWords.has(w.word) ? ' dimmed' : '';
+    return `<div class="word-point-2d${dimmed}" style="left:${p.x}px;top:${p.y}px;transform:translate(-50%,-50%);
+      background:color-mix(in srgb, ${c} 15%, transparent);color:${c}">${w.word}</div>`;
+  }).join('');
+
+  const legend = Object.entries(GROUPS_HD).map(([k, v]) =>
+    `<div class="legend-item"><div class="legend-dot" style="background:var(--${v.color})"></div>${v.label}</div>`
+  ).join('');
+
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="filter-bar">${filterBtns}</div>
+    <div class="scatter-2d" id="scatter2d" style="width:100%;max-width:${W}px;height:${H}px;margin:0 auto;cursor:grab;">
+      <svg class="svg-overlay" viewBox="0 0 ${W} ${H}">${svgLines}</svg>
+      ${points}
+    </div>
+    <div class="legend">${legend}</div>`;
+
+  const el = document.getElementById('scatter2d');
+  if (!el) return;
+  el.addEventListener('wheel', e => {
+    e.preventDefault();
+    const prev = zoomHD;
+    zoomHD = Math.max(0.5, Math.min(4, zoomHD * (e.deltaY < 0 ? 1.1 : 0.9)));
+    const rect = el.getBoundingClientRect();
+    const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+    panHDx = cx - (cx - panHDx) * (zoomHD / prev);
+    panHDy = cy - (cy - panHDy) * (zoomHD / prev);
+    renderHighDim();
+  }, { passive: false });
+  el.addEventListener('mousedown', e => {
+    isDraggingHD = true; hdDragStartX = e.clientX; hdDragStartY = e.clientY;
+    hdPanStartX = panHDx; hdPanStartY = panHDy;
+    el.style.cursor = 'grabbing';
+  });
+}
+
+function setFilter(f) {
+  activeFilter = activeFilter === f && f !== 'all' ? 'all' : f;
+  render();
+}
+
+function sideHighDim() {
+  const filterInfo = {
+    all: `<div class="narration">
+      <strong>50 words in 10 dimensions</strong>, projected to 2D. Each word is a point; nearby points have similar meanings.
+      Use the filter buttons to highlight specific relationship patterns.
+    </div>`,
+    geography: `<div class="narration">
+      <strong>Geography:</strong> Each dashed line connects a country to its capital. Notice the lines are roughly
+      <strong>parallel</strong> — the direction from country → capital is consistent. The "capital of" relationship
+      is a single direction in vector space.
+    </div>`,
+    gender: `<div class="narration">
+      <strong>Gender:</strong> Each line connects a male word to its female counterpart. Again, the lines are roughly
+      parallel — "gender" is encoded as a consistent direction. This is what makes arithmetic like
+      <strong>king − man + woman = queen</strong> work.
+    </div>`,
+    tense: `<div class="narration">
+      <strong>Verb tense:</strong> Each line connects a base form to its past tense.
+      The "past tense" transformation is another consistent direction —
+      <strong>walked − walk ≈ ran − run ≈ swam − swim</strong>.
+    </div>`,
+  };
+
+  document.getElementById('sidePanel').innerHTML = `
+    ${filterInfo[activeFilter]}
+    <div class="card">
+      <h3>Why project to 2D?</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        Real word vectors live in <strong>hundreds to thousands of dimensions</strong> (Word2Vec: 300, GPT-3: 12,288).
+        We project down using PCA — finding the 2 directions of greatest variation.<br><br>
+        Some structure is lost, but the main clusters and directions survive.
+      </div>
+    </div>
+    <div class="card">
+      <h3>What to look for</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong style="color:var(--blue)">Countries</strong> cluster near their <strong style="color:var(--aqua)">capitals</strong>.<br>
+        <strong style="color:var(--orange)">Male</strong> and <strong style="color:var(--magenta)">female</strong> pairs align along a consistent axis.<br>
+        <strong style="color:var(--green)">Verbs</strong> group by action type, with <strong style="color:var(--yellow)">past tense</strong> shifted in the same direction.
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Dimensionality</h3>
+      <div class="formula">
+        10D vectors → PCA → 2D
+      </div>
+      <div class="scale-note">Word2Vec: 300D. BERT: 768D. GPT-3: 12,288D.</div>
+    </div>`;
+}
+
+function controlsHighDim() {
+  document.getElementById('controlsBar').innerHTML = `
+    <button class="ctrl-btn" onclick="activeFilter='all';zoomHD=1;panHDx=0;panHDy=0;render()">Reset View</button>`;
+}
+
+// ── ARITHMETIC RENDERING ─────────────────────────────────────────────────────
+
+function renderArithmetic() {
+  const presetBtns = PRESETS.map((p, i) =>
+    `<button class="preset-btn${activePreset===i?' active':''}" onclick="selectPreset(${i})">${p.label}</button>`
+  ).join('');
+
+  let aWord = '?', bWord = '?', cWord = '?', resultWord = '?';
+  let neighborsHTML = '';
+  let arrowsHTML = '';
+
+  if (activePreset !== null) {
+    const p = PRESETS[activePreset];
+    aWord = p.a; bWord = p.b; cWord = p.c;
+
+    const aIdx = findWordIdx(p.a), bIdx = findWordIdx(p.b), cIdx = findWordIdx(p.c);
+    const resultVec = vecArith(WORDS_HD[aIdx].vec, WORDS_HD[bIdx].vec, WORDS_HD[cIdx].vec);
+    const neighbors = findNearest(resultVec, [p.a, p.b, p.c], 5);
+    resultWord = neighbors[0].word;
+
+    const maxSim = Math.max(...neighbors.map(n => n.sim));
+    neighborsHTML = '<div class="neighbors-list">' + neighbors.map((n, i) => {
+      const width = (n.sim / maxSim * 100).toFixed(0);
+      const isTop = i === 0;
+      const barColor = isTop ? 'var(--aqua)' : 'var(--muted)';
+      const wordColor = isTop ? 'color:var(--aqua)' : '';
+      return `<div class="neighbor-row">
+        <div class="neighbor-word" style="${wordColor}">${n.word}</div>
+        <div class="neighbor-bar-bg"><div class="neighbor-bar" style="width:${width}%;background:${barColor}"></div></div>
+        <div class="neighbor-val">${n.sim.toFixed(2)}</div>
+      </div>`;
+    }).join('') + '</div>';
+
+    const MW = 460, MH = 280;
+    const wa = WORDS_HD[aIdx], wb = WORDS_HD[bIdx], wc = WORDS_HD[cIdx];
+    const wr = WORDS_HD[findWordIdx(resultWord)];
+    const pa = mapHD(wa.px, wa.py, MW, MH);
+    const pb = mapHD(wb.px, wb.py, MW, MH);
+    const pc = mapHD(wc.px, wc.py, MW, MH);
+    const pr = wr ? mapHD(wr.px, wr.py, MW, MH) : { x: pc.x + (pa.x - pb.x), y: pc.y + (pa.y - pb.y) };
+
+    const miniPoints = WORDS_HD.map(w => {
+      const pp = mapHD(w.px, w.py, MW, MH);
+      const highlight = [p.a, p.b, p.c, resultWord].includes(w.word);
+      const opacity = highlight ? 1 : 0.15;
+      const c = groupColor(w.group);
+      const fontSize = highlight ? '12px' : '9px';
+      const fontWeight = highlight ? '700' : '500';
+      return `<div style="position:absolute;left:${pp.x}px;top:${pp.y}px;transform:translate(-50%,-50%);
+        font-size:${fontSize};font-weight:${fontWeight};opacity:${opacity};color:${c};white-space:nowrap">${w.word}</div>`;
+    }).join('');
+
+    arrowsHTML = `
+      <div style="position:relative;width:${MW}px;height:${MH}px;background:var(--surface);border:1px solid var(--gridline);border-radius:12px;overflow:hidden;margin:0 auto;">
+        <svg class="svg-overlay" viewBox="0 0 ${MW} ${MH}">
+          <defs>
+            <marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="var(--blue)" opacity="0.6"/>
+            </marker>
+            <marker id="ah2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="var(--aqua)" opacity="0.8"/>
+            </marker>
+          </defs>
+          <line x1="${pb.x}" y1="${pb.y}" x2="${pa.x}" y2="${pa.y}" stroke="var(--blue)" stroke-width="2" stroke-opacity="0.5" stroke-dasharray="6,4" marker-end="url(#ah)"/>
+          <line x1="${pc.x}" y1="${pc.y}" x2="${pr.x}" y2="${pr.y}" stroke="var(--aqua)" stroke-width="2.5" stroke-opacity="0.7" marker-end="url(#ah2)"/>
+        </svg>
+        ${miniPoints}
+      </div>
+      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted)">
+        <span style="color:var(--blue)">⤏ dashed</span> = relationship (${bWord} → ${aWord}) &nbsp;
+        <span style="color:var(--aqua)">→ solid</span> = same direction from ${cWord}
+      </div>`;
+  }
+
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="preset-bar">${presetBtns}</div>
+    <div class="arith-equation fade-in">
+      <div class="arith-word${activePreset!==null?' filled':''}">${aWord}</div>
+      <div class="arith-op">−</div>
+      <div class="arith-word${activePreset!==null?' filled':''}">${bWord}</div>
+      <div class="arith-op">+</div>
+      <div class="arith-word${activePreset!==null?' filled':''}">${cWord}</div>
+      <div class="arith-op">=</div>
+      <div class="arith-word${activePreset!==null?' result':''}">${resultWord}</div>
+    </div>
+    ${neighborsHTML}
+    ${arrowsHTML}`;
+}
+
+function selectPreset(i) {
+  activePreset = activePreset === i ? null : i;
+  render();
+}
+
+function sideArithmetic() {
+  document.getElementById('sidePanel').innerHTML = `
+    <div class="narration">
+      <strong>The most famous word vector property:</strong> relationships between words correspond to
+      <strong>directions</strong> in the space. Subtract "man" from "king" and you get the concept of
+      "royalty." Add that to "woman" and you land near "queen."
+    </div>
+    <div class="card">
+      <h3>How it works</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong>Compute:</strong> result = vec(A) − vec(B) + vec(C)<br><br>
+        <strong>Find:</strong> the word whose vector is most similar (highest cosine similarity) to the result.<br><br>
+        This works because the direction from B to A captures a relationship that transfers to C.
+      </div>
+    </div>
+    <div class="card">
+      <h3>Three relationship types</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong>Gender:</strong> king − man + woman = queen<br>
+        <strong>Geography:</strong> paris − france + japan = tokyo<br>
+        <strong>Tense:</strong> walked − walk + swim = swam<br><br>
+        Each works because the relationship is encoded as a consistent direction in vector space.
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Cosine Similarity</h3>
+      <div class="formula">
+        sim(a, b) <span class="op">=</span> a · b <span class="op">/</span> (‖a‖ × ‖b‖)
+      </div>
+      <div style="font-size:12px;color:var(--secondary);text-align:center;margin-top:6px;">
+        Measures the angle between two vectors.
+        1 = identical direction, 0 = perpendicular.
+      </div>
+    </div>`;
+}
+
+function controlsArithmetic() {
+  document.getElementById('controlsBar').innerHTML = `
+    <button class="ctrl-btn" onclick="activePreset=null;render()">Reset</button>`;
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────────────────────────
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    activeFilter = 'all'; activePreset = null;
+    rotX = -20; rotY = 30; zoom3D = 1;
+    zoomHD = 1; panHDx = 0; panHDy = 0;
+    render();
+  }
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+
+render();
+
+(function(){
+  const KEY = 'intro-dismissed-word-vectors';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

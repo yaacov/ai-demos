@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Timeline</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --aqua:           #1baf7a;
+    --yellow:         #eda100;
+    --green:          #008300;
+    --violet:         #4a3aa7;
+    --red:            #e34948;
+    --magenta:        #e87ba4;
+    --orange:         #eb6834;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #3987e5;
+      --aqua:         #199e70;
+      --yellow:       #c98500;
+      --green:        #008300;
+      --violet:       #9085e9;
+      --red:          #e66767;
+      --magenta:      #d55181;
+      --orange:       #d95926;
+      --card-bg:      #222220;
+      --card-border:  #3a3a35;
+      --narration-bg: #1e1e1c;
+      --narration-border:#333330;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+  }
+  .nav-bar {
+    width: 100%; max-width: 1100px; display: flex; gap: 4px; margin-bottom: 16px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center; flex-wrap: wrap; margin-top: 16px;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  h1 { font-size: 24px; font-weight: 700; margin: 24px 0 8px; text-align: center; }
+  .subtitle {
+    color: var(--secondary); font-size: 14px; text-align: center;
+    max-width: 640px; line-height: 1.7; margin-bottom: 32px; padding: 0 16px;
+  }
+
+  /* ── Horizontal timeline ────────────────────────────── */
+  .timeline-wrap {
+    width: 100%;
+    position: relative;
+  }
+  /* Fade overlays to hint at scroll */
+  .timeline-wrap::before,
+  .timeline-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 48px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .timeline-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, var(--page), transparent);
+  }
+  .timeline-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, var(--page), transparent);
+  }
+
+  .timeline {
+    display: flex;
+    direction: ltr;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 8px 56px 28px;
+    position: relative;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) var(--gridline);
+  }
+  .timeline::-webkit-scrollbar { height: 6px; }
+  .timeline::-webkit-scrollbar-track { background: var(--gridline); border-radius: 3px; }
+  .timeline::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+
+  /* Horizontal line through the dots */
+  .timeline {
+    background: linear-gradient(
+      to bottom,
+      transparent 39px,
+      var(--gridline) 39px,
+      var(--gridline) 42px,
+      transparent 42px
+    );
+  }
+
+  /* ── Timeline item (column: year → dot → stem → card) ── */
+  .tl-item {
+    flex: 0 0 270px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* scroll-snap removed for smooth drag */
+    position: relative;
+  }
+
+  /* Year label — sits above the line */
+  .tl-year {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue);
+    direction: ltr;
+    white-space: nowrap;
+    line-height: 1;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+    z-index: 2;
+    background: var(--page);
+    padding: 0 8px;
+    border-radius: 4px;
+  }
+
+  /* Dot on the line */
+  .tl-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid var(--blue);
+    background: var(--surface);
+    flex-shrink: 0;
+    z-index: 2;
+    position: relative;
+  }
+  /* Vertical stem from dot down to card */
+  .tl-dot::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 20px;
+    background: var(--gridline);
+  }
+
+  /* Card below the stem */
+  .tl-card {
+    margin-top: 22px;
+    width: 100%;
+    direction: ltr;
+    text-align: left;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .tl-card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+
+  .tl-people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0 0 8px;
+  }
+  .tl-person {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--gridline);
+    color: var(--secondary);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .tl-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 8px; line-height: 1.4;
+  }
+  .tl-body {
+    font-size: 13px; color: var(--secondary); line-height: 1.7;
+  }
+  .tl-body strong { color: var(--primary); }
+  .tl-insight {
+    margin-top: 10px; padding: 10px 12px; border-radius: 8px;
+    background: var(--narration-bg); border: 1px solid var(--narration-border);
+    font-size: 12px; color: var(--secondary); line-height: 1.6;
+  }
+  .tl-insight strong { color: var(--primary); }
+  .tl-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 6px 14px; border-radius: 6px;
+    background: var(--blue); color: #fff; text-decoration: none;
+    font-size: 12px; font-weight: 600; transition: filter 0.15s;
+  }
+  .tl-link:hover { filter: brightness(1.15); }
+
+  /* ── Section divider (inline badge on the line) ──── */
+  .tl-section {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 18px;
+    /* scroll-snap removed for smooth drag */
+    z-index: 2;
+  }
+  .tl-section-title {
+    background: var(--surface);
+    border: 2px solid var(--gridline);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    white-space: nowrap;
+    direction: ltr;
+  }
+
+  /* ── Context strips (HW & Algorithm) ──────────────── */
+  .context-strips { padding: 0 56px; margin-top: 16px; margin-bottom: 4px; }
+  .context-strip {
+    display: flex; align-items: center; margin-bottom: 6px;
+    position: relative;
+  }
+  .strip-label {
+    position: absolute; left: -48px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--muted); white-space: nowrap; text-align: right;
+    width: 44px;
+  }
+  .strip-track {
+    flex: 1; overflow: hidden; height: 64px;
+  }
+  .strip-inner {
+    width: 5610px; height: 100%; position: relative;
+  }
+  .strip-bar {
+    position: absolute; inset: 0; border-radius: 6px;
+  }
+  .strip-hw-bar {
+    background: linear-gradient(to right,
+      rgba(235,104,52,0.06) 0%,
+      rgba(235,104,52,0.06) 14%,
+      rgba(235,104,52,0.07) 40%,
+      rgba(235,104,52,0.09) 52%,
+      rgba(235,104,52,0.12) 58%,
+      rgba(235,104,52,0.25) 65%,
+      rgba(235,104,52,0.32) 72%,
+      rgba(235,104,52,0.42) 79%,
+      rgba(235,104,52,0.52) 87%,
+      rgba(235,104,52,0.56) 92%,
+      rgba(235,104,52,0.58) 100%
+    );
+  }
+  .strip-algo-bar {
+    background: linear-gradient(to right,
+      rgba(74,58,167,0.10) 0%,
+      rgba(74,58,167,0.06) 10%,
+      rgba(74,58,167,0.04) 28%,
+      rgba(74,58,167,0.14) 40%,
+      rgba(74,58,167,0.10) 50%,
+      rgba(74,58,167,0.16) 58%,
+      rgba(74,58,167,0.28) 65%,
+      rgba(74,58,167,0.35) 72%,
+      rgba(74,58,167,0.50) 79%,
+      rgba(74,58,167,0.55) 87%,
+      rgba(74,58,167,0.58) 92%,
+      rgba(74,58,167,0.60) 100%
+    );
+  }
+  .strip-note {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 15px; font-weight: 700; white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+  .strip-note-light { color: rgba(235,104,52,0.85); }
+  .strip-note-dark { color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.3); }
+  .strip-note-algo-light { color: rgba(74,58,167,0.9); }
+  .strip-note-algo-dark { color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.3); }
+  .strip-legend {
+    display: flex; justify-content: center; gap: 20px;
+    padding: 2px 0 4px; font-size: 10px; color: var(--muted);
+  }
+  .strip-legend span::before {
+    content: ''; display: inline-block;
+    width: 8px; height: 8px; border-radius: 2px;
+    margin-right: 4px; vertical-align: middle;
+  }
+  .strip-legend .leg-hw::before { background: rgba(235,104,52,0.45); }
+  .strip-legend .leg-algo::before { background: rgba(74,58,167,0.45); }
+  @media (prefers-color-scheme: dark) {
+    .strip-hw-bar {
+      background: linear-gradient(to right,
+        rgba(217,89,38,0.06) 0%,
+        rgba(217,89,38,0.06) 14%,
+        rgba(217,89,38,0.08) 40%,
+        rgba(217,89,38,0.10) 52%,
+        rgba(217,89,38,0.14) 58%,
+        rgba(217,89,38,0.28) 65%,
+        rgba(217,89,38,0.35) 72%,
+        rgba(217,89,38,0.45) 79%,
+        rgba(217,89,38,0.54) 87%,
+        rgba(217,89,38,0.58) 92%,
+        rgba(217,89,38,0.60) 100%
+      );
+    }
+    .strip-algo-bar {
+      background: linear-gradient(to right,
+        rgba(144,133,233,0.10) 0%,
+        rgba(144,133,233,0.06) 10%,
+        rgba(144,133,233,0.04) 28%,
+        rgba(144,133,233,0.16) 40%,
+        rgba(144,133,233,0.10) 50%,
+        rgba(144,133,233,0.18) 58%,
+        rgba(144,133,233,0.32) 65%,
+        rgba(144,133,233,0.38) 72%,
+        rgba(144,133,233,0.52) 79%,
+        rgba(144,133,233,0.56) 87%,
+        rgba(144,133,233,0.60) 92%,
+        rgba(144,133,233,0.62) 100%
+      );
+    }
+    .strip-note-light { color: rgba(217,89,38,0.9); }
+    .strip-note-algo-light { color: rgba(144,133,233,0.95); }
+    .strip-legend .leg-hw::before { background: rgba(217,89,38,0.55); }
+    .strip-legend .leg-algo::before { background: rgba(144,133,233,0.55); }
+  }
+
+  /* ── Mobile: compact vertical list ───────────────── */
+  @media (max-width: 800px) {
+    .context-strips { display: none; }
+    .strip-legend { display: none; }
+    .timeline-wrap::before,
+    .timeline-wrap::after { display: none; }
+
+    .timeline {
+      flex-direction: column;
+      direction: ltr;
+      overflow-x: visible;
+      padding: 0 16px 16px;
+      gap: 20px;
+      scroll-snap-type: none;
+    }
+    .timeline { background: none; }
+
+    .tl-item {
+      flex: auto;
+      width: 100%;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 14px;
+      margin-left: 0 !important;
+    }
+
+    .tl-year {
+      flex: 0 0 auto;
+      margin-bottom: 0;
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--surface);
+      border: 1px solid var(--gridline);
+      border-radius: 6px;
+      height: auto;
+      margin-top: 2px;
+    }
+
+    .tl-dot { display: none; }
+
+    .tl-card {
+      margin-top: 0;
+      flex: 1;
+    }
+
+    .tl-section {
+      padding-top: 0;
+      width: 100%;
+    }
+    .tl-section-title {
+      width: 100%;
+      text-align: center;
+      border-radius: 8px;
+    }
+  }
+
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
+.intro-card {
+  background: var(--surface); border: 1px solid var(--gridline);
+  border-radius: 16px; max-width: 560px; width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+.intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card li { margin-bottom: 4px; }
+.intro-start {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.intro-start:hover { filter: brightness(1.15); }
+.intro-reopen {
+  display: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  line-height: 18px; text-align: center; margin-left: auto;
+}
+.intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+.intro-wiki {
+  display: inline-block; margin-bottom: 16px;
+  color: var(--blue); font-size: 13px; text-decoration: none;
+}
+.intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>AI &amp; NLP Timeline</h2>
+    <p>This interactive timeline traces the key milestones that shaped artificial intelligence and natural language processing — from the theoretical foundations to today's large language models.</p>
+    <p>Each card highlights a breakthrough moment: who was behind it, what changed, and why it mattered for the AI we use today.</p>
+    <ul>
+      <li>Scroll horizontally to explore milestones from 1936 to 2026</li>
+      <li>Click the blue links on cards to jump to interactive demos</li>
+      <li>Each card explains the significance of that breakthrough</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+<nav class="nav-bar">
+  <a class="nav-link active">Timeline</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+  <button class="intro-reopen" title="About this demo">?</button>
+</nav>
+
+<h1>Milestones in the History of Natural Language Processing</h1>
+
+<div class="timeline-wrap">
+
+<div class="context-strips">
+  <!-- Hardware strip -->
+  <div class="context-strip">
+    <div class="strip-label">HW</div>
+    <div class="strip-track" id="hwTrack">
+      <div class="strip-inner">
+        <div class="strip-bar strip-hw-bar"></div>
+        <span class="strip-note strip-note-light" style="left:90px">Vacuum Tubes</span>
+        <span class="strip-note strip-note-light" style="left:780px">Transistors</span>
+        <span class="strip-note strip-note-light" style="left:2220px">Microprocessors</span>
+        <span class="strip-note strip-note-light" style="left:2850px">Internet Scale</span>
+        <span class="strip-note strip-note-dark" style="left:3620px">GPU + CUDA</span>
+        <span class="strip-note strip-note-dark" style="left:4400px">Cloud GPUs</span>
+        <span class="strip-note strip-note-dark" style="left:4830px">Training at Scale</span>
+        <span class="strip-note strip-note-dark" style="left:5270px">On-device AI</span>
+      </div>
+    </div>
+  </div>
+  <!-- Algorithm strip -->
+  <div class="context-strip">
+    <div class="strip-label">Algo</div>
+    <div class="strip-track" id="algoTrack">
+      <div class="strip-inner">
+        <div class="strip-bar strip-algo-bar"></div>
+        <span class="strip-note strip-note-algo-light" style="left:80px">Turing Machine</span>
+        <span class="strip-note strip-note-algo-light" style="left:780px">Turing Test</span>
+        <span class="strip-note strip-note-algo-light" style="left:2220px">CNN (LeNet)</span>
+        <span class="strip-note strip-note-algo-light" style="left:2850px">Statistical NLP</span>
+        <span class="strip-note strip-note-algo-dark" style="left:3620px">Deep Learning</span>
+        <span class="strip-note strip-note-algo-dark" style="left:4020px">Word2Vec</span>
+        <span class="strip-note strip-note-algo-dark" style="left:4400px">Transformer</span>
+        <span class="strip-note strip-note-algo-dark" style="left:4830px">ChatGPT</span>
+        <span class="strip-note strip-note-algo-dark" style="left:5120px">Open Source</span>
+        <span class="strip-note strip-note-algo-dark" style="left:5420px">Agents</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="timeline">
+
+  <!-- 1936 -->
+  <div class="tl-item">
+    <div class="tl-year">1936</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Alan Turing</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Turing Machine</a></div>
+      <div class="tl-body">
+        <strong>Alan Turing</strong> defines a mathematical model of computation: an infinite tape, a read/write head, and a transition table.
+        The model proves what can and cannot be computed.
+        <div class="tl-insight">
+          <strong>Significance:</strong> The theoretical foundation for every digital computer.
+          Every programming language and every processor implements the same computational model.
+        </div>
+      </div>
+      <a class="tl-link" href="../turing-machine/index.html">Interactive Turing Machine &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 1950 -->
+  <div class="tl-item" style="margin-left:420px">
+    <div class="tl-year">1950</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Alan Turing</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_test" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Turing Test</a></div>
+      <div class="tl-body">
+        <strong>Alan Turing</strong> publishes a paper asking: "Can machines think?"
+        He proposes a test: if a human judge cannot distinguish between a machine and a person in a text conversation, the machine "thinks."
+        <div class="tl-insight">
+          <strong>Significance:</strong> Turing defined a criterion for measuring artificial intelligence before the technology even existed.
+        </div>
+      </div>
+      <a class="tl-link" href="../turing-test/index.html">Interactive Turing Test &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 1989 -->
+  <div class="tl-item" style="margin-left:1170px">
+    <div class="tl-year">1989</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Yann LeCun</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LeNet" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">LeNet — Handwritten Digit Recognition</a></div>
+      <div class="tl-body">
+        <strong>Yann LeCun</strong> develops LeNet — a convolutional neural network (CNN)
+        that recognizes handwritten digits. The US Postal Service (USPS) uses it to read zip codes.
+        <div class="tl-insight">
+          <strong>Significance:</strong> The first practical use of a neural network in production.
+          Proof that networks can solve real-world problems, not just academic ones.
+        </div>
+      </div>
+      <a class="tl-link" href="../cnn/index.html">CNN Visualization &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 2001 Wikipedia -->
+  <div class="tl-item" style="margin-left:360px">
+    <div class="tl-year" style="color:var(--green)">2001</div>
+    <div class="tl-dot" style="border-color:var(--green)"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Jimmy Wales</span>
+        <span class="tl-person">Larry Sanger</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Wikipedia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Wikipedia — The Free Encyclopedia</a></div>
+      <div class="tl-body">
+        <strong>Wikipedia</strong> launches as a free online encyclopedia that anyone can edit.
+        Within a few years it accumulated millions of articles in hundreds of languages —
+        the largest open knowledge repository in the world.
+        <div class="tl-insight">
+          <strong>Significance for AI:</strong> Wikipedia became the primary data source for training language models.
+          Nearly every modern NLP model was trained on its texts.
+          Its structured knowledge (categories, links, infoboxes) feeds knowledge graphs and search engines.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2004 Google Books -->
+  <div class="tl-item" style="margin-left:90px">
+    <div class="tl-year" style="color:var(--yellow)">2004</div>
+    <div class="tl-dot" style="border-color:var(--yellow)"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Google</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Google_Books" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Google Books</a></div>
+      <div class="tl-body">
+        Google launches <strong>Google Books</strong> — a project to scan and digitize millions of books
+        from libraries around the world. To date, over 40 million volumes have been scanned.
+        <div class="tl-insight">
+          <strong>Significance for AI:</strong> The project created a massive text corpus
+          that led to tools like <strong>Google Ngram Viewer</strong> for analyzing language trends over hundreds of years.
+          The digitized books were used to train language models and develop advanced OCR.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2009-2012 -->
+  <div class="tl-item" style="margin-left:150px">
+    <div class="tl-year">2009–2012</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Geoffrey Hinton</span>
+        <span class="tl-person">Yann LeCun</span>
+        <span class="tl-person">Yoshua Bengio</span>
+        <span class="tl-person">Alex Krizhevsky</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Deep_learning" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Deep Networks + GPU</a></div>
+      <div class="tl-body">
+        <strong>Neural networks</strong> — the idea has existed since the 1950s,
+        but computers were too weak. <strong>Hinton, LeCun, and Bengio</strong>
+        prove that deep networks can learn complex patterns.
+        <br><br>
+        <strong>GPUs</strong> — graphics cards built for gaming
+        perform billions of matrix multiplications in parallel.
+        <div class="tl-insight">
+          <strong>2012:</strong> <strong>AlexNet</strong> uses a GPU
+          and wins the image recognition competition by a large margin. The GPU became the foundational hardware of AI.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2013 -->
+  <div class="tl-item" style="margin-left:120px">
+    <div class="tl-year">2013</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Tomas Mikolov</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Word2vec" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Word Vectors — Word2Vec</a></div>
+      <div class="tl-body">
+        A neural network that maps words to <strong>vectors</strong> in a high-dimensional space.
+        Similar words get nearby vectors. Vector arithmetic reflects semantic relationships:
+        <br><br>
+        <strong>king − man + woman = queen</strong>
+        <div class="tl-insight">
+          <strong>Significance:</strong> Word relationships are learned from text, not from hand-written rules.
+        </div>
+      </div>
+      <a class="tl-link" href="../word-vectors/index.html">Word Vectors Visualization &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 2017 -->
+  <div class="tl-item" style="margin-left:120px">
+    <div class="tl-year">2017</div>
+    <div class="tl-dot"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Ashish Vaswani</span>
+        <span class="tl-person">Noam Shazeer</span>
+        <span class="tl-person">Niki Parmar</span>
+        <span class="tl-person">Jakob Uszkoreit</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Transformer Architecture</a></div>
+      <div class="tl-body">
+        The paper <strong>"Attention Is All You Need"</strong>
+        introduces the <strong>Transformer</strong> — a structure that processes entire sentences in parallel
+        using an <strong>Attention mechanism</strong>, instead of word-by-word.
+        <div class="tl-insight">
+          <strong>Significance:</strong> Parallel processing fully utilizes the GPU.
+          All modern language models use components from this architecture.
+        </div>
+      </div>
+      <a class="tl-link" href="../transformer/index.html">Transformer Visualization &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 2022 ChatGPT -->
+  <div class="tl-item" style="margin-left:150px">
+    <div class="tl-year" style="color:var(--red)">2022</div>
+    <div class="tl-dot" style="border-color:var(--red)"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">OpenAI</span>
+        <span class="tl-person">Sam Altman</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/ChatGPT" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">ChatGPT — AI for Everyone</a></div>
+      <div class="tl-body">
+        <strong>OpenAI</strong> launches <strong>ChatGPT</strong> in November 2022 —
+        a simple chat interface on top of the GPT-3.5 model.
+        Within five days — one million users. Within two months — 100 million.
+        The fastest-growing product in history.
+        <div class="tl-insight">
+          <strong>Significance:</strong> For the first time, anyone can chat with a language model without technical knowledge.
+          ChatGPT transformed AI from an academic topic into an everyday tool,
+          and launched an arms race among the major tech companies.
+        </div>
+      </div>
+      <a class="tl-link" href="../chat/index.html">From Sentence Completion to Chat &#x2192;</a>
+    </div>
+  </div>
+
+  <!-- 2023 Open Source -->
+  <div class="tl-item" style="margin-left:30px">
+    <div class="tl-year" style="color:var(--aqua)">2023</div>
+    <div class="tl-dot" style="border-color:var(--aqua)"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Hugo Touvron</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LLaMA" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Open Source — Llama</a></div>
+      <div class="tl-body">
+        Until 2023, the most powerful language models were closed-source.
+        <strong>Llama</strong> was released as open source.
+        <div class="tl-insight">
+          <strong>Significance:</strong> Relatively small models on affordable hardware
+          achieve performance close to closed-source models.
+          Accessible to researchers and startups.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2024-2026 Context Window -->
+  <div class="tl-item" style="margin-left:30px">
+    <div class="tl-year" style="color:var(--violet)">2024–2026</div>
+    <div class="tl-dot" style="border-color:var(--violet)"></div>
+    <div class="tl-card">
+      <div class="tl-people">
+        <span class="tl-person">Tri Dao</span>
+        <span class="tl-person">Benjamin Lee</span>
+      </div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Context_window" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Long Context Window</a></div>
+      <div class="tl-body">
+        The context window = the amount of text the model processes at once.
+        Previously: a few pages. Text beyond the window — the model doesn't see it.
+        <br><br>
+        Gemini and others expanded the window to millions of tokens.
+        <div class="tl-insight">
+          <strong>Significance:</strong> An entire book, a codebase, or an hour of video — in a single request.
+        </div>
+      </div>
+      <a class="tl-link" href="../tool-usage/index.html">Tool Usage Visualization &#x2192;</a>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  const KEY = 'intro-dismissed-timeline';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+
+// Sync strip scroll with timeline scroll
+(function(){
+  const timeline = document.querySelector('.timeline');
+  const tracks = document.querySelectorAll('.strip-track');
+  if (!timeline || !tracks.length) return;
+  timeline.addEventListener('scroll', () => {
+    const sl = timeline.scrollLeft;
+    tracks.forEach(t => { t.scrollLeft = sl; });
+  });
+})();
+
+// Smooth scroll: wheel + grab-drag with momentum
+(function(){
+  const wrap = document.querySelector('.timeline-wrap');
+  const timeline = document.querySelector('.timeline');
+  if (!wrap || !timeline) return;
+
+  // Wheel → horizontal scroll (smooth interpolation)
+  let wheelTarget = timeline.scrollLeft;
+  let wheelRAF = null;
+  function wheelStep() {
+    const diff = wheelTarget - timeline.scrollLeft;
+    if (Math.abs(diff) < 0.5) { wheelRAF = null; return; }
+    timeline.scrollLeft += diff * 0.25;
+    wheelRAF = requestAnimationFrame(wheelStep);
+  }
+  wrap.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (delta === 0) return;
+    wheelTarget = timeline.scrollLeft + delta * 2;
+    wheelTarget = Math.max(0, Math.min(wheelTarget, timeline.scrollWidth - timeline.clientWidth));
+    if (!wheelRAF) wheelRAF = requestAnimationFrame(wheelStep);
+  }, { passive: false });
+
+  // Grab-drag with momentum
+  let dragging = false, startX, startScroll, lastX, lastTime, velocity;
+  let momentumRAF = null;
+  wrap.style.cursor = 'grab';
+
+  wrap.addEventListener('mousedown', function(e) {
+    if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
+    dragging = true;
+    startX = e.pageX;
+    lastX = e.pageX;
+    lastTime = Date.now();
+    startScroll = timeline.scrollLeft;
+    velocity = 0;
+    wrap.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    const now = Date.now();
+    const dt = now - lastTime;
+    if (dt > 0) velocity = (lastX - e.pageX) / dt;
+    lastX = e.pageX;
+    lastTime = now;
+    timeline.scrollLeft = startScroll - (e.pageX - startX);
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!dragging) return;
+    dragging = false;
+    wrap.style.cursor = 'grab';
+    document.body.style.userSelect = '';
+    // Momentum coast
+    let v = velocity * 16;
+    if (Math.abs(v) > 1) {
+      function coast() {
+        v *= 0.94;
+        if (Math.abs(v) < 0.5) { momentumRAF = null; return; }
+        timeline.scrollLeft += v;
+        momentumRAF = requestAnimationFrame(coast);
+      }
+      momentumRAF = requestAnimationFrame(coast);
+    }
+  });
+
+  // Prevent text selection while dragging
+  wrap.addEventListener('dragstart', function(e) { e.preventDefault(); });
+})();
+</script>
+</body>
+</html>

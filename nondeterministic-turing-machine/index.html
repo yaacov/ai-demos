@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nondeterministic Turing Machine</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --red:            #c03030;
+    --good:           #0ca30c;
+    --critical:       #d03b3b;
+    --metal-light:    #d4d4d0;
+    --metal-mid:      #a8a8a2;
+    --metal-dark:     #6e6e68;
+    --reel-color:     #4a4a44;
+    --tape-color:     #faf6e8;
+    --tape-shadow:    #d8d4c4;
+    --tape-hole:      #e0dcd0;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --pointer-red:    #c03030;
+    --head-accent:    #b08030;
+    --state-active:   #2a78d6;
+    --state-idle:     var(--metal-mid);
+    --state-halt:     #0ca30c;
+    --state-reject:   #d03b3b;
+    --arrow-color:    #898781;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+    --branch-running: #2a78d6;
+    --branch-accept:  #0ca30c;
+    --branch-reject:  #d03b3b;
+    --branch-focused: #eda100;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #5a9ae8;
+      --red:          #d04040;
+      --good:         #30a030;
+      --critical:     #d04040;
+      --metal-light:  #55554f;
+      --metal-mid:    #3e3e39;
+      --metal-dark:   #2a2a26;
+      --reel-color:   #888880;
+      --tape-color:   #2a2924;
+      --tape-shadow:  #1e1e1a;
+      --tape-hole:    #222220;
+      --card-bg:      #1e1e1a;
+      --card-border:  #3a3832;
+      --pointer-red:  #d04040;
+      --head-accent:  #c89040;
+      --state-active: #5a9ae8;
+      --state-idle:   #55554f;
+      --state-halt:   #30a030;
+      --state-reject: #d04040;
+      --arrow-color:  #5a5850;
+      --narration-bg: #1e1e1a;
+      --narration-border:#3a3832;
+      --branch-running: #5a9ae8;
+      --branch-accept:  #30a030;
+      --branch-reject:  #d04040;
+      --branch-focused: #c89040;
+    }
+  }
+
+  /* ── Navigation bar ── */
+  .nav-bar {
+    width: 100%; max-width: 1060px; display: flex; gap: 4px; margin-bottom: 6px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px;
+    overflow: hidden;
+  }
+
+  h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0; }
+  .subtitle { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .container { width: 100%; max-width: 1060px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
+
+  /* ── Algo bar ── */
+  .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .algo-bar-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 4px; }
+  .algo-btn {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
+  }
+  .algo-btn:hover { border-color: var(--baseline); color: var(--primary); }
+  .algo-btn.selected { background: var(--primary); color: var(--page); border-color: var(--primary); }
+  .tape-input-row { display: flex; gap: 6px; align-items: center; margin-inline-start: auto; }
+  .tape-input-row label { font-size: 0.75rem; color: var(--muted); }
+  .tape-input-row input[type="text"] { font-family: 'Courier New', monospace; font-size: 0.85rem; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--primary); width: 140px; }
+  .tape-input-row button { font-family: inherit; font-size: 0.75rem; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; }
+
+  /* ── Machine SVG ── */
+  .machine-frame { background: var(--surface); border: 2px solid var(--gridline); border-radius: 8px; padding: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08); }
+  .machine-svg { width: 100%; height: auto; display: block; max-height: 200px; }
+
+  /* ── Layout ── */
+  .status-bar { display: flex; gap: 8px; align-items: stretch; }
+  .status-bar .readout-panel { flex: 1; }
+  .status-bar .controls-bar { flex-shrink: 0; align-items: center; }
+  .main-row { display: flex; gap: 10px; align-items: stretch; flex: 1; min-height: 0; overflow: hidden; }
+  .left-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .right-col { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+  @media (max-width: 860px) { .main-row { flex-direction: column; } .right-col { width: 100%; } }
+
+  /* ── Narration ── */
+  .narration {
+    background: var(--narration-bg); border: 1px solid var(--narration-border); border-radius: 6px; padding: 10px 12px;
+    font-size: 0.82rem; line-height: 1.4; color: var(--secondary); min-height: 0;
+  }
+  .narration-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+  .narration-state { font-weight: 600; color: var(--primary); }
+  .narration-desc { margin-top: 4px; }
+  .narration-action { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--narration-border); font-family: 'Courier New', monospace; font-size: 0.78rem; }
+  .narration-action em { font-style: normal; color: var(--state-active); font-weight: 600; }
+
+  /* ── FSC table ── */
+  .fsc-card { background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px; overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  #fsc-body { flex: 1; overflow-y: auto; }
+  .fsc-header {
+    background: var(--metal-dark); color: var(--metal-light); padding: 6px 12px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
+  }
+  .fsc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .fsc-table th {
+    padding: 5px 6px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); border-bottom: 2px solid var(--gridline); text-align: center;
+    font-family: system-ui, sans-serif;
+  }
+  .fsc-table th.corner {
+    text-align: center; color: var(--muted); font-size: 0.5rem; vertical-align: bottom;
+    border-right: 2px solid var(--gridline); border-bottom: 2px solid var(--gridline);
+    padding: 4px 6px; line-height: 1.3;
+  }
+  .fsc-table th.corner .corner-input { display: block; font-weight: 700; color: var(--secondary); font-size: 0.6rem; }
+  .fsc-table th.corner .corner-state { display: block; color: var(--muted); }
+  .fsc-table th.col-head {
+    background: var(--tape-color); border-left: 1px solid var(--gridline);
+    font-family: 'Courier New', monospace; font-size: 0.9rem; font-weight: 700; color: var(--primary);
+    border-bottom: 2px solid var(--gridline);
+  }
+  .fsc-table th.col-head.active-col { background: color-mix(in srgb, var(--state-active) 15%, var(--tape-color)); }
+  .fsc-table td {
+    padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--gridline);
+    font-family: 'Courier New', monospace; color: var(--secondary); transition: background 0.2s;
+    font-size: 0.72rem;
+  }
+  .fsc-table td.state-label {
+    text-align: left; font-weight: 600; color: var(--primary); font-family: system-ui, sans-serif;
+    border-right: 2px solid var(--gridline); background: color-mix(in srgb, var(--surface) 50%, var(--page));
+    font-size: 0.75rem; padding: 5px 8px;
+  }
+  .fsc-table td.state-label.active-state {
+    color: var(--state-active); font-weight: 700;
+    background: color-mix(in srgb, var(--state-active) 8%, var(--surface));
+  }
+  .fsc-table td.action-cell { border-left: 1px solid var(--gridline); line-height: 1.6; vertical-align: middle; }
+  .fsc-table td.action-cell.active-cell {
+    background: color-mix(in srgb, var(--state-active) 12%, var(--surface));
+    color: var(--primary); font-weight: 600;
+    box-shadow: inset 0 0 0 2px var(--state-active);
+  }
+  .fsc-table td.action-cell.empty { color: var(--muted); font-style: italic; font-family: system-ui, sans-serif; font-size: 0.6rem; }
+  .fsc-output-line { display: flex; align-items: center; justify-content: center; gap: 3px; }
+  .fsc-tag {
+    font-family: system-ui, sans-serif; font-size: 0.48rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+    line-height: 1;
+  }
+  .fsc-val { font-weight: 700; font-size: 0.82rem; }
+  .fsc-val.write-val { color: var(--state-active); }
+  .fsc-val.dir-val { color: var(--primary); }
+  .fsc-val.next-val { color: var(--head-accent); }
+  .fsc-table tr.halt-row td.state-label { color: var(--state-halt); }
+  .fsc-table tr.reject-row td.state-label { color: var(--state-reject); }
+
+  .fsc-choice-group { padding: 4px 2px; }
+  .fsc-choice-divider { border-top: 1px dashed var(--gridline); margin: 3px 0; }
+  .fsc-choice-label {
+    font-family: system-ui, sans-serif; font-size: 0.45rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    margin-bottom: 1px; text-align: center;
+  }
+
+  /* ── Readout panel ── */
+  .readout-panel { display: flex; gap: 2px; background: var(--metal-dark); border-radius: 6px; padding: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1); }
+  .readout { flex: 1; background: #0a1a0a; border-radius: 4px; padding: 8px 6px; text-align: center; }
+  .readout-label { font-size: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #4a7a4a; margin-bottom: 2px; }
+  .readout-value { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700; color: #30dd30; text-shadow: 0 0 8px rgba(48,221,48,0.4); font-variant-numeric: tabular-nums; }
+  .readout-value.halt { color: #dddd30; text-shadow: 0 0 8px rgba(221,221,48,0.4); }
+  .readout-value.reject { color: #dd3030; text-shadow: 0 0 8px rgba(221,48,48,0.4); }
+
+  /* ── Controls ── */
+  .controls-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .ctrl-btn {
+    font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 8px 20px; border-radius: 4px;
+    border: 1px solid var(--metal-mid); background: linear-gradient(180deg, var(--metal-light) 0%, var(--metal-mid) 100%);
+    color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .ctrl-btn:hover { filter: brightness(1.05); }
+  .ctrl-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); transform: translateY(1px); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .ctrl-btn.run-btn { background: linear-gradient(180deg, #40a040 0%, #2a7a2a 100%); border-color: #2a7a2a; color: #fff; }
+  .speed-control { display: flex; align-items: center; gap: 6px; margin-inline-start: auto; }
+  .speed-control label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  input[type="range"] { width: 80px; accent-color: var(--metal-mid); }
+
+  /* ── Branch tree ── */
+  .branch-card { background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px; overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .branch-header {
+    background: var(--metal-dark); color: var(--metal-light); padding: 6px 12px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
+  }
+  .branch-body { padding: 8px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; }
+  .branch-node {
+    display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 4px;
+    cursor: pointer; font-size: 0.75rem; transition: background 0.15s;
+    border: 1px solid var(--gridline);
+  }
+  .branch-node:hover { background: color-mix(in srgb, var(--state-active) 6%, var(--surface)); }
+  .branch-node.focused {
+    background: color-mix(in srgb, var(--branch-focused) 12%, var(--surface));
+    border-color: var(--branch-focused);
+    box-shadow: 0 0 0 1px var(--branch-focused);
+  }
+  .branch-node.status-accepted { border-left: 3px solid var(--branch-accept); }
+  .branch-node.status-rejected { border-left: 3px solid var(--branch-reject); opacity: 0.6; }
+  .branch-node.status-running { border-left: 3px solid var(--branch-running); }
+  .branch-meta {
+    display: flex; flex-direction: column; gap: 1px; min-width: 50px; flex-shrink: 0;
+  }
+  .branch-id { font-weight: 700; color: var(--primary); font-family: 'Courier New', monospace; font-size: 0.7rem; }
+  .branch-state-label { color: var(--secondary); font-size: 0.62rem; }
+  .branch-status { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .branch-status.running { color: var(--branch-running); }
+  .branch-status.accepted { color: var(--branch-accept); }
+  .branch-status.rejected { color: var(--branch-reject); }
+  .branch-mini-tape {
+    display: flex; gap: 0; flex-shrink: 0;
+  }
+  .mini-cell {
+    width: 18px; height: 20px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Courier New', monospace; font-size: 0.68rem; font-weight: 600;
+    background: var(--tape-color); border: 0.5px solid var(--tape-shadow);
+    color: var(--primary);
+  }
+  .mini-cell:first-child { border-radius: 2px 0 0 2px; }
+  .mini-cell:last-child { border-radius: 0 2px 2px 0; }
+  .mini-cell.head-cell {
+    background: color-mix(in srgb, var(--head-accent) 25%, var(--tape-color));
+    color: var(--primary); font-weight: 800;
+    box-shadow: inset 0 -2px 0 var(--head-accent);
+  }
+  .branch-parent {
+    font-size: 0.55rem; color: var(--muted); font-style: italic;
+  }
+  .branch-summary {
+    padding: 6px 8px; font-size: 0.72rem; color: var(--secondary);
+    border-top: 1px solid var(--gridline); text-align: center;
+  }
+  .branch-summary .count { font-weight: 700; color: var(--primary); }
+  .branch-summary .accept-count { color: var(--branch-accept); font-weight: 700; }
+  .branch-summary .reject-count { color: var(--branch-reject); font-weight: 700; }
+
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
+.intro-card {
+  background: var(--surface); border: 1px solid var(--gridline);
+  border-radius: 16px; max-width: 560px; width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+.intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card li { margin-bottom: 4px; }
+.intro-start {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.intro-start:hover { filter: brightness(1.15); }
+.intro-reopen {
+  display: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  line-height: 18px; text-align: center; margin-left: auto;
+}
+.intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+.intro-wiki {
+  display: inline-block; margin-bottom: 16px;
+  color: var(--blue); font-size: 13px; text-decoration: none;
+}
+.intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>Nondeterministic Turing Machine</h2>
+    <p>A standard Turing machine follows one path — each state and symbol leads to exactly one action. A <strong>nondeterministic</strong> Turing machine can branch: when multiple rules match, it explores all possibilities simultaneously.</p>
+    <p>If <em>any</em> branch reaches an accept state, the machine accepts. This model is central to complexity theory and the famous P vs NP problem — it defines the class NP.</p>
+    <ul>
+      <li>Watch the computation tree branch as the machine explores multiple paths</li>
+      <li>Click on any branch to inspect its tape state</li>
+      <li>Try three algorithms: string search, substring guessing, and third-from-end detection</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Nondeterministic_Turing_machine" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+  <nav class="nav-bar">
+    <a class="nav-link" href="../timeline/index.html">Timeline</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link active">Nondeterministic TM</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../cnn/index.html">CNN</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../transformer/index.html">Transformer</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../chat/index.html">Chat</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+    <button class="intro-reopen" title="About this demo">?</button>
+  </nav>
+
+  <h1>Nondeterministic Turing Machine</h1>
+
+  <div class="container">
+    <div class="algo-bar">
+      <span class="algo-bar-label">Program:</span>
+      <span id="algo-row"></span>
+      <div class="tape-input-row">
+        <label for="tape-input">Tape:</label>
+        <input type="text" id="tape-input" spellcheck="false" dir="ltr">
+        <button onclick="loadCustomTape()">Load</button>
+      </div>
+    </div>
+
+    <!-- Machine illustration (full width) -->
+    <div class="machine-frame">
+      <svg id="machine-svg" class="machine-svg" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--metal-light)"/><stop offset="100%" stop-color="var(--metal-mid)"/>
+          </linearGradient>
+          <linearGradient id="metalDarkGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--metal-mid)"/><stop offset="100%" stop-color="var(--metal-dark)"/>
+          </linearGradient>
+          <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--head-accent)"/><stop offset="50%" stop-color="#907030"/><stop offset="100%" stop-color="#605020"/>
+          </linearGradient>
+          <linearGradient id="tapeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--tape-color)"/><stop offset="100%" stop-color="var(--tape-shadow)"/>
+          </linearGradient>
+          <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+          </filter>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect x="10" y="200" width="680" height="50" rx="6" fill="url(#metalDarkGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <rect x="10" y="200" width="680" height="4" rx="2" fill="var(--metal-light)" opacity="0.3"/>
+        <rect x="50" y="180" width="80" height="24" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <rect x="570" y="180" width="80" height="24" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <g id="left-reel">
+          <circle cx="90" cy="110" r="68" fill="var(--metal-mid)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <circle cx="90" cy="110" r="60" fill="var(--reel-color)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="90" cy="110" r="20" fill="var(--metal-light)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="90" cy="110" r="8" fill="var(--metal-dark)"/>
+          <line x1="90" y1="50" x2="90" y2="170" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="30" y1="110" x2="150" y2="110" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="47" y1="67" x2="133" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="133" y1="67" x2="47" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+        </g>
+        <g id="right-reel">
+          <circle cx="610" cy="110" r="68" fill="var(--metal-mid)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <circle cx="610" cy="110" r="60" fill="var(--reel-color)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="610" cy="110" r="20" fill="var(--metal-light)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="610" cy="110" r="8" fill="var(--metal-dark)"/>
+          <line x1="610" y1="50" x2="610" y2="170" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="550" y1="110" x2="670" y2="110" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="567" y1="67" x2="653" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="653" y1="67" x2="567" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+        </g>
+        <g id="tape-group" filter="url(#shadow)">
+          <rect id="tape-bg" x="130" y="98" width="440" height="44" rx="2" fill="url(#tapeGrad)" stroke="var(--tape-shadow)" stroke-width="1"/>
+          <g id="sprocket-top"></g>
+          <g id="sprocket-bot"></g>
+          <g id="cell-dividers" stroke="var(--tape-shadow)" stroke-width="0.5" opacity="0.5"></g>
+          <g id="tape-cells" font-family="'Courier New', monospace" font-size="18" font-weight="600" text-anchor="middle" dominant-baseline="central"></g>
+        </g>
+        <path d="M130 108 Q120 108 115 100 Q110 90 105 85 Q100 78 95 75" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M130 132 Q120 132 115 140 Q110 148 105 152 Q100 158 95 160" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M570 108 Q580 108 585 100 Q590 90 595 85 Q600 78 605 75" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M570 132 Q580 132 585 140 Q590 148 595 152 Q600 158 605 160" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <g id="head-group">
+          <rect x="338" y="0" width="24" height="60" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <rect x="318" y="55" width="64" height="40" rx="4" fill="url(#headGrad)" stroke="#504010" stroke-width="1.5"/>
+          <rect x="322" y="59" width="56" height="32" rx="2" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <rect x="332" y="64" width="36" height="22" rx="2" fill="#0a0a08" stroke="#504010" stroke-width="1"/>
+          <rect x="334" y="66" width="32" height="2" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <text id="head-value" x="350" y="78" font-family="'Courier New', monospace" font-size="16" font-weight="700" fill="#30dd30" text-anchor="middle" dominant-baseline="central"></text>
+          <text x="350" y="50" font-family="system-ui, sans-serif" font-size="7" font-weight="700" fill="var(--metal-dark)" text-anchor="middle" letter-spacing="0.1em">R/W HEAD</text>
+          <polygon points="350,97 344,105 356,105" fill="var(--head-accent)" stroke="#504010" stroke-width="0.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="status-bar">
+      <div class="readout-panel">
+        <div class="readout"><div class="readout-label">Branch</div><div class="readout-value" id="ro-branch">#1</div></div>
+        <div class="readout"><div class="readout-label">State</div><div class="readout-value" id="ro-state">--</div></div>
+        <div class="readout"><div class="readout-label">Steps</div><div class="readout-value" id="ro-steps">0</div></div>
+        <div class="readout"><div class="readout-label">Branches</div><div class="readout-value" id="ro-branches">1</div></div>
+        <div class="readout"><div class="readout-label">Status</div><div class="readout-value" id="ro-status">Ready</div></div>
+      </div>
+      <div class="controls-bar">
+        <button class="ctrl-btn" id="step-btn" onclick="step()">Step</button>
+        <button class="ctrl-btn run-btn" id="run-btn" onclick="toggleRun()">Run</button>
+        <button class="ctrl-btn" id="reset-btn" onclick="reset()">Reset</button>
+        <div class="speed-control">
+          <label for="speed">Speed</label>
+          <input type="range" id="speed" min="1" max="10" value="5">
+        </div>
+      </div>
+    </div>
+
+    <div class="main-row">
+      <div class="left-col">
+        <div class="fsc-card">
+          <div class="fsc-header">Finite State Controller (Nondeterministic)</div>
+          <div id="fsc-body"></div>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="narration" id="narration"></div>
+        <div class="branch-card">
+          <div class="branch-header">Computation Branches</div>
+          <div class="branch-body" id="branch-body"></div>
+          <div class="branch-summary" id="branch-summary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const BLANK = '_';
+const CELL_W = 40;
+const CELL_COUNT = 11;
+const TAPE_Y = 110;
+const CENTER_CELL = 5;
+const HEAD_X = 350;
+const TAPE_LEFT = HEAD_X - CENTER_CELL * CELL_W;
+
+const ALGORITHMS = {
+  'Search "11"': {
+    description: 'Nondeterministically guess where "11" appears in a binary string',
+    initialTape: '01011',
+    startState: 'scan',
+    acceptStates: ['accept'],
+    rejectStates: ['reject'],
+    symbols: [
+      { sym: '0', meaning: 'Binary digit zero', example: 'Part of the input string' },
+      { sym: '1', meaning: 'Binary digit one', example: 'Looking for two consecutive ones' },
+      { sym: '_', meaning: 'Blank — end of input', example: 'Marks the boundary' },
+    ],
+    stateDescriptions: {
+      'scan':   'Scanning the input. At each position, the machine nondeterministically chooses: skip this cell, or guess that "11" starts here.',
+      'check2': 'Guessed that "11" starts at the previous position. Already saw the first 1 — now checking if the next symbol is also 1.',
+      'accept': 'Found "11"! This branch accepts.',
+      'reject': 'This branch did not find "11" here. It rejects.',
+    },
+    rules: [
+      { state: 'scan', read: '0', write: '0', move: 'R', next: 'scan' },
+      { state: 'scan', read: '1', write: '1', move: 'R', next: 'scan' },
+      { state: 'scan', read: '1', write: '1', move: 'R', next: 'check2' },
+      { state: 'scan', read: '_', write: '_', move: 'R', next: 'reject' },
+      { state: 'check2', read: '1', write: '1', move: 'R', next: 'accept' },
+      { state: 'check2', read: '0', write: '0', move: 'R', next: 'reject' },
+      { state: 'check2', read: '_', write: '_', move: 'R', next: 'reject' },
+    ],
+    interpret(tape, initTape, state, branches) {
+      const accepted = branches.some(b => b.status === 'accepted');
+      const allDone = branches.every(b => b.status !== 'running');
+      let result = 'Scanning branches...';
+      if (accepted) result = 'Yes — contains "11"';
+      else if (allDone) result = 'No — does not contain "11"';
+      return {
+        input: initTape,
+        inputNote: `"${initTape}"`,
+        output: result,
+        outputNote: `${branches.length} branches explored`,
+      };
+    },
+  },
+  'Guess Substring': {
+    description: 'Nondeterministically check if "ab" appears in a string over {a, b}',
+    initialTape: 'baab',
+    startState: 'scan',
+    acceptStates: ['accept'],
+    rejectStates: ['reject'],
+    symbols: [
+      { sym: 'a', meaning: 'Symbol a', example: 'Part of the input string' },
+      { sym: 'b', meaning: 'Symbol b', example: 'Part of the input string' },
+      { sym: '_', meaning: 'Blank — end of input', example: 'Marks the boundary' },
+    ],
+    stateDescriptions: {
+      'scan':   'Scanning the input. Nondeterministic choice: skip this cell, or guess that "ab" starts here.',
+      'sawA':   'Guessed this position. Saw "a" — now checking if the next symbol is "b".',
+      'accept': 'Found "ab"! This branch accepts.',
+      'reject': 'Did not find "ab" at the guessed position. This branch rejects.',
+    },
+    rules: [
+      { state: 'scan', read: 'a', write: 'a', move: 'R', next: 'scan' },
+      { state: 'scan', read: 'b', write: 'b', move: 'R', next: 'scan' },
+      { state: 'scan', read: 'a', write: 'a', move: 'R', next: 'sawA' },
+      { state: 'scan', read: '_', write: '_', move: 'R', next: 'reject' },
+      { state: 'sawA', read: 'b', write: 'b', move: 'R', next: 'accept' },
+      { state: 'sawA', read: 'a', write: 'a', move: 'R', next: 'reject' },
+      { state: 'sawA', read: '_', write: '_', move: 'R', next: 'reject' },
+    ],
+    interpret(tape, initTape, state, branches) {
+      const accepted = branches.some(b => b.status === 'accepted');
+      const allDone = branches.every(b => b.status !== 'running');
+      let result = 'Scanning branches...';
+      if (accepted) result = 'Yes — contains "ab"';
+      else if (allDone) result = 'No — does not contain "ab"';
+      return {
+        input: initTape,
+        inputNote: `"${initTape}"`,
+        output: result,
+        outputNote: `${branches.length} branches explored`,
+      };
+    },
+  },
+  'Third from End': {
+    description: 'Nondeterministically check if the third symbol from the end is "1" — branches at every step',
+    initialTape: '01010',
+    startState: 'scan',
+    acceptStates: ['accept'],
+    rejectStates: ['reject'],
+    symbols: [
+      { sym: '0', meaning: 'Binary digit zero', example: 'Part of the input string' },
+      { sym: '1', meaning: 'Binary digit one', example: 'Looking for it at the third position from the end' },
+      { sym: '_', meaning: 'Blank — end of input', example: 'Marks the boundary' },
+    ],
+    stateDescriptions: {
+      'scan':   'Scanning the input. At each position, nondeterministic guess: are there exactly 2 more symbols after this one?',
+      'two':    'Guessed this is the third from the end. Need to see exactly 2 more symbols then blank.',
+      'one':    'Saw one more symbol after the guess. Need to see exactly 1 more.',
+      'last':   'Saw two symbols after the guess. The next must be blank to confirm the guess was correct.',
+      'accept': 'The third symbol from the end is indeed "1"!',
+      'reject': 'The guess was wrong — the position was not third from the end, or it was not 1.',
+    },
+    rules: [
+      { state: 'scan', read: '0', write: '0', move: 'R', next: 'scan' },
+      { state: 'scan', read: '1', write: '1', move: 'R', next: 'scan' },
+      { state: 'scan', read: '1', write: '1', move: 'R', next: 'two' },
+      { state: 'scan', read: '_', write: '_', move: 'R', next: 'reject' },
+      { state: 'two', read: '0', write: '0', move: 'R', next: 'one' },
+      { state: 'two', read: '1', write: '1', move: 'R', next: 'one' },
+      { state: 'two', read: '_', write: '_', move: 'R', next: 'reject' },
+      { state: 'one', read: '0', write: '0', move: 'R', next: 'last' },
+      { state: 'one', read: '1', write: '1', move: 'R', next: 'last' },
+      { state: 'one', read: '_', write: '_', move: 'R', next: 'reject' },
+      { state: 'last', read: '_', write: '_', move: 'R', next: 'accept' },
+      { state: 'last', read: '0', write: '0', move: 'R', next: 'reject' },
+      { state: 'last', read: '1', write: '1', move: 'R', next: 'reject' },
+    ],
+    interpret(tape, initTape, state, branches) {
+      const accepted = branches.some(b => b.status === 'accepted');
+      const allDone = branches.every(b => b.status !== 'running');
+      const thirdFromEnd = initTape.length >= 3 ? initTape[initTape.length - 3] : '';
+      let result = 'Scanning branches...';
+      if (accepted) result = `Yes — third from end is "${thirdFromEnd}"`;
+      else if (allDone) result = `No — third from end is "${thirdFromEnd}"`;
+      return {
+        input: initTape,
+        inputNote: `Third from end: "${thirdFromEnd || 'N/A'}"`,
+        output: result,
+        outputNote: `${branches.length} branches explored`,
+      };
+    },
+  },
+};
+
+let branches = [];
+let focusedBranchId = 0;
+let stepCount = 0;
+let running = false;
+let runTimer = null;
+let currentAlgo = null;
+let currentAlgoName = '';
+let reelAngle = 0;
+let initialTapeStr = '';
+let nextBranchId = 1;
+
+function createBranch(tape, headPos, state, parentId) {
+  const b = {
+    id: nextBranchId++,
+    tape: { ...tape },
+    headPos,
+    state,
+    status: 'running',
+    parentId,
+    writtenCells: new Set(),
+  };
+  return b;
+}
+
+function getFocusedBranch() {
+  return branches.find(b => b.id === focusedBranchId) || branches[0];
+}
+
+function readCell(tape, pos) {
+  if (tape[pos] !== undefined) return tape[pos];
+  return BLANK;
+}
+
+function getTapeContent(t) {
+  const keys = Object.keys(t).map(Number).sort((a, b) => a - b);
+  if (!keys.length) return '';
+  let s = '';
+  for (let i = keys[0]; i <= keys[keys.length - 1]; i++) {
+    const v = t[i] !== undefined ? t[i] : '_';
+    if (v !== '_') s += v;
+  }
+  return s;
+}
+
+function findRules(state, symbol) {
+  return currentAlgo.rules.filter(r => r.state === state && r.read === symbol);
+}
+
+function isBranchDone(b) {
+  return b.status !== 'running';
+}
+
+function checkBranchState(b) {
+  if (currentAlgo.acceptStates.includes(b.state)) {
+    b.status = 'accepted';
+  } else if (currentAlgo.rejectStates.includes(b.state)) {
+    b.status = 'rejected';
+  }
+}
+
+function allBranchesDone() {
+  return branches.every(b => b.status !== 'running');
+}
+
+function anyAccepted() {
+  return branches.some(b => b.status === 'accepted');
+}
+
+function selectAlgorithm(name) {
+  stopRun();
+  currentAlgo = ALGORITHMS[name];
+  currentAlgoName = name;
+  document.querySelectorAll('.algo-btn').forEach(b => b.classList.toggle('selected', b.textContent === name));
+  document.getElementById('tape-input').value = currentAlgo.initialTape;
+  reset();
+}
+
+function loadCustomTape() { stopRun(); reset(); }
+
+function reset() {
+  stopRun();
+  stepCount = 0;
+  reelAngle = 0;
+  nextBranchId = 1;
+  const input = document.getElementById('tape-input').value;
+  initialTapeStr = input;
+  const initTape = {};
+  for (let i = 0; i < input.length; i++) initTape[i] = input[i];
+  branches = [createBranch(initTape, 0, currentAlgo.startState, null)];
+  focusedBranchId = branches[0].id;
+  renderAll();
+}
+
+function step() {
+  if (allBranchesDone()) return;
+
+  const activeBranches = branches.filter(b => b.status === 'running');
+  const newBranches = [];
+
+  for (const b of activeBranches) {
+    const sym = readCell(b.tape, b.headPos);
+    const rules = findRules(b.state, sym);
+
+    if (rules.length === 0) {
+      b.status = 'rejected';
+      continue;
+    }
+
+    const prevState = b.state;
+    const origPos = b.headPos;
+    const origTape = { ...b.tape };
+    const origWritten = new Set(b.writtenCells);
+
+    const firstRule = rules[0];
+    b.tape[origPos] = firstRule.write;
+    b.writtenCells.add(origPos);
+    b.state = firstRule.next;
+    b.headPos = origPos + (firstRule.move === 'R' ? 1 : -1);
+    checkBranchState(b);
+
+    for (let i = 1; i < rules.length; i++) {
+      const r = rules[i];
+      const forkTape = { ...origTape };
+      forkTape[origPos] = r.write;
+      const forkPos = origPos + (r.move === 'R' ? 1 : -1);
+      const fork = createBranch(forkTape, forkPos, r.next, b.id);
+      fork.writtenCells = new Set(origWritten);
+      fork.writtenCells.add(origPos);
+      checkBranchState(fork);
+      newBranches.push(fork);
+    }
+  }
+
+  branches.push(...newBranches);
+  stepCount++;
+  reelAngle += 15;
+
+  if (!branches.find(b => b.id === focusedBranchId) || branches.find(b => b.id === focusedBranchId).status !== 'running') {
+    const firstAccepted = branches.find(b => b.status === 'accepted');
+    const firstRunning = branches.find(b => b.status === 'running');
+    if (firstAccepted) focusedBranchId = firstAccepted.id;
+    else if (firstRunning) focusedBranchId = firstRunning.id;
+  }
+
+  renderAll();
+}
+
+function toggleRun() {
+  if (running) { stopRun(); } else { running = true; document.getElementById('run-btn').textContent = 'Pause'; runLoop(); }
+}
+function runLoop() {
+  if (!running || allBranchesDone()) { stopRun(); return; }
+  step();
+  runTimer = setTimeout(runLoop, 1000 / document.getElementById('speed').value);
+}
+function stopRun() { running = false; clearTimeout(runTimer); document.getElementById('run-btn').textContent = 'Run'; }
+
+function renderTape() {
+  const fb = getFocusedBranch();
+  if (!fb) return;
+  const cellsGroup = document.getElementById('tape-cells');
+  const dividersGroup = document.getElementById('cell-dividers');
+  document.getElementById('head-value').textContent = readCell(fb.tape, fb.headPos);
+
+  let cellsHtml = '', divHtml = '';
+  const start = fb.headPos - CENTER_CELL;
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const pos = start + i;
+    const val = readCell(fb.tape, pos);
+    const cx = TAPE_LEFT + i * CELL_W;
+    const isHead = pos === fb.headPos;
+    const fill = isHead ? '#30dd30' : (fb.writtenCells.has(pos) ? 'var(--blue)' : 'var(--primary)');
+    const opacity = isHead ? 1 : (fb.writtenCells.has(pos) ? 0.8 : 0.7);
+    cellsHtml += `<text x="${cx}" y="${TAPE_Y + 10}" fill="${fill}" opacity="${opacity}" font-weight="${isHead ? '800' : '600'}">${val}</text>`;
+    if (i > 0) { const lx = TAPE_LEFT - CELL_W / 2 + i * CELL_W; divHtml += `<line x1="${lx}" y1="${TAPE_Y - 12}" x2="${lx}" y2="${TAPE_Y + 22}" />`; }
+  }
+  cellsGroup.innerHTML = cellsHtml;
+  dividersGroup.innerHTML = divHtml;
+
+  let st = '', sb = '';
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const cx = TAPE_LEFT + i * CELL_W;
+    st += `<circle cx="${cx}" cy="105" r="3.5" fill="var(--tape-hole)" stroke="var(--tape-shadow)" stroke-width="0.5"/>`;
+    sb += `<circle cx="${cx}" cy="135" r="3.5" fill="var(--tape-hole)" stroke="var(--tape-shadow)" stroke-width="0.5"/>`;
+  }
+  document.getElementById('sprocket-top').innerHTML = st;
+  document.getElementById('sprocket-bot').innerHTML = sb;
+
+  document.getElementById('left-reel').setAttribute('transform', `rotate(${reelAngle}, 90, 110)`);
+  document.getElementById('right-reel').setAttribute('transform', `rotate(${-reelAngle}, 610, 110)`);
+}
+
+function renderReadouts() {
+  const fb = getFocusedBranch();
+  if (!fb) return;
+  const done = allBranchesDone();
+  const accepted = anyAccepted();
+
+  const hc = fb.status === 'accepted' ? ' halt' : fb.status === 'rejected' ? ' reject' : '';
+  document.getElementById('ro-branch').textContent = `#${fb.id}`;
+  document.getElementById('ro-state').textContent = fb.state;
+  document.getElementById('ro-state').className = 'readout-value' + hc;
+  document.getElementById('ro-steps').textContent = stepCount;
+  document.getElementById('ro-branches').textContent = branches.length;
+
+  const s = document.getElementById('ro-status');
+  if (done) {
+    s.textContent = accepted ? 'Accept' : 'Reject';
+    s.className = 'readout-value' + (accepted ? ' halt' : ' reject');
+  } else {
+    s.textContent = running ? 'Running' : 'Ready';
+    s.className = 'readout-value';
+  }
+}
+
+function renderNarration() {
+  const el = document.getElementById('narration');
+  if (!el) return;
+  const fb = getFocusedBranch();
+  if (!fb) { el.innerHTML = ''; return; }
+  const desc = currentAlgo.stateDescriptions[fb.state] || '';
+  const done = allBranchesDone();
+  const accepted = anyAccepted();
+
+  let html = `<div class="narration-title">What's happening — Branch #${fb.id}</div>`;
+  html += `<div><span class="narration-state">State: ${fb.state}</span></div>`;
+  html += `<div class="narration-desc">${desc}</div>`;
+
+  if (done) {
+    html += `<div class="narration-action">${accepted ? 'The NTM <em>accepts</em> — at least one branch reached an accept state.' : 'The NTM <em>rejects</em> — no branch reached an accept state.'}</div>`;
+  } else if (fb.status === 'running') {
+    const sym = readCell(fb.tape, fb.headPos);
+    const rules = findRules(fb.state, sym);
+    if (rules.length > 1) {
+      html += `<div class="narration-action">Nondeterministic choice! Reading "<em>${sym}</em>" — <em>${rules.length} possible transitions</em>. The machine will branch.</div>`;
+    } else if (rules.length === 1) {
+      const r = rules[0];
+      html += `<div class="narration-action">Next: read "<em>${sym}</em>" → write "<em>${r.write}</em>", move ${r.move === 'R' ? 'right →' : '← left'}, go to <em>${r.next}</em></div>`;
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+function renderFSC() {
+  const el = document.getElementById('fsc-body');
+  if (!el) return;
+  const fb = getFocusedBranch();
+  const symbols = new Set();
+  const statesOrdered = [];
+  const statesSeen = new Set();
+  currentAlgo.rules.forEach(r => {
+    symbols.add(r.read);
+    if (!statesSeen.has(r.state)) { statesOrdered.push(r.state); statesSeen.add(r.state); }
+  });
+  const syms = [...symbols];
+
+  const ruleMap = {};
+  currentAlgo.rules.forEach(r => {
+    const key = r.state + '|' + r.read;
+    if (!ruleMap[key]) ruleMap[key] = [];
+    ruleMap[key].push(r);
+  });
+
+  const curSym = fb ? readCell(fb.tape, fb.headPos) : null;
+  const curState = fb ? fb.state : null;
+  const halted = !fb || fb.status !== 'running';
+
+  let html = '<table class="fsc-table"><thead><tr>';
+  html += `<th class="corner"><span class="corner-input">Read →</span><span class="corner-state">State ↓</span></th>`;
+  syms.forEach(s => {
+    const isActiveCol = s === curSym && !halted;
+    html += `<th class="col-head${isActiveCol ? ' active-col' : ''}">${s}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  statesOrdered.forEach(state => {
+    const isAccept = currentAlgo.acceptStates.includes(state);
+    const isReject = currentAlgo.rejectStates.includes(state);
+    const rowCls = isReject ? ' class="reject-row"' : isAccept ? ' class="halt-row"' : '';
+    html += `<tr${rowCls}>`;
+    const isActiveState = state === curState;
+    html += `<td class="state-label${isActiveState ? ' active-state' : ''}">${state}</td>`;
+    syms.forEach(s => {
+      const rules = ruleMap[state + '|' + s] || [];
+      const isActive = isActiveState && s === curSym && !halted;
+      const cls = 'action-cell' + (isActive ? ' active-cell' : '') + (rules.length === 0 ? ' empty' : '');
+      if (rules.length === 0) {
+        html += `<td class="${cls}">—</td>`;
+      } else if (rules.length === 1) {
+        const r = rules[0];
+        html += `<td class="${cls}">`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Write:</span><span class="fsc-val write-val">${r.write}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Move:</span><span class="fsc-val dir-val">${r.move === 'R' ? '→' : '←'}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Next:</span><span class="fsc-val next-val">${r.next}</span></div>`;
+        html += `</td>`;
+      } else {
+        html += `<td class="${cls}"><div class="fsc-choice-group">`;
+        rules.forEach((r, idx) => {
+          if (idx > 0) html += `<div class="fsc-choice-divider"></div>`;
+          html += `<div class="fsc-choice-label">Option ${idx + 1}</div>`;
+          html += `<div class="fsc-output-line"><span class="fsc-tag">Write:</span><span class="fsc-val write-val">${r.write}</span></div>`;
+          html += `<div class="fsc-output-line"><span class="fsc-tag">Move:</span><span class="fsc-val dir-val">${r.move === 'R' ? '→' : '←'}</span></div>`;
+          html += `<div class="fsc-output-line"><span class="fsc-tag">Next:</span><span class="fsc-val next-val">${r.next}</span></div>`;
+        });
+        html += `</div></td>`;
+      }
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function getMiniTapeCells(b) {
+  const keys = Object.keys(b.tape).map(Number);
+  let lo = Math.min(0, b.headPos, ...keys);
+  let hi = Math.max(0, b.headPos, ...keys);
+  lo = Math.min(lo, b.headPos - 2);
+  hi = Math.max(hi, b.headPos + 2);
+  if (hi - lo < 6) { lo = b.headPos - 3; hi = b.headPos + 3; }
+  const cells = [];
+  for (let i = lo; i <= hi; i++) {
+    cells.push({ pos: i, val: readCell(b.tape, i), isHead: i === b.headPos });
+  }
+  return cells;
+}
+
+function renderBranches() {
+  const body = document.getElementById('branch-body');
+  const summary = document.getElementById('branch-summary');
+  if (!body || !summary) return;
+
+  let html = '';
+  branches.forEach(b => {
+    const isFocused = b.id === focusedBranchId;
+    const statusCls = b.status === 'accepted' ? 'status-accepted' : b.status === 'rejected' ? 'status-rejected' : 'status-running';
+    const depth = getDepth(b);
+    const indent = depth * 12;
+
+    html += `<div class="branch-node ${statusCls}${isFocused ? ' focused' : ''}" onclick="focusBranch(${b.id})" style="margin-left: ${indent}px">`;
+
+    html += `<div class="branch-meta">`;
+    html += `<span class="branch-id">B${b.id}</span>`;
+    html += `<span class="branch-state-label">${b.state}</span>`;
+    const statusText = b.status === 'accepted' ? 'Accepted' : b.status === 'rejected' ? 'Rejected' : 'Active';
+    html += `<span class="branch-status ${b.status}">${statusText}</span>`;
+    if (b.parentId !== null) html += `<span class="branch-parent">from B${b.parentId}</span>`;
+    html += `</div>`;
+
+    html += `<div class="branch-mini-tape">`;
+    const cells = getMiniTapeCells(b);
+    cells.forEach(c => {
+      html += `<div class="mini-cell${c.isHead ? ' head-cell' : ''}">${c.val}</div>`;
+    });
+    html += `</div>`;
+
+    html += `</div>`;
+  });
+  body.innerHTML = html;
+
+  const total = branches.length;
+  const acc = branches.filter(b => b.status === 'accepted').length;
+  const rej = branches.filter(b => b.status === 'rejected').length;
+  const run = branches.filter(b => b.status === 'running').length;
+  summary.innerHTML = `<span class="count">${total}</span> branches: <span class="accept-count">${acc} accepted</span>, <span class="reject-count">${rej} rejected</span>, ${run} active`;
+}
+
+function getDepth(branch) {
+  let d = 0;
+  let b = branch;
+  while (b.parentId !== null) {
+    b = branches.find(x => x.id === b.parentId);
+    if (!b) break;
+    d++;
+  }
+  return d;
+}
+
+function focusBranch(id) {
+  focusedBranchId = id;
+  renderAll();
+}
+
+function renderAll() {
+  renderTape();
+  renderReadouts();
+  renderFSC();
+  renderBranches();
+  renderNarration();
+  document.getElementById('step-btn').disabled = allBranchesDone();
+  document.getElementById('run-btn').disabled = allBranchesDone();
+}
+
+const algoRow = document.getElementById('algo-row');
+Object.keys(ALGORITHMS).forEach(name => {
+  const btn = document.createElement('button');
+  btn.className = 'algo-btn';
+  btn.textContent = name;
+  btn.title = ALGORITHMS[name].description;
+  btn.onclick = () => selectAlgorithm(name);
+  algoRow.appendChild(btn);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); step(); }
+  if (e.key === 'r') { e.preventDefault(); toggleRun(); }
+  if (e.key === 'Escape') { e.preventDefault(); reset(); }
+});
+
+selectAlgorithm('Search "11"');
+
+(function(){
+  const KEY = 'intro-dismissed-nondeterministic-tm';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

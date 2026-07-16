@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Use</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --aqua:           #1baf7a;
+    --yellow:         #eda100;
+    --green:          #008300;
+    --violet:         #4a3aa7;
+    --red:            #e34948;
+    --magenta:        #e87ba4;
+    --orange:         #eb6834;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #3987e5;
+      --aqua:         #199e70;
+      --yellow:       #c98500;
+      --green:        #008300;
+      --violet:       #9085e9;
+      --red:          #e66767;
+      --magenta:      #d55181;
+      --orange:       #d95926;
+      --card-bg:      #222220;
+      --card-border:  #3a3a35;
+      --narration-bg: #1e1e1c;
+      --narration-border:#333330;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+  .nav-bar {
+    width: 100%; max-width: 1100px; display: flex; gap: 4px; margin-bottom: 16px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center; flex-wrap: wrap; margin-top: 16px;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  h1 { font-size: 22px; font-weight: 700; margin: 24px 0 8px; text-align: center; }
+  .subtitle {
+    color: var(--secondary); font-size: 14px; text-align: center;
+    max-width: 640px; line-height: 1.7; margin-bottom: 20px; padding: 0 16px;
+  }
+
+  .container { width: 100%; max-width: 1100px; padding: 0 16px; }
+  .main-row { display: flex; gap: 20px; width: 100%; align-items: flex-start; }
+  .viz-panel {
+    flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 24px;
+  }
+  .side-panel { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 16px;
+  }
+  .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+  .narration {
+    background: var(--narration-bg); border: 1px solid var(--narration-border);
+    border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.7; color: var(--secondary);
+  }
+  .narration strong { color: var(--primary); }
+
+  .mode-tabs {
+    display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 10px; padding: 4px; margin-bottom: 8px; align-self: center;
+  }
+  .mode-tab {
+    padding: 8px 20px; border: none; background: transparent; color: var(--secondary);
+    font-size: 14px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.15s;
+  }
+  .mode-tab:hover { color: var(--primary); }
+  .mode-tab.active { background: var(--blue); color: #fff; }
+
+  /* Chat panel */
+  .chat-box {
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 12px;
+    overflow: hidden;
+  }
+  .chat-header {
+    padding: 12px 16px; border-bottom: 1px solid var(--gridline);
+    font-size: 13px; font-weight: 600; color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chat-messages { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 200px; }
+  .chat-msg {
+    display: flex; gap: 10px; align-items: flex-start;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .chat-msg.user { flex-direction: row-reverse; }
+  .chat-avatar {
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .chat-avatar.user-avatar { background: var(--blue); color: #fff; }
+  .chat-avatar.assistant-avatar { background: var(--aqua); color: #fff; }
+  .chat-avatar.tool-avatar { background: var(--orange); color: #fff; }
+  .chat-bubble {
+    max-width: 75%; padding: 10px 14px; border-radius: 12px;
+    font-size: 14px; line-height: 1.6;
+  }
+  .chat-msg.user .chat-bubble {
+    background: var(--blue); color: #fff; border-radius: 12px 12px 12px 4px;
+  }
+  .chat-msg.assistant .chat-bubble {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--primary); border-radius: 12px 12px 4px 12px;
+  }
+  .chat-msg.tool-call .chat-bubble {
+    background: rgba(235,104,52,0.08); border: 1px dashed var(--orange);
+    color: var(--primary); border-radius: 8px; max-width: 100%; width: 100%;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace; font-size: 12px;
+  }
+  .chat-msg.tool-result .chat-bubble {
+    background: rgba(0,131,0,0.08); border: 1px dashed var(--green);
+    color: var(--primary); border-radius: 8px; max-width: 100%; width: 100%;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace; font-size: 12px;
+  }
+  .chat-msg.tool-call .chat-avatar { background: var(--orange); color: #fff; }
+  .chat-msg.tool-result .chat-avatar { background: var(--green); color: #fff; }
+
+  .tool-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 4px; display: block;
+  }
+  .tool-call .tool-label { color: var(--orange); }
+  .tool-result .tool-label { color: var(--green); }
+
+  /* Template view */
+  .template-box {
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 12px;
+    padding: 20px; direction: ltr; text-align: left;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    font-size: 12px; line-height: 1.8;
+  }
+  .tmpl-tag { font-weight: 700; }
+  .tmpl-system { color: var(--muted); }
+  .tmpl-user { color: var(--blue); }
+  .tmpl-assistant { color: var(--aqua); }
+  .tmpl-tool { color: var(--orange); }
+  .tmpl-result { color: var(--green); }
+  .tmpl-content { color: var(--secondary); }
+
+  .arrow-label {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    color: var(--muted); font-size: 13px; font-weight: 500; margin: 8px 0;
+  }
+  .arrow-label .arrow { font-size: 20px; }
+
+  /* Flow diagram */
+  .flow-diagram {
+    display: flex; align-items: center; justify-content: center; gap: 0;
+    direction: ltr; flex-wrap: wrap; padding: 12px 0;
+  }
+  .flow-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 16px; border-radius: 10px; background: var(--surface);
+    border: 2px solid var(--gridline); min-width: 100px; text-align: center;
+    transition: all 0.3s;
+  }
+  .flow-step.active { border-color: var(--blue); background: rgba(42,120,214,0.06); }
+  .flow-step.done { border-color: var(--aqua); opacity: 0.7; }
+  .flow-step-icon { font-size: 22px; }
+  .flow-step-label { font-size: 11px; font-weight: 600; color: var(--secondary); }
+  .flow-arrow { font-size: 20px; color: var(--muted); padding: 0 6px; }
+
+  /* Controls */
+  .controls-bar {
+    display: flex; gap: 8px; justify-content: center; margin-top: 16px; width: 100%; max-width: 1100px;
+  }
+  .ctrl-btn {
+    font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 22px;
+    border-radius: 6px; border: 1px solid var(--gridline); cursor: pointer;
+    background: var(--surface); color: var(--secondary); transition: all 0.15s;
+  }
+  .ctrl-btn:hover:not(:disabled) { background: var(--gridline); color: var(--primary); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+  .ctrl-btn.primary-btn { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .ctrl-btn.primary-btn:hover:not(:disabled) { filter: brightness(1.1); }
+
+  @media (max-width: 800px) {
+    .main-row { flex-direction: column; }
+    .side-panel { width: 100%; }
+    .flow-diagram { gap: 8px; }
+    .flow-arrow { display: none; }
+  }
+  .intro-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    transition: opacity 0.3s;
+  }
+  .intro-card {
+    background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 16px; max-width: 560px; width: 100%;
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+  .intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+  .intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+  .intro-card li { margin-bottom: 4px; }
+  .intro-start {
+    background: var(--blue); color: #fff; border: none;
+    padding: 10px 28px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .intro-start:hover { filter: brightness(1.15); }
+  .intro-reopen {
+    display: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: transparent; border: 2px solid var(--muted);
+    color: var(--muted); font-size: 12px; font-weight: 700;
+    padding: 0; cursor: pointer; transition: all 0.15s;
+    line-height: 18px; text-align: center; margin-left: auto;
+  }
+  .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+  .intro-wiki {
+    display: inline-block; margin-bottom: 16px;
+    color: var(--blue); font-size: 13px; text-decoration: none;
+  }
+  .intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>Tool Use</h2>
+    <p>A language model can only generate text — it lives inside a bubble with no access to the outside world. It can't check today's weather, look up a flight, or run a calculation on its own.</p>
+    <p><strong>Tools</strong> break the bubble. Like a doctor writing a prescription instead of manufacturing the medicine, the model writes a structured request (a tool call) that an external system executes, then feeds the result back into the conversation.</p>
+    <ul>
+      <li><strong>The Problem</strong> — see what happens without tools</li>
+      <li><strong>Tool Definition</strong> — learn how tools are described to the model</li>
+      <li><strong>Tools in Action</strong> — watch the full tool-call flow step by step</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Large_language_model#Tool_use" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+<nav class="nav-bar">
+  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link active">Tools</a>
+  <button class="intro-reopen" title="About this demo">?</button>
+</nav>
+<h1>Tool Use</h1>
+
+<div style="display:flex;justify-content:center;margin-bottom:16px;">
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('problem')">The Problem</button>
+    <button class="mode-tab" onclick="switchMode('definition')">Tool Definition</button>
+    <button class="mode-tab" onclick="switchMode('action')">Tools in Action</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main-row">
+    <div class="viz-panel" id="vizPanel"></div>
+    <div class="side-panel" id="sidePanel"></div>
+  </div>
+</div>
+
+<div class="controls-bar" id="controlsBar"></div>
+
+<script>
+let mode = 'problem';
+let actionStep = 0;
+
+const ACTION_STEPS = [
+  { type: 'user', text: 'What is the weather in Tel Aviv right now?' },
+  { type: 'tool-call', label: 'Tool Call', text: 'get_weather(city="Tel Aviv")' },
+  { type: 'tool-result', label: 'Tool Result', text: '{"temp": 31, "humidity": 65, "condition": "sunny", "wind": "15 km/h"}' },
+  { type: 'assistant', text: 'The current weather in Tel Aviv: 31°C, sunny, humidity 65%, wind 15 km/h.' },
+  { type: 'user', text: 'And what about Jerusalem?' },
+  { type: 'tool-call', label: 'Tool Call', text: 'get_weather(city="Jerusalem")' },
+  { type: 'tool-result', label: 'Tool Result', text: '{"temp": 26, "humidity": 40, "condition": "partly_cloudy", "wind": "10 km/h"}' },
+  { type: 'assistant', text: 'In Jerusalem: 26°C, partly cloudy, humidity 40%, wind 10 km/h. 5 degrees cooler than Tel Aviv.' },
+];
+
+const FLOW_STEPS = [
+  { icon: '\u{1F464}', label: 'User Query' },
+  { icon: '\u{1F916}', label: 'Model Decides' },
+  { icon: '\u{1F527}', label: 'Tool Call' },
+  { icon: '\u{1F4E1}', label: 'Result Returns' },
+  { icon: '\u{1F4AC}', label: 'Final Answer' },
+];
+
+function switchMode(m) {
+  mode = m;
+  actionStep = 0;
+  document.querySelectorAll('.mode-tab').forEach((t, i) => {
+    t.classList.toggle('active',
+      (i === 0 && m === 'problem') ||
+      (i === 1 && m === 'definition') ||
+      (i === 2 && m === 'action'));
+  });
+  render();
+}
+
+function render() {
+  if (mode === 'problem') renderProblem();
+  else if (mode === 'definition') renderDefinition();
+  else renderAction();
+}
+
+function renderProblem() {
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="chat-box">
+      <div class="chat-header">\u{1F4AC} Chat without Tools</div>
+      <div class="chat-messages">
+        <div class="chat-msg user">
+          <div class="chat-avatar user-avatar">U</div>
+          <div class="chat-bubble">What is the weather in Tel Aviv right now?</div>
+        </div>
+        <div class="chat-msg assistant">
+          <div class="chat-avatar assistant-avatar">AI</div>
+          <div class="chat-bubble">
+            I'm sorry, I don't have access to real-time information.
+            I'm a language model — I can only generate text based on what I learned during training.
+            I cannot check the weather, search the internet, or access external systems.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-color:var(--red);border-style:dashed;">
+      <h3 style="color:var(--red);">The Limitation</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        A language model is <strong>text only</strong>. It cannot:
+        <ul style="margin:8px 16px 0;padding:0;">
+          <li>Access the internet or up-to-date information</li>
+          <li>Run code or perform precise calculations</li>
+          <li>Read or write files</li>
+          <li>Send emails or messages</li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('sidePanel').innerHTML = `
+    <div class="narration">
+      <strong>A language model lives in a bubble.</strong> It was trained on text from the past
+      and can only generate new text. It has no hands, no eyes, and no connection to the world.
+    </div>
+    <div class="card">
+      <h3>The Solution: Tools</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        Instead of trying to give the model direct access to systems —
+        we define <strong>Tools</strong> that it can "call."
+        <br><br>
+        The model doesn't run the tools itself. It only <strong>decides when and how to use them</strong>,
+        and the system executes and returns the result.
+      </div>
+    </div>
+    <div class="narration">
+      <strong>Like a doctor writing a prescription:</strong> the doctor doesn't manufacture the medicine —
+      they write an order, and the pharmacy fulfills it. The model writes a "tool call,"
+      and the system executes it.
+    </div>
+  `;
+
+  document.getElementById('controlsBar').innerHTML = '';
+}
+
+function renderDefinition() {
+  const toolDef = `<span class="tmpl-tag tmpl-system">&lt;|system|&gt;</span>
+<span class="tmpl-content">You are a helpful assistant.</span>
+<span class="tmpl-content">You have access to the following tools:</span>
+
+<span class="tmpl-tag tmpl-tool">[tool: get_weather]</span>
+<span class="tmpl-content">{</span>
+<span class="tmpl-content">  "name": "get_weather",</span>
+<span class="tmpl-content">  "description": "Get current weather for a city",</span>
+<span class="tmpl-content">  "parameters": {</span>
+<span class="tmpl-content">    "city": {</span>
+<span class="tmpl-content">      "type": "string",</span>
+<span class="tmpl-content">      "description": "City name"</span>
+<span class="tmpl-content">    }</span>
+<span class="tmpl-content">  }</span>
+<span class="tmpl-content">}</span>
+
+<span class="tmpl-tag tmpl-tool">[tool: search_web]</span>
+<span class="tmpl-content">{</span>
+<span class="tmpl-content">  "name": "search_web",</span>
+<span class="tmpl-content">  "description": "Search the web for information",</span>
+<span class="tmpl-content">  "parameters": {</span>
+<span class="tmpl-content">    "query": {</span>
+<span class="tmpl-content">      "type": "string",</span>
+<span class="tmpl-content">      "description": "Search query"</span>
+<span class="tmpl-content">    }</span>
+<span class="tmpl-content">  }</span>
+<span class="tmpl-content">}</span>
+
+<span class="tmpl-tag tmpl-tool">[tool: run_code]</span>
+<span class="tmpl-content">{</span>
+<span class="tmpl-content">  "name": "run_code",</span>
+<span class="tmpl-content">  "description": "Execute Python code and return output",</span>
+<span class="tmpl-content">  "parameters": {</span>
+<span class="tmpl-content">    "code": {</span>
+<span class="tmpl-content">      "type": "string",</span>
+<span class="tmpl-content">      "description": "Python code to run"</span>
+<span class="tmpl-content">    }</span>
+<span class="tmpl-content">  }</span>
+<span class="tmpl-content">}</span>
+<span class="tmpl-tag" style="color:var(--muted)">&lt;|end|&gt;</span>`;
+
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="card" style="margin-bottom:12px;">
+      <h3>Tool Definition = An Addition to the Chat Template</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        The tools are defined <strong>inside the system message</strong> as JSON.
+        The model learns from the description when to use each tool and which parameters to send.
+      </div>
+    </div>
+    <div class="template-box"><pre style="margin:0;white-space:pre-wrap;">${toolDef}</pre></div>
+    <div class="arrow-label">
+      <span class="arrow">&#x2191;</span>
+      The tools are defined as part of the template — the model sees them as text
+    </div>
+  `;
+
+  document.getElementById('sidePanel').innerHTML = `
+    <div class="narration">
+      <strong>Tools are text.</strong>
+      There is no "magic" — the model simply sees a textual description of each tool
+      and learns during training when and how to generate a call to it.
+    </div>
+    <div class="card">
+      <h3>Each tool is defined by:</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">1</span>
+        <strong>Name</strong> — a unique identifier<br><br>
+        <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">2</span>
+        <strong>Description</strong> — when to use it<br><br>
+        <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">3</span>
+        <strong>Parameters</strong> — what needs to be sent
+      </div>
+    </div>
+    <div class="narration">
+      <strong>Examples of tools:</strong>
+      Web search, weather checking, code execution, file reading,
+      sending emails, database access — any API can become a tool.
+    </div>
+  `;
+
+  document.getElementById('controlsBar').innerHTML = '';
+}
+
+function renderAction() {
+  const shown = ACTION_STEPS.slice(0, actionStep);
+
+  let activeFlowIdx = 0;
+  if (actionStep === 0) activeFlowIdx = 0;
+  else {
+    const last = ACTION_STEPS[actionStep - 1];
+    if (last.type === 'user') activeFlowIdx = 1;
+    else if (last.type === 'tool-call') activeFlowIdx = 2;
+    else if (last.type === 'tool-result') activeFlowIdx = 3;
+    else activeFlowIdx = 4;
+  }
+
+  let flowHtml = FLOW_STEPS.map((s, i) => {
+    const cls = i === activeFlowIdx ? 'flow-step active' : i < activeFlowIdx ? 'flow-step done' : 'flow-step';
+    const arrow = i < FLOW_STEPS.length - 1 ? '<span class="flow-arrow">&rarr;</span>' : '';
+    return `<div class="${cls}"><span class="flow-step-icon">${s.icon}</span><span class="flow-step-label">${s.label}</span></div>${arrow}`;
+  }).join('');
+
+  let msgs = shown.map(m => {
+    if (m.type === 'user') {
+      return `<div class="chat-msg user">
+        <div class="chat-avatar user-avatar">U</div>
+        <div class="chat-bubble">${m.text}</div>
+      </div>`;
+    } else if (m.type === 'assistant') {
+      return `<div class="chat-msg assistant">
+        <div class="chat-avatar assistant-avatar">AI</div>
+        <div class="chat-bubble">${m.text}</div>
+      </div>`;
+    } else if (m.type === 'tool-call') {
+      return `<div class="chat-msg tool-call">
+        <div class="chat-avatar tool-avatar" style="background:var(--orange)">\u{1F527}</div>
+        <div class="chat-bubble"><span class="tool-label">${m.label}</span>${m.text}</div>
+      </div>`;
+    } else {
+      return `<div class="chat-msg tool-result">
+        <div class="chat-avatar tool-avatar" style="background:var(--green)">\u{1F4E1}</div>
+        <div class="chat-bubble"><span class="tool-label">${m.label}</span>${m.text}</div>
+      </div>`;
+    }
+  }).join('');
+
+  if (!msgs) {
+    msgs = '<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:14px;">Click "Next" to begin</div>';
+  }
+
+  document.getElementById('vizPanel').innerHTML = `
+    <div class="flow-diagram">${flowHtml}</div>
+    <div class="chat-box">
+      <div class="chat-header">\u{1F527} Chat with Tools</div>
+      <div class="chat-messages">${msgs}</div>
+    </div>
+    ${actionStep > 0 ? renderTemplate() : ''}
+  `;
+
+  const sideNarrations = [
+    `<div class="narration"><strong>Click "Next"</strong> to see the tool-use process step by step.</div>`,
+
+    `<div class="narration"><strong>Step 1:</strong> The user asks a question that requires real-time information.
+      The model cannot answer from its own knowledge.</div>`,
+
+    `<div class="narration"><strong>Step 2:</strong> The model <strong>does not try to guess</strong>.
+      Instead, it generates a <strong>tool call</strong> — structured text that says
+      "I need to invoke the get_weather tool with the parameter Tel Aviv."</div>
+    <div class="card"><h3>What happens behind the scenes?</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        The model <strong>does not run</strong> the tool. It only generates text describing the call.
+        <strong>The system</strong> (the code running the model) detects the call, executes the tool, and returns the result.
+      </div>
+    </div>`,
+
+    `<div class="narration"><strong>Step 3:</strong> The system ran the tool and received a result.
+      The result is inserted back into the template as JSON — the model sees it as text.</div>`,
+
+    `<div class="narration"><strong>Step 4:</strong> Now the model has the information it needs.
+      It <strong>interprets the JSON</strong> and composes a natural-language answer.</div>
+    <div class="card"><h3>The Loop</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        1. User asks a question<br>
+        2. Model decides: answer directly or call a tool?<br>
+        3. If a tool — the system runs it and returns the result<br>
+        4. The model composes a final answer
+      </div>
+    </div>`,
+
+    `<div class="narration"><strong>Follow-up question:</strong> The user asks about a different city.
+      The entire history — including previous tool calls — is sent to the model again.</div>`,
+
+    `<div class="narration"><strong>Second call:</strong> The model recognizes that the get_weather tool is needed here too,
+      but this time with a different parameter — Jerusalem.</div>`,
+
+    `<div class="narration"><strong>Second result:</strong> The system runs the tool again and returns the data for Jerusalem.</div>`,
+
+    `<div class="narration"><strong>Smart answer:</strong> The model doesn't just present the data —
+      it <strong>compares</strong> the two cities because it can see the entire history in its context window.</div>
+    <div class="card"><h3>Tools + Context Window</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
+        The larger the context window, the more the model can manage <strong>longer conversations with tools</strong> —
+        remembering previous results, comparing them, and building complex answers.
+      </div>
+    </div>`,
+  ];
+
+  document.getElementById('sidePanel').innerHTML = sideNarrations[actionStep] || sideNarrations[sideNarrations.length - 1];
+
+  document.getElementById('controlsBar').innerHTML = `
+    <button class="ctrl-btn" onclick="actionStep=0;render()">Reset</button>
+    <button class="ctrl-btn primary-btn" onclick="stepAction()" ${actionStep >= ACTION_STEPS.length ? 'disabled' : ''}>
+      Next &rarr;
+    </button>
+  `;
+}
+
+function renderTemplate() {
+  const shown = ACTION_STEPS.slice(0, actionStep);
+  let tmpl = '';
+  shown.forEach(m => {
+    if (m.type === 'user') {
+      tmpl += `<span class="tmpl-tag tmpl-user">&lt;|user|&gt;</span>\n<span class="tmpl-content">${m.text}</span>\n<span class="tmpl-tag" style="color:var(--muted)">&lt;|end|&gt;</span>\n`;
+    } else if (m.type === 'tool-call') {
+      tmpl += `<span class="tmpl-tag tmpl-tool">&lt;|tool_call|&gt;</span>\n<span class="tmpl-content">${m.text}</span>\n<span class="tmpl-tag" style="color:var(--muted)">&lt;|end|&gt;</span>\n`;
+    } else if (m.type === 'tool-result') {
+      tmpl += `<span class="tmpl-tag tmpl-result">&lt;|tool_result|&gt;</span>\n<span class="tmpl-content">${m.text}</span>\n<span class="tmpl-tag" style="color:var(--muted)">&lt;|end|&gt;</span>\n`;
+    } else {
+      tmpl += `<span class="tmpl-tag tmpl-assistant">&lt;|assistant|&gt;</span>\n<span class="tmpl-content">${m.text}</span>\n<span class="tmpl-tag" style="color:var(--muted)">&lt;|end|&gt;</span>\n`;
+    }
+  });
+
+  const lastType = shown.length > 0 ? shown[shown.length - 1].type : '';
+  if (lastType === 'user') {
+    tmpl += `<span class="tmpl-tag tmpl-assistant">&lt;|assistant|&gt;</span>\n<span style="color:var(--blue)">▌</span>`;
+  } else if (lastType === 'tool-result') {
+    tmpl += `<span class="tmpl-tag tmpl-assistant">&lt;|assistant|&gt;</span>\n<span style="color:var(--blue)">▌</span>`;
+  }
+
+  return `
+    <div class="arrow-label"><span class="arrow">&#x2193;</span> What the model actually sees</div>
+    <div class="template-box" style="font-size:11px;"><pre style="margin:0;white-space:pre-wrap;">${tmpl}</pre></div>
+  `;
+}
+
+function stepAction() {
+  if (actionStep < ACTION_STEPS.length) {
+    actionStep++;
+    render();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    if (mode === 'action') stepAction();
+  }
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    actionStep = 0; render();
+  }
+});
+
+render();
+
+(function(){
+  const KEY = 'intro-dismissed-tool-usage';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

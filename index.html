@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI demos</title>
+<style>
+  :root {
+    --surface: #fcfcfb;
+    --page: #f0ede4;
+    --primary: #0b0b0b;
+    --secondary: #52514e;
+    --muted: #898781;
+    --gridline: #d5d0c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19;
+      --page: #121210;
+      --primary: #e8e6de;
+      --secondary: #b0ae9f;
+      --muted: #7a786e;
+      --gridline: #2e2e2a;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 64px;
+  }
+  h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; }
+  .subtitle {
+    color: var(--secondary);
+    font-size: 0.95rem;
+    max-width: 36rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  ul {
+    list-style: none;
+    width: 100%;
+    max-width: 36rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  a {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--gridline);
+    border-radius: 6px;
+    padding: 14px 18px;
+    color: var(--primary);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  a:hover { border-color: var(--secondary); }
+  a strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+  a span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <h1>AI demos</h1>
+  <p class="subtitle">Interactive visualizations from Turing machines to modern LLMs. Each demo is a single HTML file — open one and play.</p>
+  <ul>
+    <li><a href="timeline/index.html"><strong>Timeline</strong><span>AI/NLP milestones, 1936–2026</span></a></li>
+    <li><a href="turing-machine/index.html"><strong>Turing Machine</strong><span>Step a deterministic TM through sample programs</span></a></li>
+    <li><a href="nondeterministic-turing-machine/index.html"><strong>Nondeterministic TM</strong><span>Branching computation and P vs NP intuition</span></a></li>
+    <li><a href="turing-test/index.html"><strong>Turing Test</strong><span>Judge which side is human</span></a></li>
+    <li><a href="word-vectors/index.html"><strong>Word Vectors</strong><span>Drag embeddings; try vector arithmetic</span></a></li>
+    <li><a href="cnn/index.html"><strong>CNN</strong><span>See convolution, pooling, and classification step by step</span></a></li>
+    <li><a href="transformer/index.html"><strong>Transformer</strong><span>Tokens through attention to next-word prediction</span></a></li>
+    <li><a href="chat/index.html"><strong>Chat</strong><span>How completion becomes a turn-taking assistant</span></a></li>
+    <li><a href="tool-usage/index.html"><strong>Tool Usage</strong><span>Structured tool calls to external systems</span></a></li>
+  </ul>
+</body>
+</html>

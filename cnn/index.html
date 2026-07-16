@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNN (LeNet)</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --aqua:           #1baf7a;
+    --yellow:         #eda100;
+    --green:          #008300;
+    --violet:         #4a3aa7;
+    --red:            #e34948;
+    --magenta:        #e87ba4;
+    --orange:         #eb6834;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+    --blue-r: 42; --blue-g: 120; --blue-b: 214;
+    --orange-r: 235; --orange-g: 104; --orange-b: 52;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #3987e5;
+      --aqua:         #199e70;
+      --yellow:       #c98500;
+      --green:        #008300;
+      --violet:       #9085e9;
+      --red:          #e66767;
+      --magenta:      #d55181;
+      --orange:       #d95926;
+      --card-bg:      #222220;
+      --card-border:  #3a3a35;
+      --narration-bg: #1e1e1c;
+      --narration-border:#333330;
+      --blue-r: 57; --blue-g: 135; --blue-b: 229;
+      --orange-r: 217; --orange-g: 89; --orange-b: 38;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+  .nav-bar {
+    width: 100%; max-width: 1100px; display: flex; gap: 4px; margin-bottom: 16px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center; flex-wrap: wrap; margin-top: 16px;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+  h1 { font-size: 22px; font-weight: 700; margin: 24px 0 8px; text-align: center; }
+
+  /* Step progress bar */
+  .step-bar { display: flex; gap: 6px; align-items: center; justify-content: center; margin-bottom: 6px; flex-wrap: wrap; }
+  .step-dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--gridline);
+    cursor: pointer; transition: all 0.2s; border: 2px solid transparent;
+  }
+  .step-dot:hover { border-color: var(--muted); }
+  .step-dot.active { background: var(--blue); transform: scale(1.3); border-color: var(--blue); }
+  .step-dot.done { background: var(--muted); }
+  .step-title {
+    text-align: center; font-size: 13px; color: var(--secondary); margin-bottom: 16px;
+    font-weight: 500; min-height: 18px;
+  }
+  .step-title strong { color: var(--blue); }
+
+  .container { width: 100%; max-width: 1100px; padding: 0 16px; }
+  .main-row { display: flex; gap: 20px; width: 100%; align-items: flex-start; }
+  .viz-panel {
+    flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 12px; padding: 24px; min-height: 340px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    direction: ltr;
+  }
+  .side-panel { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  /* Controls */
+  .controls-bar {
+    display: flex; gap: 8px; justify-content: center; margin-top: 16px; width: 100%; max-width: 1100px;
+  }
+  .ctrl-btn {
+    font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 22px;
+    border-radius: 6px; border: 1px solid var(--gridline); cursor: pointer;
+    background: var(--surface); color: var(--secondary); transition: all 0.15s;
+  }
+  .ctrl-btn:hover:not(:disabled) { background: var(--gridline); color: var(--primary); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: default; }
+  .ctrl-btn.primary-btn { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .ctrl-btn.primary-btn:hover:not(:disabled) { filter: brightness(1.1); }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 16px;
+  }
+  .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+  .narration {
+    background: var(--narration-bg); border: 1px solid var(--narration-border);
+    border-radius: 10px; padding: 14px 16px; font-size: 13px; line-height: 1.6; color: var(--secondary);
+  }
+  .narration strong { color: var(--primary); }
+  .formula-card {
+    background: var(--surface); border: 1px solid var(--blue); border-radius: 10px; padding: 14px 16px;
+  }
+  .formula-card h3 { color: var(--blue); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .formula {
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    font-size: 13px; text-align: center; color: var(--primary); font-weight: 600; line-height: 1.8;
+  }
+  .formula .op { color: var(--muted); font-weight: 400; }
+  .scale-note {
+    font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 8px;
+    padding-top: 8px; border-top: 1px solid var(--gridline);
+  }
+
+  /* Flow layout */
+  .flow-section { display: flex; flex-direction: column; gap: 14px; align-items: center; width: 100%; }
+  .flow-row { display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .flow-arrow { color: var(--muted); font-size: 18px; font-weight: 300; }
+  .flow-op {
+    font-size: 14px; font-weight: 700; color: var(--muted); padding: 4px 12px;
+    border-radius: 6px; border: 1px dashed var(--gridline); background: var(--surface);
+  }
+  .flow-label { font-size: 11px; color: var(--muted); text-align: center; font-weight: 500; }
+
+  /* Tensor op flow */
+  .tensor-op-flow {
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    flex-wrap: wrap; margin: 10px 0; padding: 12px 16px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 10px;
+  }
+  .tensor-operand { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tensor-op-sym { font-size: 18px; font-weight: 700; color: var(--muted); }
+  .tensor-eq { font-size: 18px; font-weight: 700; color: var(--blue); }
+
+  /* Prob bars */
+  .prob-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .prob-word { font-weight: 600; width: 30px; text-align: right; font-size: 14px; }
+  .prob-bar-bg { flex: 1; height: 24px; background: var(--gridline); border-radius: 4px; overflow: hidden; position: relative; }
+  .prob-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .prob-val { font-size: 12px; color: var(--muted); font-family: monospace; width: 40px; }
+  .prob-highlight .prob-word { color: var(--blue); }
+  .prob-highlight .prob-bar { background: var(--blue); }
+
+  /* Path indicator */
+  .path-bar {
+    display: flex; gap: 4px; justify-content: center; align-items: center;
+    margin-bottom: 12px; flex-wrap: wrap; min-height: 24px;
+  }
+  .path-pill {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 12px; background: var(--gridline); color: var(--secondary);
+    transition: all 0.2s;
+  }
+  .path-pill.active { background: var(--blue); color: #fff; }
+  .path-sep { color: var(--muted); font-size: 10px; }
+
+  /* Shape badges */
+  .shape-badge {
+    display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px;
+    border-radius: 3px; font-family: monospace; vertical-align: middle; margin: 0 2px;
+  }
+  .shape-badge.vec { background: rgba(var(--blue-r),var(--blue-g),var(--blue-b),0.15); color: var(--blue); }
+  .shape-badge.mat { background: rgba(var(--orange-r),var(--orange-g),var(--orange-b),0.15); color: var(--orange); }
+
+  /* CNN-specific: pixel grids */
+  .pixel-grid { display: inline-grid; gap: 1px; }
+  .grid-cell {
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    transition: all 0.3s;
+  }
+  .grid-wrap { position: relative; display: inline-block; }
+  .filter-overlay {
+    position: absolute;
+    border: 3px solid var(--blue);
+    background: rgba(var(--blue-r),var(--blue-g),var(--blue-b),0.15);
+    pointer-events: none;
+    transition: all 0.5s ease;
+    border-radius: 3px;
+    z-index: 2;
+  }
+  .pool-overlay {
+    position: absolute;
+    border: 3px solid var(--orange);
+    background: rgba(var(--orange-r),var(--orange-g),var(--orange-b),0.15);
+    pointer-events: none;
+    transition: all 0.4s ease;
+    border-radius: 3px;
+    z-index: 2;
+  }
+  .feature-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-align: center; margin-bottom: 4px;
+  }
+  .filter-box {
+    display: inline-grid; gap: 1px; grid-template-columns: repeat(3, 32px);
+  }
+  .filter-cell {
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+    font-size: 12px; font-weight: 600; border-radius: 3px; border: 1px solid var(--gridline);
+  }
+  .predict-label {
+    font-size: 14px; color: var(--secondary); text-align: center; margin-top: 10px;
+    padding: 8px 16px; border: 1px dashed var(--gridline); border-radius: 8px; display: inline-block;
+  }
+  .predict-label strong { color: var(--blue); }
+  .flatten-cell {
+    width: 18px; height: 22px; display: flex; align-items: center; justify-content: center;
+    border-radius: 2px; font-size: 7px;
+    font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
+  }
+  .dense-node {
+    width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700;
+    border: 2px solid var(--gridline); background: var(--surface); color: var(--secondary);
+  }
+  .dense-node.winner { border-color: var(--blue); color: var(--blue); background: rgba(var(--blue-r),var(--blue-g),var(--blue-b),0.1); }
+
+  /* Animations */
+  @keyframes cellReveal {
+    from { opacity: 0; transform: scale(0.7); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes tensorPulse {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 0 2px var(--blue); }
+  }
+  .anim-reveal { animation: cellReveal 0.3s ease forwards; opacity: 0; }
+  .anim-pulse { animation: tensorPulse 0.6s ease; }
+  .fade-in { animation: fadeIn 0.35s ease; }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .main-row { flex-direction: column; }
+    .side-panel { width: 100%; }
+    .viz-panel { padding: 16px; overflow-x: auto; }
+  }
+
+  .intro-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; transition: opacity 0.3s;
+  }
+  .intro-card {
+    background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 16px; max-width: 560px; width: 100%;
+    padding: 40px 36px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+  .intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+  .intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+  .intro-card li { margin-bottom: 4px; }
+  .intro-start {
+    background: var(--blue); color: #fff; border: none;
+    padding: 10px 28px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: filter 0.15s;
+  }
+  .intro-start:hover { filter: brightness(1.15); }
+  .intro-reopen {
+    display: none;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: transparent; border: 2px solid var(--muted);
+    color: var(--muted); font-size: 12px; font-weight: 700;
+    padding: 0; cursor: pointer; transition: all 0.15s;
+    line-height: 18px; text-align: center; margin-left: auto;
+  }
+  .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+  .intro-wiki {
+    display: inline-block; margin-bottom: 16px;
+    color: var(--blue); font-size: 13px; text-decoration: none;
+  }
+  .intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>Convolutional Neural Network</h2>
+    <p>CNNs are the architecture behind image recognition. LeNet (1989) by Yann LeCun was the first practical CNN, used by the USPS to read handwritten zip codes on envelopes. This demo walks through how a CNN processes a handwritten digit image step by step.</p>
+    <p>The visualization uses a simplified 12&times;12 pixel grid (real MNIST images are 28&times;28) so you can follow every computation by hand.</p>
+    <ul>
+      <li>Follow the image through convolution, pooling, and classification</li>
+      <li>See how filters detect edges and patterns</li>
+      <li>Understand why CNNs work for images</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Convolutional_neural_network" target="_blank">Learn more on Wikipedia &#x2197;</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+
+<nav class="nav-bar">
+  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link active">CNN</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+  <button class="intro-reopen" title="About this demo">?</button>
+</nav>
+
+<h1>Convolutional Neural Network</h1>
+<div class="step-bar" id="stepBar"></div>
+<div class="step-title" id="stepTitle"></div>
+
+<div class="container">
+  <div class="main-row">
+    <div class="viz-panel" id="vizPanel"></div>
+    <div class="side-panel" id="sidePanel"></div>
+  </div>
+</div>
+
+<div class="controls-bar">
+  <button class="ctrl-btn" id="btnBack" onclick="goStep(step-1)">&larr; Back</button>
+  <button class="ctrl-btn" id="btnReset" onclick="goStep(0)">Reset</button>
+  <button class="ctrl-btn primary-btn" id="btnNext" onclick="goStep(step+1)">Next &rarr;</button>
+</div>
+
+<script>
+// --- DATA -------------------------------------------------------------------
+const IMG = [
+  [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
+  [  0,  0,200,220,235,245,250,245,235,200,  0,  0],
+  [  0,  0,170,195,210,220,225,220,210,175,  0,  0],
+  [  0,  0,  0,  0,  0,  0,  0,200,220,  0,  0,  0],
+  [  0,  0,  0,  0,  0,  0,185,215,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0,170,210,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,155,205,  0,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,190,220,  0,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,195,225,  0,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,185,215,  0,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,165,195,  0,  0,  0,  0,  0,  0],
+  [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
+];
+
+const FILTERS = [
+  { name: 'Horizontal Edge', weights: [[-1,-1,-1],[0,0,0],[1,1,1]], color: 'var(--blue)' },
+  { name: 'Vertical Edge',   weights: [[-1,0,1],[-1,0,1],[-1,0,1]], color: 'var(--orange)' },
+  { name: 'Diagonal',        weights: [[1,0,-1],[0,0,0],[-1,0,1]], color: 'var(--aqua)' },
+  { name: 'Corner',          weights: [[0,1,0],[1,-2,1],[0,1,0]], color: 'var(--violet)' },
+];
+
+const CONV2_MAPS = [
+  [[0.0,0.2,0.9],[0.0,0.8,0.4],[0.0,0.3,0.1]],
+  [[0.8,0.4,0.0],[0.5,0.1,0.0],[0.2,0.0,0.0]],
+  [[0.1,0.0,0.3],[0.3,0.9,0.2],[0.6,0.4,0.0]],
+  [[0.0,0.5,0.1],[0.1,0.3,0.7],[0.0,0.1,0.5]],
+];
+
+const PREDICTIONS = [
+  { digit: 0, prob: 0.01 },
+  { digit: 1, prob: 0.03 },
+  { digit: 2, prob: 0.02 },
+  { digit: 3, prob: 0.01 },
+  { digit: 4, prob: 0.00 },
+  { digit: 5, prob: 0.00 },
+  { digit: 6, prob: 0.01 },
+  { digit: 7, prob: 0.92 },
+  { digit: 8, prob: 0.00 },
+  { digit: 9, prob: 0.00 },
+];
+
+// --- COMPUTATION HELPERS ----------------------------------------------------
+function convolve(input, filter) {
+  const h = input.length, w = input[0].length;
+  const fh = filter.length, fw = filter[0].length;
+  const out = [];
+  for (let i = 0; i <= h - fh; i++) {
+    out[i] = [];
+    for (let j = 0; j <= w - fw; j++) {
+      let s = 0;
+      for (let fi = 0; fi < fh; fi++)
+        for (let fj = 0; fj < fw; fj++)
+          s += (input[i + fi][j + fj] / 255) * filter[fi][fj];
+      out[i][j] = Math.max(0, s);
+    }
+  }
+  return out;
+}
+
+function maxPool2x2(map) {
+  const h = map.length, w = map[0].length;
+  const oh = Math.floor(h / 2), ow = Math.floor(w / 2);
+  const out = [];
+  for (let i = 0; i < oh; i++) {
+    out[i] = [];
+    for (let j = 0; j < ow; j++) {
+      out[i][j] = Math.max(
+        map[i*2][j*2], map[i*2][j*2+1],
+        map[i*2+1][j*2], map[i*2+1][j*2+1]
+      );
+    }
+  }
+  return out;
+}
+
+function mapMax(map) {
+  let m = 0;
+  for (const row of map) for (const v of row) if (v > m) m = v;
+  return m || 1;
+}
+
+// Precompute feature maps
+const FEATURE_MAPS = FILTERS.map(f => convolve(IMG, f.weights));
+const POOLED_MAPS = FEATURE_MAPS.map(m => maxPool2x2(m));
+
+// --- PATH BAR ---------------------------------------------------------------
+const PATH_ITEMS = ['Input', 'Conv1', 'Pool1', 'Conv2', 'Pool2', 'Flatten', 'Output'];
+const STEP_TO_PATH = [[0],[1],[1],[2],[3,4],[5],[6]];
+
+// --- STEP DEFINITIONS -------------------------------------------------------
+const STEPS = [
+  { title: 'Input Image',        render: renderInput,      narrate: narrInput },
+  { title: 'Convolution',        render: renderConv,       narrate: narrConv },
+  { title: 'Feature Maps',       render: renderFeatures,   narrate: narrFeatures },
+  { title: 'Max Pooling',        render: renderPooling,    narrate: narrPooling },
+  { title: 'Conv2 + Pool2',      render: renderConv2,      narrate: narrConv2 },
+  { title: 'Flatten + Dense',    render: renderFlatten,    narrate: narrFlatten },
+  { title: 'Classification',     render: renderOutput,     narrate: narrOutput },
+];
+
+let step = 0;
+let animTimers = [];
+
+function clearAnims() { animTimers.forEach(t => clearTimeout(t)); animTimers = []; }
+function schedAnim(fn, delay) { animTimers.push(setTimeout(fn, delay)); }
+
+function goStep(s) {
+  clearAnims();
+  step = Math.max(0, Math.min(STEPS.length - 1, s));
+  renderAll();
+}
+
+function renderAll() {
+  renderStepBar();
+  renderPathBar();
+  STEPS[step].render();
+  document.getElementById('sidePanel').innerHTML = STEPS[step].narrate();
+  document.getElementById('btnBack').disabled = step === 0;
+  document.getElementById('btnNext').disabled = step === STEPS.length - 1;
+}
+
+function renderStepBar() {
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = STEPS.map((s, i) => {
+    const cls = i === step ? 'active' : i < step ? 'done' : '';
+    return `<div class="step-dot ${cls}" onclick="goStep(${i})" title="${s.title}"></div>`;
+  }).join('');
+  document.getElementById('stepTitle').innerHTML = `<strong>Step ${step + 1}/${STEPS.length}</strong>  ${STEPS[step].title}`;
+}
+
+function renderPathBar() {
+  let el = document.getElementById('pathBar');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'pathBar';
+    el.className = 'path-bar';
+    document.getElementById('stepTitle').after(el);
+  }
+  const active = STEP_TO_PATH[step];
+  el.innerHTML = PATH_ITEMS.map((name, i) => {
+    const cls = active.includes(i) ? 'path-pill active' : 'path-pill';
+    const sep = i < PATH_ITEMS.length - 1 ? '<span class="path-sep">&rarr;</span>' : '';
+    return `<span class="${cls}">${name}</span>${sep}`;
+  }).join('');
+}
+
+// --- VISUAL HELPERS ---------------------------------------------------------
+function pixelBg(value) {
+  if (value < 10) return 'var(--gridline)';
+  const a = 0.12 + (value / 255) * 0.78;
+  return `rgba(var(--blue-r),var(--blue-g),var(--blue-b),${a})`;
+}
+
+function cellBg(value) {
+  const t = Math.max(-1, Math.min(1, value));
+  const a = Math.abs(t) * 0.45;
+  if (t < 0) return `rgba(var(--blue-r),var(--blue-g),var(--blue-b),${a})`;
+  return `rgba(var(--orange-r),var(--orange-g),var(--orange-b),${a})`;
+}
+
+function featureBg(value, mx) {
+  if (mx === 0) return 'var(--gridline)';
+  const t = Math.min(1, value / mx);
+  if (t < 0.02) return 'var(--gridline)';
+  const a = 0.1 + t * 0.75;
+  return `rgba(var(--orange-r),var(--orange-g),var(--orange-b),${a})`;
+}
+
+function renderGrid(data, cellSize, colorFn, id) {
+  const rows = data.length, cols = data[0].length;
+  let cells = '';
+  for (let i = 0; i < rows; i++)
+    for (let j = 0; j < cols; j++)
+      cells += `<div class="grid-cell" style="width:${cellSize}px;height:${cellSize}px;background:${colorFn(data[i][j])}" data-r="${i}" data-c="${j}"></div>`;
+  return `<div class="pixel-grid" ${id ? `id="${id}"` : ''} style="grid-template-columns:repeat(${cols},${cellSize}px)">${cells}</div>`;
+}
+
+function renderFilterWeights(filter) {
+  let cells = '';
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++) {
+      const v = filter[i][j];
+      cells += `<div class="filter-cell" style="background:${cellBg(v)}">${v >= 0 ? '+' : ''}${v}</div>`;
+    }
+  return `<div class="filter-box">${cells}</div>`;
+}
+
+function renderFeatureMap(data, cellSize, label, color) {
+  const mx = mapMax(data);
+  const grid = renderGrid(data, cellSize, v => featureBg(v, mx));
+  const lbl = label ? `<div class="feature-label" style="color:${color || 'var(--muted)'}">${label}</div>` : '';
+  return `<div style="display:flex;flex-direction:column;align-items:center">${lbl}${grid}</div>`;
+}
+
+// --- RENDER: STEP 1 (Input Image) ------------------------------------------
+function renderInput() {
+  const grid = renderGrid(IMG, 24, pixelBg, 'inputGrid');
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Handwritten digit: "7"</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">12&times;12 pixels, grayscale 0&ndash;255</div>
+    ${grid}
+    <div class="predict-label" style="margin-top:16px;">
+      Goal: classify this image as a digit <strong>0&ndash;9</strong>
+    </div>
+    <div style="margin-top:16px;color:var(--muted);font-size:13px;text-align:center;max-width:400px;line-height:1.6;">
+      A CNN processes the image through layers of filters and pooling to extract features, then classifies the result.
+    </div>
+  </div>`;
+}
+
+// --- RENDER: STEP 2 (Convolution) ------------------------------------------
+function renderConv() {
+  const cellSz = 22;
+  const gap = 1;
+  const gridPx = 12 * cellSz + 11 * gap;
+  const filterPx = 3 * cellSz + 2 * gap;
+
+  const positions = [[0,0],[0,4],[1,6],[4,4],[7,3]];
+  const demoPos = positions[positions.length - 1];
+
+  const grid = renderGrid(IMG, cellSz, pixelBg, 'convGrid');
+  const fm = FEATURE_MAPS[1];
+  const fmGrid = renderFeatureMap(fm, 20, 'Output: 10x10 feature map', 'var(--orange)');
+
+  let patchCells = '';
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++) {
+      const v = IMG[demoPos[0]+i][demoPos[1]+j];
+      const n = (v / 255).toFixed(2);
+      patchCells += `<div class="filter-cell" style="background:${pixelBg(v)};font-size:10px;">${n}</div>`;
+    }
+
+  let sum = 0;
+  const fw = FILTERS[1].weights;
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++)
+      sum += (IMG[demoPos[0]+i][demoPos[1]+j] / 255) * fw[i][j];
+  const result = Math.max(0, sum).toFixed(2);
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">A 3&times;3 filter slides across the image</div>
+    <div class="grid-wrap" id="convWrap">
+      ${grid}
+      <div class="filter-overlay" id="filterOverlay" style="width:${filterPx}px;height:${filterPx}px;top:0;left:0;"></div>
+    </div>
+
+    <div class="tensor-op-flow" style="margin-top:12px;">
+      <div class="tensor-operand">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;">Patch (row ${demoPos[0]}, col ${demoPos[1]})</div>
+        <div class="filter-box">${patchCells}</div>
+        <span class="shape-badge mat">[3x3]</span>
+      </div>
+      <div class="tensor-op-sym">&odot;</div>
+      <div class="tensor-operand">
+        <div style="font-size:10px;color:var(--orange);font-weight:600;">Vertical Edge Filter</div>
+        ${renderFilterWeights(fw)}
+        <span class="shape-badge mat">[3x3]</span>
+      </div>
+      <div class="tensor-eq">=</div>
+      <div class="tensor-operand">
+        <div style="font-size:10px;color:var(--blue);font-weight:600;">sum &rarr; ReLU</div>
+        <div style="font-size:22px;font-weight:700;color:var(--blue);padding:8px 16px;">${result}</div>
+        <span class="shape-badge vec">[scalar]</span>
+      </div>
+    </div>
+
+    <div class="flow-arrow">&darr;</div>
+    <div id="fmReveal" style="opacity:0;transition:opacity 0.5s;">${fmGrid}</div>
+  </div>`;
+
+  let posIdx = 0;
+  function moveFilter() {
+    const overlay = document.getElementById('filterOverlay');
+    if (!overlay) return;
+    const p = positions[posIdx];
+    overlay.style.top = (p[0] * (cellSz + gap)) + 'px';
+    overlay.style.left = (p[1] * (cellSz + gap)) + 'px';
+    posIdx++;
+    if (posIdx < positions.length) schedAnim(moveFilter, 600);
+    else schedAnim(() => {
+      const reveal = document.getElementById('fmReveal');
+      if (reveal) reveal.style.opacity = '1';
+    }, 400);
+  }
+  schedAnim(moveFilter, 300);
+}
+
+// --- RENDER: STEP 3 (Feature Maps) ----------------------------------------
+function renderFeatures() {
+  const filterCards = FILTERS.map((f, i) => `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="feature-label" style="color:${f.color}">${f.name}</div>
+      ${renderFilterWeights(f.weights)}
+    </div>`).join('');
+
+  const maps = FILTERS.map((f, i) =>
+    renderFeatureMap(FEATURE_MAPS[i], 14, f.name, f.color)
+  ).join('<div style="width:8px"></div>');
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">4 different filters, 4 different feature maps</div>
+    <div class="flow-row" style="gap:16px;">${filterCards}</div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-row" style="gap:4px;overflow-x:auto;width:100%;justify-content:center;">${maps}</div>
+    <div style="margin-top:8px;font-size:12px;color:var(--muted);text-align:center;">
+      Each 10&times;10 map highlights where a specific pattern was detected
+    </div>
+  </div>`;
+}
+
+// --- RENDER: STEP 4 (Max Pooling) ------------------------------------------
+function renderPooling() {
+  const mapIdx = 1;
+  const fm = FEATURE_MAPS[mapIdx];
+  const mx = mapMax(fm);
+  const cellSz = 24;
+  const gap = 1;
+  const pooled = POOLED_MAPS[mapIdx];
+
+  const grid = renderGrid(fm, cellSz, v => featureBg(v, mx), 'poolGrid');
+  const poolGrid = renderFeatureMap(pooled, 36, 'Pooled: 5x5', 'var(--orange)');
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">Max Pooling: take the maximum of each 2&times;2 region</div>
+    <div class="flow-row" style="gap:24px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="feature-label" style="color:var(--orange)">Feature Map (10&times;10)</div>
+        <div class="grid-wrap" id="poolWrap">
+          ${grid}
+          <div class="pool-overlay" id="poolOverlay" style="width:${2*cellSz+gap}px;height:${2*cellSz+gap}px;top:0;left:0;"></div>
+        </div>
+      </div>
+      <div class="flow-arrow" style="font-size:28px;margin-top:60px;">&rarr;</div>
+      <div id="poolResult" style="opacity:0;transition:opacity 0.5s;margin-top:30px;">${poolGrid}</div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--secondary);text-align:center;max-width:420px;line-height:1.6;">
+      Each 2&times;2 block &rarr; keep the <strong>maximum</strong> value. The map shrinks from 10&times;10 to 5&times;5, keeping the strongest activations.
+    </div>
+  </div>`;
+
+  const poolPositions = [[0,0],[0,2],[0,4],[2,2],[4,4],[4,6],[6,4],[8,8]];
+  let posIdx = 0;
+  function movePool() {
+    const overlay = document.getElementById('poolOverlay');
+    if (!overlay) return;
+    const p = poolPositions[posIdx];
+    overlay.style.top = (p[0] * (cellSz + gap)) + 'px';
+    overlay.style.left = (p[1] * (cellSz + gap)) + 'px';
+    posIdx++;
+    if (posIdx < poolPositions.length) schedAnim(movePool, 400);
+    else schedAnim(() => {
+      const r = document.getElementById('poolResult');
+      if (r) r.style.opacity = '1';
+    }, 300);
+  }
+  schedAnim(movePool, 300);
+}
+
+// --- RENDER: STEP 5 (Conv2 + Pool2) ---------------------------------------
+function renderConv2() {
+  const pooledViz = FILTERS.map((f, i) =>
+    renderFeatureMap(POOLED_MAPS[i], 20, `Ch ${i+1}`, f.color)
+  ).join('<div style="width:4px"></div>');
+
+  const conv2Viz = CONV2_MAPS.map((m, i) =>
+    renderFeatureMap(m, 30, `Feature ${i+1}`, FILTERS[i].color)
+  ).join('<div style="width:8px"></div>');
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">Deeper layers detect higher-level patterns</div>
+    <div class="flow-row" style="gap:4px;">${pooledViz}</div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);">4 pooled maps (5&times;5)</div>
+    <div class="flow-arrow">&darr; Conv2 (3&times;3 filters)</div>
+    <div class="flow-row" style="gap:8px;">${conv2Viz}</div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);">4 feature maps (3&times;3)</div>
+    <div style="margin-top:12px;font-size:12px;color:var(--secondary);text-align:center;max-width:420px;line-height:1.6;">
+      Conv2 combines patterns from <strong>all</strong> input channels. Each new filter looks at combinations of edges to detect shapes like angles, curves, and intersections.
+    </div>
+  </div>`;
+}
+
+// --- RENDER: STEP 6 (Flatten + Dense) --------------------------------------
+function renderFlatten() {
+  const allVals = [];
+  for (const m of CONV2_MAPS) for (const row of m) for (const v of row) allVals.push(v);
+
+  const flatCells = allVals.map(v => {
+    const a = 0.1 + Math.min(1, v) * 0.7;
+    const bg = v > 0.02
+      ? `rgba(var(--orange-r),var(--orange-g),var(--orange-b),${a})`
+      : 'var(--gridline)';
+    return `<div class="flatten-cell" style="background:${bg}"></div>`;
+  }).join('');
+
+  const denseNodes = Array.from({length: 10}, (_, i) => {
+    const cls = i === 7 ? 'dense-node winner' : 'dense-node';
+    return `<div class="${cls}">${i}</div>`;
+  }).join('');
+
+  const mapsViz = CONV2_MAPS.map((m, i) =>
+    renderFeatureMap(m, 22, '', FILTERS[i].color)
+  ).join('<div style="width:4px"></div>');
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">Flatten 2D maps into a 1D vector, then classify</div>
+
+    <div class="flow-row" style="gap:4px;">${mapsViz}</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;">4 &times; 3&times;3 = 36 values</div>
+
+    <div class="flow-arrow">&darr; Flatten</div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:500px;">${flatCells}</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;">36-element vector</div>
+
+    <div class="flow-arrow">&darr; Dense layer (36 &rarr; 10)</div>
+
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">${denseNodes}</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">10 output neurons (one per digit)</div>
+  </div>`;
+}
+
+// --- RENDER: STEP 7 (Classification) ---------------------------------------
+function renderOutput() {
+  const maxProb = Math.max(...PREDICTIONS.map(p => p.prob));
+  const bars = PREDICTIONS.map(p => {
+    const isTop = p.prob === maxProb;
+    const width = maxProb > 0 ? (p.prob / maxProb * 100).toFixed(0) : 0;
+    const cls = isTop ? 'prob-row prob-highlight' : 'prob-row';
+    const barColor = isTop ? 'var(--blue)' : 'var(--muted)';
+    return `<div class="${cls}">
+      <div class="prob-word">${p.digit}</div>
+      <div class="prob-bar-bg"><div class="prob-bar" style="width:${width}%;background:${barColor}"></div></div>
+      <div class="prob-val">${(p.prob * 100).toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+
+  const denseNodes = Array.from({length: 10}, (_, i) => {
+    const cls = i === 7 ? 'dense-node winner' : 'dense-node';
+    return `<div class="${cls}">${i}</div>`;
+  }).join('');
+
+  document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
+    <div class="flow-label">Softmax &rarr; probability for each digit</div>
+
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">${denseNodes}</div>
+
+    <div class="flow-arrow">&darr; Softmax</div>
+
+    <div style="width:100%;max-width:380px;margin-top:8px;">${bars}</div>
+
+    <div class="predict-label" style="margin-top:16px;">
+      Prediction: <strong>"7"</strong> with 92% confidence
+    </div>
+
+    <div style="margin-top:16px;text-align:center;">
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;max-width:400px;">
+        The CNN correctly identifies the handwritten digit. During training, backpropagation adjusts
+        <strong>all</strong> filter weights and dense layer weights to minimize classification error.
+      </div>
+    </div>
+  </div>`;
+}
+
+// --- NARRATIONS -------------------------------------------------------------
+function narrInput() {
+  return `
+    <div class="narration">
+      <strong>The input:</strong> a grayscale image of a handwritten digit.
+      Each pixel is a number from 0 (background) to 255 (full intensity).
+      The CNN must decide which digit (0&ndash;9) it represents.
+    </div>
+    <div class="card">
+      <h3>What you will see</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        This image of a <strong>"7"</strong> flows through a CNN step by step:
+        convolution, pooling, more convolution, flattening, and finally classification.
+      </div>
+    </div>
+    <div class="narration">
+      Unlike a fully-connected network that treats every pixel independently,
+      a CNN exploits <strong>spatial structure</strong> &mdash; nearby pixels matter more
+      than distant ones. This is why CNNs dominate image tasks.
+    </div>
+    <div class="narration">
+      <div class="scale-note"><strong>Scale:</strong> MNIST uses 28&times;28 images.
+      LeNet (1989) used 32&times;32. ImageNet models process 224&times;224 with millions of parameters.
+      Here: 12&times;12 for clarity.</div>
+    </div>`;
+}
+
+function narrConv() {
+  return `
+    <div class="narration">
+      <strong>Convolution:</strong> a small filter (3&times;3) slides across the image.
+      At each position, it computes a weighted sum of the overlapping pixels.
+      The result is one value in the output <strong>feature map</strong>.
+    </div>
+    <div class="card">
+      <h3>How it works</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        1. Place the 3&times;3 filter over a patch of the image<br>
+        2. Multiply each pixel by the corresponding filter weight<br>
+        3. Sum all 9 products &rarr; one output value<br>
+        4. Apply ReLU (keep positive, zero out negative)<br>
+        5. Slide to the next position and repeat
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Formula</h3>
+      <div class="formula">
+        out[i,j] <span class="op">=</span> ReLU(&sum; input[i+r, j+c] &times; filter[r,c])
+      </div>
+      <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
+        12&times;12 input with 3&times;3 filter &rarr; 10&times;10 output
+      </div>
+    </div>
+    <div class="narration">
+      The filter shown here detects <strong>vertical edges</strong>: it responds strongly
+      where the image transitions from dark to light horizontally.
+      <div class="scale-note">The network <strong>learns</strong> the filter weights during training.
+      These are not hand-designed.</div>
+    </div>`;
+}
+
+function narrFeatures() {
+  return `
+    <div class="narration">
+      <strong>Multiple filters</strong> capture different features.
+      Each filter produces its own feature map, highlighting where
+      a specific pattern appears in the input.
+    </div>
+    <div class="card">
+      <h3>What each filter detects</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong style="color:var(--blue)">Horizontal edge</strong> &mdash; top bar of the 7<br>
+        <strong style="color:var(--orange)">Vertical edge</strong> &mdash; stem of the 7<br>
+        <strong style="color:var(--aqua)">Diagonal</strong> &mdash; slanted strokes<br>
+        <strong style="color:var(--violet)">Corner</strong> &mdash; where edges meet<br><br>
+        Together, the 4 maps form a <strong>multi-channel representation</strong> of the image.
+      </div>
+    </div>
+    <div class="narration">
+      In training, gradient descent adjusts filter weights to minimize classification error.
+      The network discovers which patterns are most useful on its own.
+      <div class="scale-note">LeNet: 6 filters in Conv1, 16 in Conv2.
+      Modern CNNs: 64&ndash;512 filters per layer.</div>
+    </div>`;
+}
+
+function narrPooling() {
+  return `
+    <div class="narration">
+      <strong>Max pooling</strong> reduces the spatial size of each feature map.
+      A 2&times;2 window slides across the map (stride 2), keeping only the
+      <strong>maximum</strong> value in each region.
+    </div>
+    <div class="card">
+      <h3>Why pool?</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong>Reduces size:</strong> 10&times;10 &rarr; 5&times;5 (4&times; fewer values)<br><br>
+        <strong>Translation invariance:</strong> if the digit shifts by a pixel,
+        the same max is often selected, making the network robust to small shifts.<br><br>
+        <strong>Fewer parameters:</strong> smaller maps mean fewer weights in later layers.
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Formula</h3>
+      <div class="formula">
+        out[i,j] <span class="op">=</span> max(in[2i..2i+1, 2j..2j+1])
+      </div>
+    </div>`;
+}
+
+function narrConv2() {
+  return `
+    <div class="narration">
+      <strong>Deeper layers</strong> detect higher-level patterns.
+      Conv1 found edges; Conv2 finds <strong>combinations of edges</strong> &mdash;
+      corners, curves, junctions.
+    </div>
+    <div class="card">
+      <h3>Building a hierarchy</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        <strong>Layer 1:</strong> edges, gradients<br>
+        <strong>Layer 2:</strong> corners, simple shapes<br>
+        <strong>Layer 3+:</strong> parts, objects<br><br>
+        Each Conv2 filter spans <strong>all input channels</strong>, combining
+        information from every Conv1 filter. A 3&times;3&times;4 filter on a
+        5&times;5 input produces a 3&times;3 output.
+      </div>
+    </div>
+    <div class="narration">
+      In deeper networks (VGG, ResNet), this hierarchy continues for
+      dozens of layers, learning increasingly abstract representations.
+      <div class="scale-note">ResNet-50: 50 layers, 25M parameters.
+      LeNet: 2 conv layers, ~60K parameters.</div>
+    </div>`;
+}
+
+function narrFlatten() {
+  return `
+    <div class="narration">
+      <strong>Flatten:</strong> the 2D feature maps are unrolled into a single 1D vector.
+      4 maps of 3&times;3 = <strong>36 values</strong>.
+    </div>
+    <div class="card">
+      <h3>From spatial to semantic</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        The convolutional layers extracted <strong>where</strong> patterns occur.
+        The dense (fully connected) layer learns <strong>which combinations</strong>
+        of features correspond to which digit.<br><br>
+        Every one of the 36 input values connects to each of the 10 output neurons:
+        36 &times; 10 = 360 weights + 10 biases.
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Dense layer</h3>
+      <div class="formula">y <span class="op">=</span> W &middot; x <span class="op">+</span> b</div>
+      <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
+        W: <span class="shape-badge mat">[10x36]</span> &nbsp;
+        x: <span class="shape-badge vec">[36x1]</span> &nbsp;
+        b: <span class="shape-badge vec">[10x1]</span>
+      </div>
+    </div>`;
+}
+
+function narrOutput() {
+  return `
+    <div class="narration">
+      <strong>Softmax</strong> converts the 10 raw output values into probabilities
+      that sum to 1. The highest probability is the network's prediction.
+    </div>
+    <div class="card">
+      <h3>The prediction</h3>
+      <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
+        The CNN predicts <strong style="color:var(--blue)">"7"</strong> with 92% confidence.
+        The small remaining probability is spread across similar-looking digits
+        (1, 2) &mdash; digits with similar strokes.<br><br>
+        During training, the network sees thousands of labeled examples. Backpropagation
+        adjusts <strong>every weight</strong> &mdash; filter weights, dense layer weights,
+        biases &mdash; to minimize the cross-entropy loss.
+      </div>
+    </div>
+    <div class="formula-card">
+      <h3>Softmax</h3>
+      <div class="formula">
+        P(digit=k) <span class="op">=</span> e<sup>z<sub>k</sub></sup> <span class="op">/</span> &sum; e<sup>z<sub>j</sub></sup>
+      </div>
+      <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
+        Ensures all probabilities are positive and sum to 1.
+      </div>
+    </div>
+    <div class="narration">
+      <strong>LeNet's impact:</strong> in the 1990s, LeNet read ~10% of all handwritten
+      checks in the US. Today, CNNs power face recognition, medical imaging, self-driving
+      cars, and much more.
+      <div class="scale-note">LeNet: ~60K params, 2 conv layers.
+      Modern image models: 100M+ params, 100+ layers.</div>
+    </div>`;
+}
+
+// --- INIT ------------------------------------------------------------------
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); goStep(step + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(step - 1); }
+  if (e.key === 'Escape') { e.preventDefault(); goStep(0); }
+});
+
+renderAll();
+
+(function(){
+  const KEY = 'intro-dismissed-cnn';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

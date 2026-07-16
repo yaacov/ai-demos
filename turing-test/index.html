@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turing Test — Interactive Simulation</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --red:            #c03030;
+    --good:           #0ca30c;
+    --critical:       #d03b3b;
+    --metal-light:    #d4d4d0;
+    --metal-mid:      #a8a8a2;
+    --metal-dark:     #6e6e68;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+    --head-accent:    #b08030;
+    --state-active:   #2a78d6;
+    --judge-bg:       #f4f0e0;
+    --human-accent:   #2a78d6;
+    --machine-accent: #c03030;
+    --highlight-bg:   rgba(192,48,48,0.12);
+    --highlight-border:#c03030;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #5a9ae8;
+      --red:          #d04040;
+      --good:         #30a030;
+      --critical:     #d04040;
+      --metal-light:  #55554f;
+      --metal-mid:    #3e3e39;
+      --metal-dark:   #2a2a26;
+      --card-bg:      #1e1e1a;
+      --card-border:  #3a3832;
+      --narration-bg: #1e1e1a;
+      --narration-border:#3a3832;
+      --head-accent:  #c89040;
+      --state-active: #5a9ae8;
+      --judge-bg:     #1e1e1a;
+      --human-accent: #5a9ae8;
+      --machine-accent:#d04040;
+      --highlight-bg: rgba(208,64,64,0.15);
+      --highlight-border:#d04040;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px;
+  }
+
+  .nav-bar {
+    width: 100%; max-width: 1060px; display: flex; gap: 4px; margin-bottom: 6px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0; }
+  .subtitle { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.02em; margin-bottom: 4px; }
+  .container { width: 100%; max-width: 1060px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+
+  .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .algo-bar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); margin-right: 4px; }
+  .algo-btn {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
+  }
+  .algo-btn:hover { border-color: var(--baseline); color: var(--primary); }
+  .algo-btn.selected { background: var(--primary); color: var(--page); border-color: var(--primary); }
+
+  .chat-row { display: flex; gap: 10px; align-items: stretch; flex: 1; min-height: 0; overflow: hidden; }
+  @media (max-width: 740px) { .chat-row { flex-direction: column; } }
+  .chat-panel {
+    flex: 1; min-width: 0; min-height: 0; background: var(--surface); border: 2px solid var(--gridline);
+    border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .chat-panel.revealed-human { border-color: var(--human-accent); }
+  .chat-panel.revealed-machine { border-color: var(--machine-accent); }
+  .chat-label {
+    background: var(--metal-dark); color: var(--metal-light); padding: 5px 12px;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+    text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .chat-label .reveal-tag {
+    font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; font-weight: 700;
+    letter-spacing: 0.04em; display: none;
+  }
+  .chat-label .reveal-tag.human { background: var(--human-accent); color: #fff; display: inline-block; }
+  .chat-label .reveal-tag.machine { background: var(--machine-accent); color: #fff; display: inline-block; }
+  .chat-body {
+    padding: 8px; display: flex; flex-direction: column; gap: 6px;
+    overflow-y: auto; flex: 1; min-height: 0;
+  }
+
+  .msg { display: flex; flex-direction: column; gap: 1px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg-sender {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--muted); padding: 0 4px;
+  }
+  .msg-bubble {
+    padding: 7px 10px; border-radius: 8px; font-size: 0.78rem; line-height: 1.5;
+    max-width: 95%; position: relative;
+  }
+  .msg.judge .msg-bubble {
+    background: var(--judge-bg); border: 1px solid var(--gridline);
+    color: var(--primary); align-self: flex-start;
+  }
+  .msg.entity .msg-bubble {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--secondary); align-self: flex-end;
+  }
+  .msg.judge .msg-sender { color: var(--head-accent); }
+
+  .telltale {
+    background: transparent; border-bottom: 2px solid transparent;
+    transition: background 0.4s, border-color 0.4s; padding: 0 1px; border-radius: 2px;
+  }
+  .telltale.revealed {
+    background: var(--highlight-bg);
+    border-bottom-color: var(--highlight-border);
+  }
+  .telltale-tip {
+    display: none; font-size: 0.6rem; color: var(--machine-accent); font-weight: 600;
+    font-style: italic; margin-top: 2px; padding-left: 4px;
+  }
+  .telltale-tip.revealed { display: block; }
+
+  .controls-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-inline-start: auto; }
+  .ctrl-btn {
+    font-family: inherit; font-size: 0.75rem; font-weight: 600; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--metal-mid); background: linear-gradient(180deg, var(--metal-light) 0%, var(--metal-mid) 100%);
+    color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s; letter-spacing: 0.02em;
+  }
+  .ctrl-btn:hover { filter: brightness(1.05); }
+  .ctrl-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); transform: translateY(1px); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .step-counter { font-size: 0.7rem; color: var(--muted); margin: 0 4px; }
+
+  .judge-panel {
+    background: var(--surface); border: 2px solid var(--gridline); border-radius: 6px;
+    padding: 8px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .judge-panel.decided { border-color: var(--head-accent); }
+  .judge-title {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .judge-prompt { font-size: 0.88rem; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
+  .judge-buttons { display: flex; gap: 8px; justify-content: center; margin-bottom: 4px; }
+  .guess-btn {
+    font-family: inherit; font-size: 0.82rem; font-weight: 700; padding: 6px 20px;
+    border-radius: 4px; border: 2px solid var(--gridline); background: var(--surface);
+    color: var(--primary); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+  }
+  .guess-btn:hover { border-color: var(--state-active); background: color-mix(in srgb, var(--state-active) 8%, var(--surface)); }
+  .guess-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .guess-btn.correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--surface)); color: var(--good); }
+  .guess-btn.wrong { border-color: var(--critical); background: color-mix(in srgb, var(--critical) 12%, var(--surface)); color: var(--critical); }
+  .judge-result {
+    font-size: 0.78rem; font-weight: 600; margin-top: 4px; padding: 6px 10px;
+    border-radius: 4px; display: none;
+  }
+  .judge-result.correct {
+    display: block; background: color-mix(in srgb, var(--good) 10%, var(--surface));
+    color: var(--good); border: 1px solid var(--good);
+  }
+  .judge-result.wrong {
+    display: block; background: color-mix(in srgb, var(--critical) 10%, var(--surface));
+    color: var(--critical); border: 1px solid var(--critical);
+  }
+  .judge-waiting { font-size: 0.75rem; color: var(--muted); font-style: italic; }
+
+  .scorecard {
+    background: var(--narration-bg); border: 1px solid var(--narration-border); border-radius: 6px;
+    padding: 6px 10px; display: none; flex-shrink: 0; max-height: 80px; overflow-y: auto;
+  }
+  .scorecard.visible { display: block; }
+  .scorecard-title {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--muted); margin-bottom: 3px;
+  }
+  .scorecard-list { list-style: none; padding: 0; }
+  .scorecard-list li {
+    padding: 2px 0; font-size: 0.72rem; color: var(--secondary); line-height: 1.4;
+    border-bottom: 1px solid var(--narration-border); display: flex; align-items: baseline; gap: 4px;
+  }
+  .scorecard-list li:last-child { border-bottom: none; }
+  .scorecard-marker {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--machine-accent); flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
+.intro-card {
+  background: var(--surface); border: 1px solid var(--gridline);
+  border-radius: 16px; max-width: 560px; width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+.intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card li { margin-bottom: 4px; }
+.intro-start {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.intro-start:hover { filter: brightness(1.15); }
+.intro-reopen {
+  display: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  line-height: 18px; text-align: center; margin-left: auto;
+}
+.intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+.intro-wiki {
+  display: inline-block; margin-bottom: 16px;
+  color: var(--blue); font-size: 13px; text-decoration: none;
+}
+.intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>The Turing Test</h2>
+    <p>In 1950, Alan Turing asked: "Can machines think?" Rather than debate philosophy, he proposed a practical test: a human judge converses with two hidden entities — one human, one machine — through text only. If the judge can't reliably tell which is which, the machine passes the test.</p>
+    <p>This interactive simulation puts you in the judge's seat. You'll read parallel conversations and try to identify which entity is the machine.</p>
+    <ul>
+      <li>Read exchanges from two conversations side by side</li>
+      <li>Look for telltale signs — hover over highlights for clues</li>
+      <li>Make your verdict: which conversation is the machine?</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Turing_test" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+  <nav class="nav-bar">
+    <a class="nav-link" href="../timeline/index.html">Timeline</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link active">Turing Test</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../cnn/index.html">CNN</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../transformer/index.html">Transformer</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../chat/index.html">Chat</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+    <button class="intro-reopen" title="About this demo">?</button>
+  </nav>
+  <h1>Turing Test</h1>
+  <p class="subtitle">Can a machine fool a human judge? Review the conversation and decide.</p>
+
+  <div class="container">
+    <div class="algo-bar">
+      <span class="algo-bar-label">Scenario:</span>
+      <span id="scenario-row"></span>
+      <div class="controls-bar">
+        <button class="ctrl-btn" id="step-btn" onclick="step()">Next Exchange</button>
+        <span class="step-counter" id="step-counter">0 / 0 exchanges</span>
+        <button class="ctrl-btn" id="reset-btn" onclick="reset()">Reset</button>
+      </div>
+    </div>
+
+    <div class="chat-row">
+      <div class="chat-panel" id="panel-a">
+        <div class="chat-label">
+          <span>Conversation A</span>
+          <span class="reveal-tag" id="reveal-a"></span>
+        </div>
+        <div class="chat-body" id="chat-a"></div>
+      </div>
+      <div class="chat-panel" id="panel-b">
+        <div class="chat-label">
+          <span>Conversation B</span>
+          <span class="reveal-tag" id="reveal-b"></span>
+        </div>
+        <div class="chat-body" id="chat-b"></div>
+      </div>
+    </div>
+
+    <div class="judge-panel" id="judge-panel">
+      <div class="judge-title">JUDGE'S VERDICT</div>
+      <div id="judge-content">
+        <div class="judge-waiting">First go through all the exchanges...</div>
+      </div>
+    </div>
+
+    <div class="scorecard" id="scorecard">
+      <div class="scorecard-title">TELLTALE SIGNS — WHAT EXPOSED THE MACHINE?</div>
+      <ul class="scorecard-list" id="scorecard-list"></ul>
+    </div>
+
+  </div>
+
+<script>
+const SCENARIOS = {
+  'Favorite Book': {
+    description: 'The judge asks about a favorite book and why',
+    machineIs: 'B',
+    exchanges: [
+      {
+        judge: "What is your favorite book, and why?",
+        human: "Oof, probably 'Infiltration' by Yehoshua Kenaz? I read it during my army service and just couldn't stop. It starts out so quiet and boring and then suddenly boom, you realize it's the saddest thing you've ever read. I've gone back to it three times since and each time I discover something new.",
+        machine: "Great question! My favorite book is '1984' by George Orwell. Here are the main reasons: 1) It explores important themes like totalitarianism and surveillance. 2) Its themes are relevant today as well. 3) The characters are deep and complex. I'd be happy to elaborate on any of these points if you'd like!",
+        telltales: [
+          { text: "Great question!", tip: "Typical chatbot opener — no human compliments a question in normal conversation" },
+          { text: "Here are the main reasons: 1)", tip: "Numbered list — humans don't number the reasons they love a book" },
+          { text: "I'd be happy to elaborate on any of these points if you'd like!", tip: "Service offer — a machine waiting for instructions, not a person in conversation" },
+        ],
+      },
+      {
+        judge: "What part stayed with you the longest?",
+        human: "There's a scene where the main character is sitting in a cafe watching people and suddenly you realize he's completely alone in the world. Just one line, something really simple, but I swear I think about it every time I sit alone in a cafe. Yehoshua Kenaz did something to me with that scene.",
+        machine: "The part that stayed with me the longest is undoubtedly the concept of 'doublethink.' Doublethink is the ability to hold two contradictory beliefs simultaneously. Doublethink illustrates how people can be controlled through language. Additionally, the scene where Winston reads Goldstein's book is of great importance for understanding the mechanisms of power.",
+        telltales: [
+          { text: "The part that stayed with me the longest is undoubtedly", tip: "Echoes the question's phrasing exactly — a machine pattern of mirroring input" },
+          { text: "Doublethink is the ability to hold two contradictory beliefs simultaneously. Doublethink illustrates", tip: "Repeats the term 'doublethink' twice in a row — a human wouldn't repeat like that" },
+          { text: "is of great importance for understanding the mechanisms of power", tip: "Describes 'importance for understanding' instead of telling what it felt — no personal experience" },
+        ],
+      },
+      {
+        judge: "Have you ever recommended the book to someone who didn't like it?",
+        human: "Yeaah my friend Or. He was like 'what is this boring book there's no plot' and I was like okay maybe it's not for you... but it really is a shame because he missed the whole point. It's not about the plot it's about the atmosphere. But he's more of an action books kind of guy so oh well.",
+        machine: "As a language model, I don't have the ability to personally recommend books or have conversations with other people. However, I can note that reading preferences are subjective and vary from person to person. Different books suit different readers, and that's perfectly fine. Is there anything else I can help with?",
+        telltales: [
+          { text: "As a language model, I don't have the ability", tip: "Refers to itself as a 'language model' — direct exposure that it's a machine!" },
+          { text: "I can note that reading preferences are subjective and vary from person to person", tip: "Empty, trite statement instead of a story — a machine filling space" },
+          { text: "Is there anything else I can help with?", tip: "Chatbot sign-off — no human says that in conversation" },
+        ],
+      },
+      {
+        judge: "If you could meet the author, what would you say to them?",
+        human: "I'm sure I'd get all flustered and say something stupid like 'your book made me cry on the bus' haha. But seriously I'd want to ask him how he wrote something so sad without it feeling manipulative. And his sentences are insane, I'd want to know if that comes naturally to him or if he worked at it.",
+        machine: "If I had the opportunity to meet George Orwell, I would ask him the following questions: First, what were the main influences on writing the novel. Second, how he views the relevance of the book in the digital age. Third, which was his favorite character to write. It's worth noting that Orwell (whose real name was Eric Arthur Blair) passed away in 1950.",
+        telltales: [
+          { text: "I would ask him the following questions: First,", tip: "Organizes an imaginary conversation as a numbered list — no human plans a conversation like that" },
+          { text: "how he views the relevance of the book in the digital age", tip: "Template interview question — not a question a human gets excited about" },
+          { text: "It's worth noting that Orwell (whose real name was Eric Arthur Blair) passed away in 1950.", tip: "Adds an unrequested factual footnote — a machine spewing information" },
+        ],
+      },
+    ],
+    signs: [
+      "Opens answers with 'Great question!' — classic chatbot pattern",
+      "Numbers reasons in lists (1, 2, 3) instead of speaking naturally",
+      "Refers to itself as a 'language model' — reveals it's a machine",
+      "Ends with 'happy to help' and 'Is there anything else' — customer service language",
+      "Repeats words and terms mechanically ('doublethink... doublethink')",
+      "Adds facts nobody asked about (death date, real name)",
+    ],
+  },
+  'Bad Day': {
+    description: 'The judge asks about coping with a bad day',
+    machineIs: 'A',
+    exchanges: [
+      {
+        judge: "Tell me about the last time you had a really bad day.",
+        machine: "Sure! I'll tell you about a bad day I experienced. On that day, several negative events occurred: 1) I woke up late. 2) I missed an important deadline at work. 3) I had a misunderstanding with a colleague. 4) I forgot my lunch at home. Each event on its own wasn't that bad, but the combination of them made for a particularly challenging day.",
+        human: "Ugh, last Thursday. The car wouldn't start so I took an Uber to work and it cost me like forty bucks, and then my manager called me into a meeting and basically told me my presentation needs a complete rewrite by Friday. Didn't eat lunch at all from all the stress. Got home and just lay on the couch watching Netflix for three hours straight.",
+        telltales: [
+          { text: "Sure! I'll tell you about a bad day I experienced.", tip: "'Sure!' — a service response, no human says 'Sure!' when asked to talk about a bad day" },
+          { text: "1) I woke up late. 2) I missed an important deadline at work. 3) I had a misunderstanding with a colleague. 4) I forgot my lunch at home.", tip: "Numbered list of generic events — humans tell a story, not bullet points" },
+          { text: "Each event on its own wasn't that bad, but the combination of them made for a particularly challenging day.", tip: "Summarizes analytically — a human would say 'it was a crappy day' not analyze the structure of the day" },
+        ],
+      },
+      {
+        judge: "How did you feel afterwards?",
+        machine: "Good question. After the bad day, I felt a range of emotions, including: frustration, fatigue, and disappointment in myself. However, it's important to remember that bad days are a normal part of the human experience. I learned from this experience that it's important to manage time better, communicate clearly with colleagues, and prepare meals in advance. Hope the answer helped!",
+        human: "Mostly a bit embarrassed? Like I'm a grown adult and I just collapsed because of work. But my partner made me dinner without me asking, that was really sweet. The next day I already felt much better, sometimes you just need to let yourself be in a funk and then get out of it.",
+        telltales: [
+          { text: "Good question.", tip: "Again complimenting the question — recurring chatbot pattern" },
+          { text: "I felt a range of emotions, including: frustration, fatigue, and disappointment in myself.", tip: "Lists emotions with a colon — a human just says 'I felt like crap'" },
+          { text: "Hope the answer helped!", tip: "Ends like a virtual assistant — this is a conversation, not a help desk" },
+        ],
+      },
+      {
+        judge: "Do you think bad days make good days feel better?",
+        human: "Hmm I don't know if I'd go that far. Like a bad day is just bad, I'm not sitting there thinking 'at least tomorrow will feel amazing by comparison' you know? But like... yeah maybe in the long run? When I look back at really hard times it does make me appreciate when things are calm. But it's not one-to-one.",
+        machine: "That's a fascinating philosophical question! There are several ways to approach this topic. On one hand, contrast is essential for appreciation — it's hard to appreciate light without knowing darkness. On the other hand, suffering is not necessary to enjoy happiness. Research in positive psychology shows that hedonic adaptation — that is, the human tendency to settle at a fixed level of happiness — plays a central role. In summary, the answer is complex and depends on personal perspective.",
+        telltales: [
+          { text: "That's a fascinating philosophical question!", tip: "Classifies the question as 'philosophically fascinating' — a human just answers, doesn't label the question" },
+          { text: "On one hand, contrast is essential for appreciation — it's hard to appreciate light without knowing darkness. On the other hand,", tip: "'On one hand... on the other hand' pattern — essay structure, not conversation" },
+          { text: "In summary, the answer is complex and depends on personal perspective.", tip: "'In summary' — no human summarizes their own words in a regular conversation" },
+        ],
+      },
+    ],
+    signs: [
+      "Opens answers with 'Sure!', 'Good question!', 'Fascinating question!' — chatbot patterns",
+      "Numbers everything in lists (1, 2, 3, 4) instead of telling a story like a human",
+      "Ends with 'Hope that helped!' — customer service language",
+      "Uses 'On one hand... on the other hand... In summary' pattern like an essay",
+      "Lists emotions as a list ('frustration, fatigue, and disappointment') instead of describing an experience",
+      "Not a single specific detail — no names, prices, places, or real times",
+    ],
+  },
+  'Cooking': {
+    description: 'The judge asks about cooking and an unforgettable meal',
+    machineIs: 'A',
+    exchanges: [
+      {
+        judge: "Do you like to cook? What's the last thing you made?",
+        machine: "Yes, cooking is a wonderful hobby! Cooking allows for creative expression, financial savings, and control over nutritional ingredients. The last dish I made was pasta primavera. Here are the ingredients: zucchini, peppers, cherry tomatoes, fresh basil, olive oil, and penne pasta. Preparation time: approximately 30 minutes. Difficulty level: intermediate.",
+        human: "I go through phases with it. Right now I'm on a stir fry kick because it's fast and you can throw whatever's dying in the fridge into the pan haha. Yesterday I made one with chicken breast that was about to expire, one sad pepper, and half a bag of frozen broccoli. Threw in some soy sauce and garlic and it actually came out great.",
+        telltales: [
+          { text: "Cooking allows for creative expression, financial savings, and control over nutritional ingredients.", tip: "Lists benefits of cooking like an article — nobody does that when asked 'do you like to cook?'" },
+          { text: "Here are the ingredients:", tip: "'Here are the ingredients' — presents a formal recipe instead of telling what they cooked" },
+          { text: "Preparation time: approximately 30 minutes. Difficulty level: intermediate.", tip: "Adds metadata like a recipe website — no human talks like that" },
+        ],
+      },
+      {
+        judge: "What's the biggest cooking disaster you've had?",
+        machine: "My biggest cooking disaster was when I tried to make a souffle. Here's what happened: the souffle collapsed immediately upon removal from the oven. Possible causes for failure: a) Opening the oven door too frequently. b) The temperature wasn't uniform. c) The egg whites may not have been whipped enough. Key takeaway: it's important to follow baking instructions precisely. I'd be happy to share more tips for baking souffles!",
+        human: "Oh god so many. The worst is probably when I tried to fry schnitzels in a regular pot and the oil started smoking and I panicked and threw water on it?? Which is exactly what you're not supposed to do of course. There was oil everywhere, the ceiling had grease stains for months. My roommate was furious. We ordered pizza that night haha.",
+        telltales: [
+          { text: "Here's what happened:", tip: "Presents a story like an incident report — 'here's what happened' is a machine format" },
+          { text: "Possible causes for failure: a) Opening the oven door too frequently. b) The temperature wasn't uniform. c) The egg whites may not have been whipped enough.", tip: "Root cause analysis with an a-b-c list — a human would laugh at themselves, not analyze" },
+          { text: "I'd be happy to share more tips for baking souffles!", tip: "Offers 'more tips' — again customer service language, not conversation" },
+        ],
+      },
+      {
+        judge: "If you had to cook for someone you wanted to impress, what would you make?",
+        human: "Risotto probably? It looks fancy but it's actually not that hard, you just have to stand and stir for half an hour and that's annoying. I'd make mushroom risotto with good parmesan. Last time I made it for a date I put too much wine in it and also drank too much wine while cooking so that was a story in itself haha.",
+        machine: "To impress, I would recommend a 3-course menu: **First course:** Caprese salad with cherry tomatoes, fresh mozzarella, and basil. **Main course:** Pan-seared salmon with roasted asparagus and lemon-dill sauce. **Dessert:** Chocolate lava cake. This menu was chosen based on the following criteria: flavor balance, variety of textures, and aesthetic presentation. Note: the salmon can be substituted with chicken breast for those who don't like fish.",
+        telltales: [
+          { text: "I would recommend a 3-course menu: **First course:**", tip: "Organizes the response with bold headers like a guide — not how people talk" },
+          { text: "This menu was chosen based on the following criteria: flavor balance, variety of textures, and aesthetic presentation.", tip: "Justifies a choice with 'criteria' — as if submitting a proposal, not planning a meal" },
+          { text: "Note: the salmon can be substituted with chicken breast for those who don't like fish.", tip: "'Note:' — adds a footnote like in a technical document" },
+        ],
+      },
+      {
+        judge: "What's a food opinion you have that other people disagree with?",
+        human: "Hummus with hard-boiled egg is the best combo ever and I'm willing to die on this hill. Everyone acts like it's disgusting but those people just have a boring palate. And also I think tahini is overrated, it's good but you don't need to put it on everything. My friend says I have the taste of a 5-year-old so there's that.",
+        machine: "A controversial opinion I have: pineapple on pizza is a successful combination. I understand many disagree, but there are good reasons to support this position. First, the combination of sweet and salty is a recognized culinary principle. Second, many Asian cuisines combine fruits with savory dishes. Third, Hawaiian pizza (invented by Sam Panopoulos in Canada in 1962) sells millions of units annually worldwide. Fun fact: Hawaiian pizza isn't actually from Hawaii!",
+        telltales: [
+          { text: "there are good reasons to support this position. First,", tip: "Presents a food opinion as an argument with 'First, Second, Third' — a human just says 'it's delicious'" },
+          { text: "Third, Hawaiian pizza (invented by Sam Panopoulos in Canada in 1962) sells millions of units annually", tip: "Statistical data and dates in a food opinion — a search engine, not a person" },
+          { text: "Fun fact: Hawaiian pizza isn't actually from Hawaii!", tip: "'Fun fact:' — classic bot 'Did you know?' pattern" },
+        ],
+      },
+    ],
+    signs: [
+      "Organizes answers with bold headers, 'Here are', 'Note:', 'Fun fact:'",
+      "Adds metadata like a recipe website: preparation time, difficulty level, criteria",
+      "Does root cause analysis (a, b, c) on a collapsed souffle",
+      "Offers 'more tips' and 'happy to help' — chatbot language",
+      "Defends opinions with statistics and dates instead of personal taste",
+      "Never mentions mess, embarrassment, or specific people",
+    ],
+  },
+};
+
+let currentScenario = null;
+let currentName = '';
+let exchangeIndex = 0;
+let guessedMachine = null;
+let revealed = false;
+
+function selectScenario(name) {
+  currentScenario = SCENARIOS[name];
+  currentName = name;
+  document.querySelectorAll('.algo-btn').forEach(b => b.classList.toggle('selected', b.textContent === name));
+  reset();
+}
+
+function reset() {
+  exchangeIndex = 0;
+  guessedMachine = null;
+  revealed = false;
+  document.getElementById('chat-a').innerHTML = '';
+  document.getElementById('chat-b').innerHTML = '';
+  document.getElementById('panel-a').className = 'chat-panel';
+  document.getElementById('panel-b').className = 'chat-panel';
+  document.getElementById('reveal-a').className = 'reveal-tag';
+  document.getElementById('reveal-a').textContent = '';
+  document.getElementById('reveal-b').className = 'reveal-tag';
+  document.getElementById('reveal-b').textContent = '';
+  document.getElementById('judge-panel').className = 'judge-panel';
+  document.getElementById('judge-content').innerHTML = '<div class="judge-waiting">First go through all the exchanges...</div>';
+  document.getElementById('scorecard').className = 'scorecard';
+  document.getElementById('scorecard-list').innerHTML = '';
+  document.getElementById('step-btn').disabled = false;
+  updateCounter();
+  clearTelltales();
+}
+
+function updateCounter() {
+  const total = currentScenario ? currentScenario.exchanges.length : 0;
+  document.getElementById('step-counter').textContent = `${exchangeIndex} / ${total} exchanges`;
+}
+
+function addMessage(panelId, sender, text, senderLabel) {
+  const chat = document.getElementById(panelId);
+  const msg = document.createElement('div');
+  msg.className = `msg ${sender}`;
+  msg.innerHTML = `<div class="msg-sender">${senderLabel}</div><div class="msg-bubble">${text}</div>`;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function wrapTelltales(text, telltales, panelId, exIdx) {
+  if (!telltales) return text;
+  let result = text;
+  telltales.forEach((t, i) => {
+    const id = `tt-${panelId}-${exIdx}-${i}`;
+    result = result.replace(t.text,
+      `<span class="telltale" id="${id}">${t.text}</span><span class="telltale-tip" id="${id}-tip">${t.tip}</span>`
+    );
+  });
+  return result;
+}
+
+function step() {
+  if (!currentScenario || exchangeIndex >= currentScenario.exchanges.length) return;
+
+  const ex = currentScenario.exchanges[exchangeIndex];
+  const machinePanel = currentScenario.machineIs === 'A' ? 'chat-a' : 'chat-b';
+  const humanPanel = currentScenario.machineIs === 'A' ? 'chat-b' : 'chat-a';
+
+  addMessage('chat-a', 'judge', ex.judge, 'JUDGE');
+  addMessage('chat-b', 'judge', ex.judge, 'JUDGE');
+
+  const machineText = wrapTelltales(ex.machine, ex.telltales, machinePanel, exchangeIndex);
+  addMessage(machinePanel, 'entity', machineText, machinePanel === 'chat-a' ? "Entity A" : "Entity B");
+  addMessage(humanPanel, 'entity', ex.human, humanPanel === 'chat-a' ? "Entity A" : "Entity B");
+
+  exchangeIndex++;
+  updateCounter();
+
+  if (exchangeIndex >= currentScenario.exchanges.length) {
+    document.getElementById('step-btn').disabled = true;
+    showJudgePrompt();
+  }
+}
+
+function showJudgePrompt() {
+  const content = document.getElementById('judge-content');
+  content.innerHTML = `
+    <div class="judge-prompt">Which conversation is the machine?</div>
+    <div class="judge-buttons">
+      <button class="guess-btn" id="guess-a" onclick="makeGuess('A')">A is the machine</button>
+      <button class="guess-btn" id="guess-b" onclick="makeGuess('B')">B is the machine</button>
+    </div>
+    <div class="judge-result" id="judge-result"></div>
+  `;
+}
+
+function makeGuess(choice) {
+  if (guessedMachine) return;
+  guessedMachine = choice;
+  revealed = true;
+
+  const correct = choice === currentScenario.machineIs;
+  const resultEl = document.getElementById('judge-result');
+  const guessAEl = document.getElementById('guess-a');
+  const guessBEl = document.getElementById('guess-b');
+  const label = currentScenario.machineIs;
+
+  document.getElementById('judge-panel').className = 'judge-panel decided';
+
+  if (correct) {
+    resultEl.className = 'judge-result correct';
+    resultEl.textContent = `Correct! Conversation ${label} is the machine. You saw through the imitation.`;
+  } else {
+    resultEl.className = 'judge-result wrong';
+    resultEl.textContent = `Not quite! Conversation ${label} is actually the machine. It fooled you — the machine passes the Turing Test (against you)!`;
+  }
+
+  if (currentScenario.machineIs === 'A') {
+    guessAEl.className = 'guess-btn correct';
+    guessBEl.className = 'guess-btn' + (choice === 'B' ? ' wrong' : '');
+  } else {
+    guessBEl.className = 'guess-btn correct';
+    guessAEl.className = 'guess-btn' + (choice === 'A' ? ' wrong' : '');
+  }
+  guessAEl.disabled = true;
+  guessBEl.disabled = true;
+
+  const machinePanel = currentScenario.machineIs === 'A' ? 'A' : 'B';
+  const humanPanel = currentScenario.machineIs === 'A' ? 'B' : 'A';
+
+  document.getElementById(`panel-${machinePanel.toLowerCase()}`).className = 'chat-panel revealed-machine';
+  document.getElementById(`panel-${humanPanel.toLowerCase()}`).className = 'chat-panel revealed-human';
+
+  const revealMachine = document.getElementById(`reveal-${machinePanel.toLowerCase()}`);
+  revealMachine.className = 'reveal-tag machine';
+  revealMachine.textContent = 'MACHINE';
+
+  const revealHuman = document.getElementById(`reveal-${humanPanel.toLowerCase()}`);
+  revealHuman.className = 'reveal-tag human';
+  revealHuman.textContent = 'HUMAN';
+
+  document.querySelectorAll('.telltale').forEach(el => el.classList.add('revealed'));
+  document.querySelectorAll('.telltale-tip').forEach(el => el.classList.add('revealed'));
+
+  const scorecard = document.getElementById('scorecard');
+  const list = document.getElementById('scorecard-list');
+  scorecard.className = 'scorecard visible';
+  list.innerHTML = currentScenario.signs.map(s =>
+    `<li><span class="scorecard-marker"></span>${s}</li>`
+  ).join('');
+}
+
+function clearTelltales() {
+  document.querySelectorAll('.telltale').forEach(el => el.classList.remove('revealed'));
+  document.querySelectorAll('.telltale-tip').forEach(el => el.classList.remove('revealed'));
+}
+
+const scenarioRow = document.getElementById('scenario-row');
+Object.keys(SCENARIOS).forEach(name => {
+  const btn = document.createElement('button');
+  btn.className = 'algo-btn';
+  btn.textContent = name;
+  btn.title = SCENARIOS[name].description;
+  btn.onclick = () => selectScenario(name);
+  scenarioRow.appendChild(btn);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); step(); }
+  if (e.key === 'Escape') { e.preventDefault(); reset(); }
+});
+
+selectScenario('Favorite Book');
+
+(function(){
+  const KEY = 'intro-dismissed-turing-test';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

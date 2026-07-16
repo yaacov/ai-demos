@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deterministic Turing Machine</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --red:            #c03030;
+    --good:           #0ca30c;
+    --critical:       #d03b3b;
+    --metal-light:    #d4d4d0;
+    --metal-mid:      #a8a8a2;
+    --metal-dark:     #6e6e68;
+    --reel-color:     #4a4a44;
+    --tape-color:     #faf6e8;
+    --tape-shadow:    #d8d4c4;
+    --tape-hole:      #e0dcd0;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --pointer-red:    #c03030;
+    --head-accent:    #b08030;
+    --state-active:   #2a78d6;
+    --state-idle:     var(--metal-mid);
+    --state-halt:     #0ca30c;
+    --state-reject:   #d03b3b;
+    --arrow-color:    #898781;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #5a9ae8;
+      --red:          #d04040;
+      --good:         #30a030;
+      --critical:     #d04040;
+      --metal-light:  #55554f;
+      --metal-mid:    #3e3e39;
+      --metal-dark:   #2a2a26;
+      --reel-color:   #888880;
+      --tape-color:   #2a2924;
+      --tape-shadow:  #1e1e1a;
+      --tape-hole:    #222220;
+      --card-bg:      #1e1e1a;
+      --card-border:  #3a3832;
+      --pointer-red:  #d04040;
+      --head-accent:  #c89040;
+      --state-active: #5a9ae8;
+      --state-idle:   #55554f;
+      --state-halt:   #30a030;
+      --state-reject: #d04040;
+      --arrow-color:  #5a5850;
+      --narration-bg: #1e1e1a;
+      --narration-border:#3a3832;
+    }
+  }
+
+  /* ── Navigation bar ── */
+  .nav-bar {
+    width: 100%; max-width: 1060px; display: flex; gap: 4px; margin-bottom: 6px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px;
+    overflow: hidden;
+  }
+
+  h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0; }
+  .subtitle { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .container { width: 100%; max-width: 1060px; display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
+
+  /* ── Algo bar ── */
+  .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .algo-bar-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 4px; }
+  .algo-btn {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
+  }
+  .algo-btn:hover { border-color: var(--baseline); color: var(--primary); }
+  .algo-btn.selected { background: var(--primary); color: var(--page); border-color: var(--primary); }
+  .tape-input-row { display: flex; gap: 6px; align-items: center; margin-inline-start: auto; }
+  .tape-input-row label { font-size: 0.75rem; color: var(--muted); }
+  .tape-input-row input[type="text"] { font-family: 'Courier New', monospace; font-size: 0.85rem; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--primary); width: 140px; }
+  .tape-input-row button { font-family: inherit; font-size: 0.75rem; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; }
+
+  /* ── Machine SVG ── */
+  .machine-frame { background: var(--surface); border: 2px solid var(--gridline); border-radius: 8px; padding: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.08); }
+  .machine-svg { width: 100%; height: auto; display: block; max-height: 200px; }
+
+  /* ── Layout ── */
+  .status-bar { display: flex; gap: 8px; align-items: stretch; }
+  .status-bar .readout-panel { flex: 1; }
+  .status-bar .controls-bar { flex-shrink: 0; align-items: center; }
+  .main-row { display: flex; gap: 10px; align-items: stretch; flex: 1; min-height: 0; overflow: hidden; }
+  .left-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .right-col { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+  @media (max-width: 820px) { .main-row { flex-direction: column; } .right-col { width: 100%; } }
+
+  /* ── Narration ── */
+  .narration {
+    background: var(--narration-bg); border: 1px solid var(--narration-border); border-radius: 6px; padding: 10px 12px;
+    font-size: 0.82rem; line-height: 1.4; color: var(--secondary); min-height: 0;
+  }
+  .narration-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+  .narration-state { font-weight: 600; color: var(--primary); }
+  .narration-desc { margin-top: 4px; }
+  .narration-action { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--narration-border); font-family: 'Courier New', monospace; font-size: 0.78rem; }
+  .narration-action em { font-style: normal; color: var(--state-active); font-weight: 600; }
+
+  /* ── State transition table ── */
+  .fsc-card { background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px; overflow: hidden; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  #fsc-body { flex: 1; overflow-y: auto; }
+  .fsc-header {
+    background: var(--metal-dark); color: var(--metal-light); padding: 6px 12px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
+  }
+  .fsc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .fsc-table th {
+    padding: 5px 6px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); border-bottom: 2px solid var(--gridline); text-align: center;
+    font-family: system-ui, sans-serif;
+  }
+  .fsc-table th.corner {
+    text-align: center; color: var(--muted); font-size: 0.5rem; vertical-align: bottom;
+    border-right: 2px solid var(--gridline); border-bottom: 2px solid var(--gridline);
+    padding: 4px 6px; line-height: 1.3;
+  }
+  .fsc-table th.corner .corner-input { display: block; font-weight: 700; color: var(--secondary); font-size: 0.6rem; }
+  .fsc-table th.corner .corner-state { display: block; color: var(--muted); }
+  .fsc-table th.col-head {
+    background: var(--tape-color); border-left: 1px solid var(--gridline);
+    font-family: 'Courier New', monospace; font-size: 0.9rem; font-weight: 700; color: var(--primary);
+    border-bottom: 2px solid var(--gridline);
+  }
+  .fsc-table th.col-head.active-col { background: color-mix(in srgb, var(--state-active) 15%, var(--tape-color)); }
+  .fsc-input-label {
+    font-size: 0.5rem; color: var(--muted); text-align: center; padding: 2px 0 0;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; font-family: system-ui, sans-serif;
+  }
+  .fsc-table td {
+    padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--gridline);
+    font-family: 'Courier New', monospace; color: var(--secondary); transition: background 0.2s;
+    font-size: 0.72rem;
+  }
+  .fsc-table td.state-label {
+    text-align: left; font-weight: 600; color: var(--primary); font-family: system-ui, sans-serif;
+    border-right: 2px solid var(--gridline); background: color-mix(in srgb, var(--surface) 50%, var(--page));
+    font-size: 0.75rem; padding: 5px 8px;
+  }
+  .fsc-table td.state-label.active-state {
+    color: var(--state-active); font-weight: 700;
+    background: color-mix(in srgb, var(--state-active) 8%, var(--surface));
+  }
+  .fsc-table td.action-cell { border-left: 1px solid var(--gridline); line-height: 1.6; vertical-align: middle; }
+  .fsc-table td.action-cell.active-cell {
+    background: color-mix(in srgb, var(--state-active) 12%, var(--surface));
+    color: var(--primary); font-weight: 600;
+    box-shadow: inset 0 0 0 2px var(--state-active);
+  }
+  .fsc-table td.action-cell.empty { color: var(--muted); font-style: italic; font-family: system-ui, sans-serif; font-size: 0.6rem; }
+  .fsc-output-line { display: flex; align-items: center; justify-content: center; gap: 3px; }
+  .fsc-tag {
+    font-family: system-ui, sans-serif; font-size: 0.48rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+    line-height: 1;
+  }
+  .fsc-val { font-weight: 700; font-size: 0.82rem; }
+  .fsc-val.write-val { color: var(--state-active); }
+  .fsc-val.dir-val { color: var(--primary); }
+  .fsc-val.next-val { color: var(--head-accent); }
+  .fsc-table tr.halt-row td.state-label { color: var(--state-halt); }
+  .fsc-table tr.reject-row td.state-label { color: var(--state-reject); }
+
+  /* ── Instruction table ── */
+  .program-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 6px; box-shadow: 2px 3px 10px rgba(0,0,0,0.10); overflow: hidden; }
+  .program-header { background: var(--primary); color: var(--page); padding: 8px 12px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; text-align: center; }
+  .program-body { position: relative; padding: 4px 0; }
+  .program-pointer {
+    position: absolute; left: 2px; width: 0; height: 0;
+    border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 10px solid var(--pointer-red);
+    transition: top 0.25s ease; z-index: 2; filter: drop-shadow(1px 0 2px rgba(0,0,0,0.2));
+  }
+  .rule-row { display: flex; align-items: center; padding: 4px 8px 4px 16px; font-family: 'Courier New', monospace; font-size: 0.72rem; color: var(--secondary); transition: background 0.2s; }
+  .rule-row.active { background: color-mix(in srgb, var(--pointer-red) 10%, var(--card-bg)); color: var(--primary); font-weight: 600; }
+  .rule-cell { text-align: center; flex-shrink: 0; }
+  .rule-cell.cond-label { width: auto; font-size: 0.58rem; color: var(--muted); text-transform: uppercase; font-family: system-ui, sans-serif; font-weight: 600; letter-spacing: 0.03em; padding-right: 2px; }
+  .rule-cell.state-c { min-width: 52px; text-align: left; }
+  .rule-cell.sym { width: 22px; }
+  .rule-cell.sep { width: 18px; color: var(--muted); font-size: 0.65rem; }
+  .rule-cell.dir { width: 22px; font-weight: 700; }
+  .rule-cell.next-c { min-width: 52px; text-align: left; }
+  .rule-header-row {
+    display: flex; align-items: center; padding: 5px 8px 3px 16px; font-size: 0.55rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); border-bottom: 1px solid var(--card-border);
+    font-family: system-ui, sans-serif;
+  }
+
+  /* ── Readout panel ── */
+  .readout-panel { display: flex; gap: 2px; background: var(--metal-dark); border-radius: 6px; padding: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1); }
+  .readout { flex: 1; background: #0a1a0a; border-radius: 4px; padding: 8px 6px; text-align: center; }
+  .readout-label { font-size: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #4a7a4a; margin-bottom: 2px; }
+  .readout-value { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700; color: #30dd30; text-shadow: 0 0 8px rgba(48,221,48,0.4); font-variant-numeric: tabular-nums; }
+  .readout-value.halt { color: #dddd30; text-shadow: 0 0 8px rgba(221,221,48,0.4); }
+  .readout-value.reject { color: #dd3030; text-shadow: 0 0 8px rgba(221,48,48,0.4); }
+
+  /* ── Controls ── */
+  .controls-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .ctrl-btn {
+    font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 8px 20px; border-radius: 4px;
+    border: 1px solid var(--metal-mid); background: linear-gradient(180deg, var(--metal-light) 0%, var(--metal-mid) 100%);
+    color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .ctrl-btn:hover { filter: brightness(1.05); }
+  .ctrl-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); transform: translateY(1px); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .ctrl-btn.run-btn { background: linear-gradient(180deg, #40a040 0%, #2a7a2a 100%); border-color: #2a7a2a; color: #fff; }
+  .speed-control { display: flex; align-items: center; gap: 6px; margin-inline-start: auto; }
+  .speed-control label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  input[type="range"] { width: 80px; accent-color: var(--metal-mid); }
+
+  /* ── Symbol legend ── */
+  .legend-card {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 6px; overflow: hidden;
+  }
+  .legend-header {
+    background: var(--metal-dark); color: var(--metal-light); padding: 6px 12px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
+  }
+  .legend-body { padding: 6px 0; }
+  .legend-row {
+    display: flex; align-items: center; padding: 3px 14px; gap: 10px;
+  }
+  .legend-sym {
+    font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700;
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+    background: var(--tape-color); border: 1px solid var(--tape-shadow); border-radius: 3px;
+    color: var(--primary); flex-shrink: 0;
+  }
+  .legend-meaning {
+    font-size: 0.78rem; color: var(--secondary); line-height: 1.3;
+  }
+  .legend-example {
+    font-size: 0.68rem; color: var(--muted); font-style: italic; margin-top: 1px;
+  }
+
+  /* ── Registers panel ── */
+  .registers-card {
+    background: #0a1a0a; border: 1px solid var(--metal-dark); border-radius: 6px; overflow: hidden;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .registers-header {
+    background: var(--metal-dark); color: var(--metal-light); padding: 5px 12px;
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
+  }
+  .registers-body { padding: 8px 12px; }
+  .reg-row {
+    display: flex; align-items: baseline; padding: 4px 0; gap: 8px;
+    border-bottom: 1px solid rgba(48,221,48,0.08);
+  }
+  .reg-row:last-child { border-bottom: none; }
+  .reg-label {
+    font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: #4a7a4a; width: 72px; flex-shrink: 0;
+  }
+  .reg-value {
+    font-family: 'Courier New', monospace; font-size: 0.88rem; font-weight: 700;
+    color: #30dd30; text-shadow: 0 0 6px rgba(48,221,48,0.3);
+    word-break: break-all;
+  }
+  .reg-note {
+    font-size: 0.68rem; color: #4a7a4a; margin-inline-start: auto; flex-shrink: 0;
+    font-family: system-ui, sans-serif;
+  }
+  .reg-divider {
+    border-top: 1px solid rgba(48,221,48,0.15); margin: 6px 0 4px;
+  }
+  .reg-step-label { color: #7aaa7a; font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+  .reg-step {
+    font-family: 'Courier New', monospace; font-size: 0.82rem; color: #30dd30;
+    text-shadow: 0 0 6px rgba(48,221,48,0.3); line-height: 1.6;
+  }
+  .reg-step .dim { color: #4a7a4a; }
+  .reg-step .hi { color: #80ff80; font-weight: 700; }
+
+  /* ── Log ── */
+  .log-card { background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px; overflow: hidden; }
+  .log-header { background: var(--gridline); padding: 5px 12px; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--secondary); }
+  .log { font-family: 'Courier New', monospace; font-size: 0.72rem; color: var(--secondary); max-height: 120px; overflow-y: auto; padding: 6px 12px; line-height: 1.5; }
+  .log-entry { white-space: pre; }
+
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
+.intro-card {
+  background: var(--surface); border: 1px solid var(--gridline);
+  border-radius: 16px; max-width: 560px; width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+.intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card li { margin-bottom: 4px; }
+.intro-start {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.intro-start:hover { filter: brightness(1.15); }
+.intro-reopen {
+  display: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  line-height: 18px; text-align: center; margin-left: auto;
+}
+.intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+.intro-wiki {
+  display: inline-block; margin-bottom: 16px;
+  color: var(--blue); font-size: 13px; text-decoration: none;
+}
+.intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>Turing Machine</h2>
+    <p>In 1936, Alan Turing imagined the simplest possible computer: an infinite tape of cells, a read/write head that moves one step at a time, and a table of rules. Despite its simplicity, this theoretical machine can compute anything that any modern computer can.</p>
+    <p>This simulator lets you step through classic algorithms and watch the machine work — reading symbols, writing new ones, and changing state according to its rules.</p>
+    <ul>
+      <li>Choose from four algorithms: Binary Increment, Palindrome, Unary Addition, Busy Beaver</li>
+      <li>Step through one instruction at a time or run continuously</li>
+      <li>Watch the tape, state diagram, and execution log update in real time</li>
+    </ul>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank">Learn more on Wikipedia ↗</a><br>
+    <button class="intro-start">Start Exploring</button>
+  </div>
+</div>
+  <nav class="nav-bar">
+    <a class="nav-link" href="../timeline/index.html">Timeline</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link active">Turing Machine</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../cnn/index.html">CNN</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../transformer/index.html">Transformer</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../chat/index.html">Chat</a>
+  <span class="nav-sep">/</span>
+  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
+  <button class="intro-reopen" title="About this demo">?</button>
+  </nav>
+  <h1>Turing Machine</h1>
+
+  <div class="container">
+    <div class="algo-bar">
+      <span class="algo-bar-label">Program:</span>
+      <span id="algo-row"></span>
+      <div class="tape-input-row">
+        <label for="tape-input">Tape:</label>
+        <input type="text" id="tape-input" spellcheck="false">
+        <button onclick="loadCustomTape()">Load</button>
+      </div>
+    </div>
+
+    <!-- Machine illustration (full width) -->
+    <div class="machine-frame">
+      <svg id="machine-svg" class="machine-svg" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--metal-light)"/><stop offset="100%" stop-color="var(--metal-mid)"/>
+          </linearGradient>
+          <linearGradient id="metalDarkGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--metal-mid)"/><stop offset="100%" stop-color="var(--metal-dark)"/>
+          </linearGradient>
+          <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--head-accent)"/><stop offset="50%" stop-color="#907030"/><stop offset="100%" stop-color="#605020"/>
+          </linearGradient>
+          <linearGradient id="tapeGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--tape-color)"/><stop offset="100%" stop-color="var(--tape-shadow)"/>
+          </linearGradient>
+          <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+          </filter>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect x="10" y="200" width="680" height="50" rx="6" fill="url(#metalDarkGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <rect x="10" y="200" width="680" height="4" rx="2" fill="var(--metal-light)" opacity="0.3"/>
+        <rect x="50" y="180" width="80" height="24" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <rect x="570" y="180" width="80" height="24" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+        <g id="left-reel">
+          <circle cx="90" cy="110" r="68" fill="var(--metal-mid)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <circle cx="90" cy="110" r="60" fill="var(--reel-color)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="90" cy="110" r="20" fill="var(--metal-light)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="90" cy="110" r="8" fill="var(--metal-dark)"/>
+          <line x1="90" y1="50" x2="90" y2="170" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="30" y1="110" x2="150" y2="110" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="47" y1="67" x2="133" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="133" y1="67" x2="47" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+        </g>
+        <g id="right-reel">
+          <circle cx="610" cy="110" r="68" fill="var(--metal-mid)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <circle cx="610" cy="110" r="60" fill="var(--reel-color)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="610" cy="110" r="20" fill="var(--metal-light)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <circle cx="610" cy="110" r="8" fill="var(--metal-dark)"/>
+          <line x1="610" y1="50" x2="610" y2="170" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="550" y1="110" x2="670" y2="110" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="567" y1="67" x2="653" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+          <line x1="653" y1="67" x2="567" y2="153" stroke="var(--metal-dark)" stroke-width="2" opacity="0.4"/>
+        </g>
+        <g id="tape-group" filter="url(#shadow)">
+          <rect id="tape-bg" x="130" y="98" width="440" height="44" rx="2" fill="url(#tapeGrad)" stroke="var(--tape-shadow)" stroke-width="1"/>
+          <g id="sprocket-top"></g>
+          <g id="sprocket-bot"></g>
+          <g id="cell-dividers" stroke="var(--tape-shadow)" stroke-width="0.5" opacity="0.5"></g>
+          <g id="tape-cells" font-family="'Courier New', monospace" font-size="18" font-weight="600" text-anchor="middle" dominant-baseline="central"></g>
+        </g>
+        <path d="M130 108 Q120 108 115 100 Q110 90 105 85 Q100 78 95 75" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M130 132 Q120 132 115 140 Q110 148 105 152 Q100 158 95 160" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M570 108 Q580 108 585 100 Q590 90 595 85 Q600 78 605 75" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <path d="M570 132 Q580 132 585 140 Q590 148 595 152 Q600 158 605 160" stroke="var(--tape-shadow)" stroke-width="1" fill="none"/>
+        <g id="head-group">
+          <rect x="338" y="0" width="24" height="60" rx="4" fill="url(#metalGrad)" stroke="var(--metal-dark)" stroke-width="1"/>
+          <rect x="318" y="55" width="64" height="40" rx="4" fill="url(#headGrad)" stroke="#504010" stroke-width="1.5"/>
+          <rect x="322" y="59" width="56" height="32" rx="2" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <rect x="332" y="64" width="36" height="22" rx="2" fill="#0a0a08" stroke="#504010" stroke-width="1"/>
+          <rect x="334" y="66" width="32" height="2" rx="1" fill="rgba(255,255,255,0.1)"/>
+          <text id="head-value" x="350" y="78" font-family="'Courier New', monospace" font-size="16" font-weight="700" fill="#30dd30" text-anchor="middle" dominant-baseline="central"></text>
+          <text x="350" y="50" font-family="system-ui, sans-serif" font-size="7" font-weight="700" fill="var(--metal-dark)" text-anchor="middle" letter-spacing="0.1em">R/W HEAD</text>
+          <polygon points="350,97 344,105 356,105" fill="var(--head-accent)" stroke="#504010" stroke-width="0.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="status-bar">
+      <div class="readout-panel">
+        <div class="readout"><div class="readout-label">State</div><div class="readout-value" id="ro-state">--</div></div>
+        <div class="readout"><div class="readout-label">Position</div><div class="readout-value" id="ro-pos">0</div></div>
+        <div class="readout"><div class="readout-label">Steps</div><div class="readout-value" id="ro-steps">0</div></div>
+        <div class="readout"><div class="readout-label">Symbol</div><div class="readout-value" id="ro-sym">_</div></div>
+        <div class="readout"><div class="readout-label">Status</div><div class="readout-value" id="ro-status">Ready</div></div>
+      </div>
+      <div class="controls-bar">
+        <button class="ctrl-btn" id="step-btn" onclick="step()">Step</button>
+        <button class="ctrl-btn run-btn" id="run-btn" onclick="toggleRun()">Run</button>
+        <button class="ctrl-btn" id="reset-btn" onclick="reset()">Reset</button>
+        <div class="speed-control">
+          <label for="speed">Speed</label>
+          <input type="range" id="speed" min="1" max="10" value="5">
+        </div>
+      </div>
+    </div>
+
+    <div class="main-row">
+      <div class="left-col">
+        <div class="fsc-card">
+          <div class="fsc-header">Finite State Control</div>
+          <div id="fsc-body"></div>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="narration" id="narration"></div>
+        <div class="registers-card">
+          <div class="registers-header">Registers</div>
+          <div class="registers-body" id="registers-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const BLANK = '_';
+const CELL_W = 40;
+const CELL_COUNT = 11;
+const TAPE_Y = 110;
+const CENTER_CELL = 5;
+const HEAD_X = 350;
+const TAPE_LEFT = HEAD_X - CENTER_CELL * CELL_W;
+
+const ALGORITHMS = {
+  'Binary Increment': {
+    description: 'Adds 1 to a binary number (e.g. 1011 → 1100)',
+    initialTape: '1011',
+    startState: 'goRight',
+    haltStates: ['halt'],
+    symbols: [
+      { sym: '0', meaning: 'Binary digit zero', example: 'Part of the binary number' },
+      { sym: '1', meaning: 'Binary digit one', example: 'Part of the binary number' },
+      { sym: '_', meaning: 'Blank — empty cell', example: 'Marks the end of the number' },
+    ],
+    stateDescriptions: {
+      'goRight': 'Scanning right to find the end of the binary number.',
+      'add':     'Adding 1. If the digit is 1, writes 0 and carries left. If it\'s 0, writes 1 and stops carrying.',
+      'done':    'Carry complete. Moving left back to the start of the number.',
+      'halt':    'Done. The incremented binary number is now on the tape.',
+    },
+    rules: [
+      { state: 'goRight', read: '0', write: '0', move: 'R', next: 'goRight' },
+      { state: 'goRight', read: '1', write: '1', move: 'R', next: 'goRight' },
+      { state: 'goRight', read: BLANK, write: BLANK, move: 'L', next: 'add' },
+      { state: 'add', read: '0', write: '1', move: 'L', next: 'done' },
+      { state: 'add', read: '1', write: '0', move: 'L', next: 'add' },
+      { state: 'add', read: BLANK, write: '1', move: 'L', next: 'done' },
+      { state: 'done', read: '0', write: '0', move: 'L', next: 'done' },
+      { state: 'done', read: '1', write: '1', move: 'L', next: 'done' },
+      { state: 'done', read: BLANK, write: BLANK, move: 'R', next: 'halt' },
+    ],
+    interpret(tape, initTape) {
+      const bits = getTapeContent(tape);
+      const dec = bits.length ? parseInt(bits, 2) : 0;
+      const initDec = initTape.length ? parseInt(initTape, 2) : 0;
+      return {
+        input: `${initTape}`,
+        inputNote: `= ${initDec} in decimal`,
+        output: bits,
+        outputNote: `= ${dec} in decimal`,
+      };
+    },
+  },
+  'Palindrome': {
+    description: 'Checks whether a binary string reads the same forwards and backwards',
+    initialTape: '10101',
+    startState: 'check0',
+    haltStates: ['accept', 'reject'],
+    symbols: [
+      { sym: '0', meaning: 'Binary digit zero', example: 'One of the characters to compare' },
+      { sym: '1', meaning: 'Binary digit one', example: 'One of the characters to compare' },
+      { sym: '_', meaning: 'Blank — erased or empty', example: 'Characters are erased after checking' },
+    ],
+    stateDescriptions: {
+      'check0':  'Looking at the leftmost remaining symbol. Remembers it and erases it.',
+      'have0':   'Remembered 0. Now scanning right to find the rightmost symbol.',
+      'have1':   'Remembered 1. Now scanning right to find the rightmost symbol.',
+      'match0':  'Checking: does the rightmost symbol match the 0 we remembered?',
+      'match1':  'Checking: does the rightmost symbol match the 1 we remembered?',
+      'goBack':  'Match succeeded! Moving left back to check the next pair.',
+      'accept':  'All pairs matched — the string is a palindrome.',
+      'reject':  'Mismatch found — the string is not a palindrome.',
+    },
+    rules: [
+      { state: 'check0', read: '0', write: BLANK, move: 'R', next: 'have0' },
+      { state: 'check0', read: '1', write: BLANK, move: 'R', next: 'have1' },
+      { state: 'check0', read: BLANK, write: BLANK, move: 'R', next: 'accept' },
+      { state: 'have0', read: '0', write: '0', move: 'R', next: 'have0' },
+      { state: 'have0', read: '1', write: '1', move: 'R', next: 'have0' },
+      { state: 'have0', read: BLANK, write: BLANK, move: 'L', next: 'match0' },
+      { state: 'match0', read: '0', write: BLANK, move: 'L', next: 'goBack' },
+      { state: 'match0', read: '1', write: '1', move: 'R', next: 'reject' },
+      { state: 'match0', read: BLANK, write: BLANK, move: 'R', next: 'accept' },
+      { state: 'have1', read: '0', write: '0', move: 'R', next: 'have1' },
+      { state: 'have1', read: '1', write: '1', move: 'R', next: 'have1' },
+      { state: 'have1', read: BLANK, write: BLANK, move: 'L', next: 'match1' },
+      { state: 'match1', read: '1', write: BLANK, move: 'L', next: 'goBack' },
+      { state: 'match1', read: '0', write: '0', move: 'R', next: 'reject' },
+      { state: 'match1', read: BLANK, write: BLANK, move: 'R', next: 'accept' },
+      { state: 'goBack', read: '0', write: '0', move: 'L', next: 'goBack' },
+      { state: 'goBack', read: '1', write: '1', move: 'L', next: 'goBack' },
+      { state: 'goBack', read: BLANK, write: BLANK, move: 'R', next: 'check0' },
+    ],
+    interpret(tape, initTape, state) {
+      const remaining = getTapeContent(tape);
+      let result = 'Checking...';
+      if (state === 'accept') result = 'Yes — palindrome';
+      else if (state === 'reject') result = 'No — not a palindrome';
+      return {
+        input: initTape,
+        inputNote: `"${initTape}"`,
+        output: result,
+        outputNote: remaining ? `Remaining: ${remaining}` : 'All symbols checked',
+      };
+    },
+  },
+  'Unary Addition': {
+    description: 'Adds two unary numbers: 111 + 11 = 11111  (3 + 2 = 5)',
+    initialTape: '111+11',
+    startState: 'goRight',
+    haltStates: ['halt'],
+    symbols: [
+      { sym: '1', meaning: 'Tally mark — one unit', example: '111 means three, 11 means two' },
+      { sym: '+', meaning: 'Plus — addition operator', example: 'Separates the two numbers to add' },
+      { sym: '_', meaning: 'Blank — empty cell', example: 'End of tape data' },
+    ],
+    stateDescriptions: {
+      'goRight': 'Scanning right to find the + sign between the two numbers.',
+      'findEnd': 'Found the +. Replaced it with 1 (merging the numbers). Now finding the end.',
+      'erase':   'Erasing the last 1 to compensate for the extra 1 added when replacing the +.',
+      'rewind':  'Moving back to the start of the result.',
+      'halt':    'Done! The sum is on the tape as a single unary number.',
+    },
+    rules: [
+      { state: 'goRight', read: '1', write: '1', move: 'R', next: 'goRight' },
+      { state: 'goRight', read: '+', write: '1', move: 'R', next: 'findEnd' },
+      { state: 'findEnd', read: '1', write: '1', move: 'R', next: 'findEnd' },
+      { state: 'findEnd', read: BLANK, write: BLANK, move: 'L', next: 'erase' },
+      { state: 'erase', read: '1', write: BLANK, move: 'L', next: 'rewind' },
+      { state: 'rewind', read: '1', write: '1', move: 'L', next: 'rewind' },
+      { state: 'rewind', read: BLANK, write: BLANK, move: 'R', next: 'halt' },
+    ],
+    interpret(tape, initTape) {
+      const content = getTapeContent(tape);
+      const ones = (content.match(/1/g) || []).length;
+      const parts = initTape.split('+');
+      return {
+        input: initTape,
+        inputNote: `${parts[0].length} + ${(parts[1]||'').length} in unary`,
+        output: content || '(empty)',
+        outputNote: `= ${ones} in decimal`,
+      };
+    },
+  },
+  'Busy Beaver 3': {
+    description: 'The 3-state champion: writes as many 1s as possible before halting',
+    initialTape: '',
+    startState: 'A',
+    haltStates: ['HALT'],
+    symbols: [
+      { sym: '0', meaning: 'Empty cell (blank)', example: 'The tape starts filled with zeros' },
+      { sym: '1', meaning: 'Marked cell', example: 'The beaver writes 1 — the goal is to write as many as possible' },
+    ],
+    stateDescriptions: {
+      'A':    'State A — one of the three working states in the busy beaver.',
+      'B':    'State B — the machine bounces between states filling the tape with 1s.',
+      'C':    'State C — if it reads 1 here, it halts. Otherwise keeps writing.',
+      'HALT': 'Halted! The beaver wrote 6 ones in 14 steps — the proven maximum for 3 states.',
+    },
+    rules: [
+      { state: 'A', read: '0', write: '1', move: 'R', next: 'B' },
+      { state: 'A', read: '1', write: '1', move: 'L', next: 'C' },
+      { state: 'B', read: '0', write: '1', move: 'L', next: 'A' },
+      { state: 'B', read: '1', write: '1', move: 'R', next: 'B' },
+      { state: 'C', read: '0', write: '1', move: 'L', next: 'B' },
+      { state: 'C', read: '1', write: '1', move: 'R', next: 'HALT' },
+    ],
+    interpret(tape) {
+      let ones = 0;
+      for (const k in tape) { if (tape[k] === '1') ones++; }
+      return {
+        input: '(empty tape)',
+        inputNote: 'All cells start as 0',
+        output: `${ones} ones written`,
+        outputNote: `in ${stepCount} steps`,
+      };
+    },
+  },
+};
+
+let tape = {};
+let headPos = 0;
+let currentState = '';
+let stepCount = 0;
+let running = false;
+let runTimer = null;
+let currentAlgo = null;
+let currentAlgoName = '';
+let writtenCells = new Set();
+let reelAngle = 0;
+let lastAction = null;
+let initialTapeStr = '';
+
+function getTapeContent(t) {
+  const keys = Object.keys(t).map(Number).sort((a,b) => a - b);
+  if (!keys.length) return '';
+  let s = '';
+  for (let i = keys[0]; i <= keys[keys.length-1]; i++) {
+    const v = t[i] !== undefined ? t[i] : '_';
+    if (v !== '_') s += v;
+  }
+  return s;
+}
+
+function readCell(pos) {
+  if (tape[pos] !== undefined) return tape[pos];
+  return currentAlgo === ALGORITHMS['Busy Beaver 3'] ? '0' : BLANK;
+}
+
+function writeCell(pos, val) {
+  tape[pos] = val;
+  writtenCells.add(pos);
+}
+
+function selectAlgorithm(name) {
+  stopRun();
+  currentAlgo = ALGORITHMS[name];
+  currentAlgoName = name;
+  document.querySelectorAll('.algo-btn').forEach(b => b.classList.toggle('selected', b.textContent === name));
+  document.getElementById('tape-input').value = currentAlgo.initialTape;
+  lastAction = null;
+  reset();
+}
+
+function loadCustomTape() { stopRun(); reset(); }
+
+function reset() {
+  stopRun();
+  tape = {};
+  writtenCells.clear();
+  headPos = 0;
+  stepCount = 0;
+  reelAngle = 0;
+  lastAction = null;
+  currentState = currentAlgo.startState;
+  const input = document.getElementById('tape-input').value;
+  initialTapeStr = input;
+  for (let i = 0; i < input.length; i++) tape[i] = input[i];
+  renderAll();
+}
+
+function findRule(state, symbol) {
+  return currentAlgo.rules.find(r => r.state === state && r.read === symbol);
+}
+
+function isHalted() {
+  return currentAlgo.haltStates.includes(currentState);
+}
+
+function step() {
+  if (isHalted()) return;
+  const sym = readCell(headPos);
+  const rule = findRule(currentState, sym);
+  if (!rule) {
+    currentState = currentAlgo.haltStates.includes('reject') ? 'reject' : currentAlgo.haltStates[0];
+    lastAction = { desc: `No matching rule — machine halted.` };
+    renderAll();
+    return;
+  }
+  const prevState = currentState;
+  const prevPos = headPos;
+  writeCell(headPos, rule.write);
+  currentState = rule.next;
+  headPos += rule.move === 'R' ? 1 : -1;
+  stepCount++;
+  reelAngle += rule.move === 'R' ? 15 : -15;
+
+  lastAction = {
+    prevState, sym, rule,
+    desc: `In state "${prevState}", read "${sym}" → wrote "${rule.write}", moved ${rule.move === 'R' ? 'right →' : '← left'}, now in state "${rule.next}"`
+  };
+
+  renderAll();
+}
+
+function toggleRun() {
+  if (running) { stopRun(); } else { running = true; document.getElementById('run-btn').textContent = 'Pause'; runLoop(); }
+}
+function runLoop() {
+  if (!running || isHalted()) { stopRun(); return; }
+  step();
+  runTimer = setTimeout(runLoop, 1000 / document.getElementById('speed').value);
+}
+function stopRun() { running = false; clearTimeout(runTimer); document.getElementById('run-btn').textContent = 'Run'; }
+
+// ── Tape rendering ──
+function renderTape() {
+  const cellsGroup = document.getElementById('tape-cells');
+  const dividersGroup = document.getElementById('cell-dividers');
+  document.getElementById('head-value').textContent = readCell(headPos);
+
+  let cellsHtml = '', divHtml = '';
+  const start = headPos - CENTER_CELL;
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const pos = start + i;
+    const val = readCell(pos);
+    const cx = TAPE_LEFT + i * CELL_W;
+    const isHead = pos === headPos;
+    const fill = isHead ? '#30dd30' : (writtenCells.has(pos) ? 'var(--blue)' : 'var(--primary)');
+    const opacity = isHead ? 1 : (writtenCells.has(pos) ? 0.8 : 0.7);
+    cellsHtml += `<text x="${cx}" y="${TAPE_Y+10}" fill="${fill}" opacity="${opacity}" font-weight="${isHead?'800':'600'}">${val}</text>`;
+    if (i > 0) { const lx = TAPE_LEFT - CELL_W/2 + i*CELL_W; divHtml += `<line x1="${lx}" y1="${TAPE_Y-12}" x2="${lx}" y2="${TAPE_Y+22}" />`; }
+  }
+  cellsGroup.innerHTML = cellsHtml;
+  dividersGroup.innerHTML = divHtml;
+
+  // sprocket holes
+  let st = '', sb = '';
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const cx = TAPE_LEFT + i * CELL_W;
+    st += `<circle cx="${cx}" cy="105" r="3.5" fill="var(--tape-hole)" stroke="var(--tape-shadow)" stroke-width="0.5"/>`;
+    sb += `<circle cx="${cx}" cy="135" r="3.5" fill="var(--tape-hole)" stroke="var(--tape-shadow)" stroke-width="0.5"/>`;
+  }
+  document.getElementById('sprocket-top').innerHTML = st;
+  document.getElementById('sprocket-bot').innerHTML = sb;
+
+  document.getElementById('left-reel').setAttribute('transform', `rotate(${reelAngle}, 90, 110)`);
+  document.getElementById('right-reel').setAttribute('transform', `rotate(${-reelAngle}, 610, 110)`);
+}
+
+// ── Readouts ──
+function renderReadouts() {
+  const halted = isHalted();
+  const hc = currentState === 'accept' ? ' halt' : currentState === 'reject' ? ' reject' : halted ? ' halt' : '';
+  document.getElementById('ro-state').textContent = currentState;
+  document.getElementById('ro-state').className = 'readout-value' + hc;
+  document.getElementById('ro-pos').textContent = headPos;
+  document.getElementById('ro-steps').textContent = stepCount;
+  document.getElementById('ro-sym').textContent = readCell(headPos);
+  const s = document.getElementById('ro-status');
+  if (halted) { s.textContent = currentState === 'accept' ? 'Accept' : currentState === 'reject' ? 'Reject' : 'Halt'; s.className = 'readout-value' + hc; }
+  else { s.textContent = running ? 'Running' : 'Ready'; s.className = 'readout-value'; }
+}
+
+// ── Narration ──
+function renderNarration() {
+  const el = document.getElementById('narration');
+  const desc = currentAlgo.stateDescriptions[currentState] || '';
+  const halted = isHalted();
+
+  let html = `<div class="narration-title">What's Happening</div>`;
+  html += `<div><span class="narration-state">State: ${currentState}</span></div>`;
+  html += `<div class="narration-desc">${desc}</div>`;
+
+  if (!halted && !lastAction) {
+    const sym = readCell(headPos);
+    const rule = findRule(currentState, sym);
+    if (rule) {
+      html += `<div class="narration-action">Next: reads "<em>${sym}</em>" → will write "<em>${rule.write}</em>", move ${rule.move === 'R' ? 'right →' : '← left'}, go to <em>${rule.next}</em></div>`;
+    }
+  } else if (lastAction) {
+    html += `<div class="narration-action">${lastAction.desc}</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ── Instruction table (structure, called once per algorithm change) ──
+function renderRulesStructure() {
+  const body = document.getElementById('program-body');
+  const pointer = document.getElementById('program-pointer');
+  body.querySelectorAll('.rule-row').forEach(r => r.remove());
+
+  let html = '';
+  currentAlgo.rules.forEach((r, i) => {
+    html += `<div class="rule-row" data-idx="${i}">
+      <span class="rule-cell cond-label" style="width:24px">If</span>
+      <span class="rule-cell state-c">${r.state}</span>
+      <span class="rule-cell sym">${r.read}</span>
+      <span class="rule-cell sep">→</span>
+      <span class="rule-cell sym">${r.write}</span>
+      <span class="rule-cell dir">${r.move === 'R' ? '→' : '←'}</span>
+      <span class="rule-cell next-c">${r.next}</span>
+    </div>`;
+  });
+  pointer.insertAdjacentHTML('afterend', html);
+}
+
+// ── Instruction table (highlight, called every step) ──
+function renderRulesHighlight() {
+  const body = document.getElementById('program-body');
+  const pointer = document.getElementById('program-pointer');
+  const sym = readCell(headPos);
+  const rows = body.querySelectorAll('.rule-row');
+  let activeIdx = -1;
+
+  rows.forEach((row, i) => {
+    const r = currentAlgo.rules[i];
+    const active = r.state === currentState && r.read === sym && !isHalted();
+    row.classList.toggle('active', active);
+    if (active) activeIdx = i;
+  });
+
+  if (activeIdx >= 0) {
+    const rowEl = rows[activeIdx];
+    const bodyRect = body.getBoundingClientRect();
+    const rowRect = rowEl.getBoundingClientRect();
+    const topOffset = rowRect.top - bodyRect.top + rowRect.height / 2 - 7;
+    pointer.style.top = topOffset + 'px';
+    pointer.style.display = 'block';
+  } else {
+    pointer.style.display = 'none';
+  }
+}
+
+// ── Finite state control table ──
+function renderStateDiagram() {
+  const el = document.getElementById('fsc-body');
+  const symbols = new Set();
+  const statesOrdered = [];
+  const statesSeen = new Set();
+  currentAlgo.rules.forEach(r => {
+    symbols.add(r.read);
+    if (!statesSeen.has(r.state)) { statesOrdered.push(r.state); statesSeen.add(r.state); }
+  });
+  const syms = [...symbols];
+  const ruleMap = {};
+  currentAlgo.rules.forEach(r => { ruleMap[r.state + '|' + r.read] = r; });
+
+  const curSym = readCell(headPos);
+  const halted = isHalted();
+
+  let html = '<table class="fsc-table"><thead><tr>';
+  html += `<th class="corner"><span class="corner-input">Read ↓</span><span class="corner-state">State →</span></th>`;
+  syms.forEach(s => {
+    const isActiveCol = s === curSym && !halted;
+    html += `<th class="col-head${isActiveCol ? ' active-col' : ''}">${s}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  statesOrdered.forEach(state => {
+    const isHaltState = currentAlgo.haltStates.includes(state);
+    const isReject = state === 'reject';
+    const rowCls = isReject ? ' class="reject-row"' : isHaltState ? ' class="halt-row"' : '';
+    html += `<tr${rowCls}>`;
+    const isActiveState = state === currentState;
+    html += `<td class="state-label${isActiveState ? ' active-state' : ''}">${state}</td>`;
+    syms.forEach(s => {
+      const rule = ruleMap[state + '|' + s];
+      const isActive = isActiveState && s === curSym && !halted;
+      const cls = 'action-cell' + (isActive ? ' active-cell' : '') + (!rule ? ' empty' : '');
+      if (rule) {
+        html += `<td class="${cls}">`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Write:</span><span class="fsc-val write-val">${rule.write}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Move:</span><span class="fsc-val dir-val">${rule.move === 'R' ? '→' : '←'}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">Next:</span><span class="fsc-val next-val">${rule.next}</span></div>`;
+        html += `</td>`;
+      } else {
+        html += `<td class="${cls}">—</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+// ── Registers ──
+function renderRegisters() {
+  const el = document.getElementById('registers-body');
+  const interp = currentAlgo.interpret(tape, initialTapeStr, currentState);
+  const sym = readCell(headPos);
+  const rule = !isHalted() ? findRule(currentState, sym) : null;
+  const halted = isHalted();
+
+  let html = '';
+
+  html += `<div class="reg-row">
+    <div class="reg-label">Input</div>
+    <div class="reg-value">${interp.input}</div>
+    <div class="reg-note">${interp.inputNote}</div>
+  </div>`;
+
+  html += `<div class="reg-row">
+    <div class="reg-label">Tape Now</div>
+    <div class="reg-value">${interp.output}</div>
+    <div class="reg-note">${interp.outputNote}</div>
+  </div>`;
+
+  html += `<div class="reg-divider"></div>`;
+  html += `<div class="reg-step-label">Current Transition</div>`;
+
+  if (halted) {
+    html += `<div class="reg-step"><span class="hi">${currentState}</span> <span class="dim">— Machine halted</span></div>`;
+  } else if (rule) {
+    html += `<div class="reg-step">`;
+    html += `<span class="dim">State</span> <span class="hi">${currentState}</span>`;
+    html += ` <span class="dim">Read</span> <span class="hi">${sym}</span>`;
+    html += ` <span class="dim">→</span>`;
+    html += ` <span class="dim">Write</span> <span class="hi">${rule.write}</span>`;
+    html += ` <span class="dim">Move</span> <span class="hi">${rule.move === 'R' ? '→ right' : '← left'}</span>`;
+    html += ` <span class="dim">Go to</span> <span class="hi">${rule.next}</span>`;
+    html += `</div>`;
+  } else {
+    html += `<div class="reg-step"><span class="dim">No matching rule — will halt</span></div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ── Symbol legend ──
+function renderLegend() {
+  const body = document.getElementById('legend-body');
+  if (!body) return;
+  body.innerHTML = currentAlgo.symbols.map(s =>
+    `<div class="legend-row">
+      <div class="legend-sym">${s.sym}</div>
+      <div>
+        <div class="legend-meaning">${s.meaning}</div>
+        <div class="legend-example">${s.example}</div>
+      </div>
+    </div>`
+  ).join('');
+}
+
+// ── Render all ──
+function renderAll() {
+  renderTape();
+  renderReadouts();
+  renderStateDiagram();
+  renderRegisters();
+  renderNarration();
+  document.getElementById('step-btn').disabled = isHalted();
+  document.getElementById('run-btn').disabled = isHalted();
+}
+
+function addLog(msg) {
+  const log = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.textContent = msg;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+// Build algo buttons
+const algoRow = document.getElementById('algo-row');
+Object.keys(ALGORITHMS).forEach(name => {
+  const btn = document.createElement('button');
+  btn.className = 'algo-btn';
+  btn.textContent = name;
+  btn.title = ALGORITHMS[name].description;
+  btn.onclick = () => selectAlgorithm(name);
+  algoRow.appendChild(btn);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); step(); }
+  if (e.key === 'r') { e.preventDefault(); toggleRun(); }
+  if (e.key === 'Escape') { e.preventDefault(); reset(); }
+});
+
+selectAlgorithm('Binary Increment');
+
+(function(){
+  const KEY = 'intro-dismissed-turing-machine';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>
