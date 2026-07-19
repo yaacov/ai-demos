@@ -35,6 +35,8 @@ python3 -m http.server 8000
 
 ## GitHub Pages
 
+**Live site: <https://yaacov.github.io/ai-demos/>**
+
 Pushes to `main` deploy via [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
 
 In the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
