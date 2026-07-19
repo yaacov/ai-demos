@@ -861,6 +861,7 @@
   }
   wrap.addEventListener('wheel', function(e) {
     e.preventDefault();
+    if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
     const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     if (delta === 0) return;
     wheelTarget = timeline.scrollLeft + delta * 2;
@@ -875,11 +876,13 @@
 
   wrap.addEventListener('mousedown', function(e) {
     if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
+    if (wheelRAF) { cancelAnimationFrame(wheelRAF); wheelRAF = null; }
     dragging = true;
     startX = e.pageX;
     lastX = e.pageX;
     lastTime = Date.now();
     startScroll = timeline.scrollLeft;
+    wheelTarget = startScroll;
     velocity = 0;
     wrap.style.cursor = 'grabbing';
     document.body.style.userSelect = 'none';
