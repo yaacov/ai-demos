@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>From Sentence Completion to Chat</title>
+<title>מהשלמת משפטים לצ׳אט</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -170,11 +170,11 @@
     font-size: 12px; max-width: 100%; width: 100%;
   }
   .chat-msg.user .chat-bubble {
-    background: var(--blue); color: #fff; border-radius: 12px 12px 4px 12px;
+    background: var(--blue); color: #fff; border-radius: 12px 12px 12px 4px;
   }
   .chat-msg.assistant .chat-bubble {
     background: var(--card-bg); border: 1px solid var(--card-border);
-    color: var(--primary); border-radius: 12px 12px 12px 4px;
+    color: var(--primary); border-radius: 12px 12px 4px 12px;
   }
 
   /* Template view */
@@ -246,11 +246,11 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 12px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  line-height: 18px; text-align: center; margin-left: 6px;
+  line-height: 18px; text-align: center; margin-right: 6px;
 }
 .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
 .nav-github {
-  margin-left: auto;
+  margin-right: auto;
   color: var(--muted);
   transition: color 0.15s;
   display: inline-flex;
@@ -264,7 +264,7 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 9px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  text-decoration: none; margin-left: 6px;
+  text-decoration: none; margin-right: 6px;
   align-self: center;
 }
 .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -278,52 +278,52 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>From Sentence Completion to Chat</h2>
-    <p>A language model does one thing: predict the next word. Given "The sky is", it guesses "blue." It simply completes sentences — over and over.</p>
-    <p>So how does a simple text predictor become an assistant you can have a conversation with? The secret is the <strong>chat template</strong> — a structured format that teaches the model to take turns between user and assistant.</p>
+    <h2>מהשלמת משפטים לצ׳אט</h2>
+    <p>מודל שפה עושה דבר אחד: חוזה את המילה הבאה. בהינתן "The sky is", הוא מנחש "blue." הוא פשוט משלים משפטים — שוב ושוב.</p>
+    <p>אז איך מנבא טקסט פשוט הופך לעוזר שאפשר לנהל איתו שיחה? הסוד הוא <strong>תבנית הצ׳אט</strong> — פורמט מובנה שמלמד את המודל לנהל תורות בין המשתמש לעוזר.</p>
     <ul>
-      <li><strong>Text Completion</strong> — see raw next-word prediction in action</li>
-      <li><strong>Chat Template</strong> — discover how the template structures a conversation</li>
-      <li><strong>Chat in Action</strong> — watch a full multi-turn conversation unfold</li>
+      <li><strong>השלמת טקסט</strong> — צפו בחיזוי המילה הבאה בפעולה</li>
+      <li><strong>תבנית צ׳אט</strong> — גלו איך התבנית מארגנת שיחה</li>
+      <li><strong>צ׳אט בפעולה</strong> — צפו בשיחה רב-תורנית מתגלגלת</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank">למידע נוסף בוויקיפדיה ↗</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 <nav class="nav-bar">
-  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <a class="nav-link" href="../cnn/he.html">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link active">Chat</a>
+  <a class="nav-link active">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
 
-<h1>From Sentence Completion to Chat</h1>
+<h1>מהשלמת משפטים לצ׳אט</h1>
 <p class="subtitle">
-  A language model "just" completes sentences — guessing the next word over and over.
-  How does it become an assistant you can talk to? With the help of a <strong>chat template</strong>.
+  מודל שפה "רק" משלים משפטים — מנחש את המילה הבאה שוב ושוב.
+  איך הוא הופך לעוזר שאפשר לדבר איתו? בעזרת <strong>תבנית צ׳אט</strong>.
 </p>
 
 <div style="display:flex;justify-content:center;margin-bottom:16px;">
   <div class="mode-tabs">
-    <button class="mode-tab active" onclick="switchMode('completion')">Text Completion</button>
-    <button class="mode-tab" onclick="switchMode('template')">Chat Template</button>
-    <button class="mode-tab" onclick="switchMode('chat')">Chat in Action</button>
+    <button class="mode-tab active" onclick="switchMode('completion')">השלמת טקסט</button>
+    <button class="mode-tab" onclick="switchMode('template')">תבנית צ׳אט</button>
+    <button class="mode-tab" onclick="switchMode('chat')">צ׳אט בפעולה</button>
   </div>
 </div>
 
@@ -413,30 +413,30 @@ function renderCompletion() {
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>Text completion</strong> — this is all a language model fundamentally does.
-      It receives a sequence of words (tokens) and guesses the <strong>next word</strong>.
-      After guessing a word, it adds it to the text and continues guessing again.
+      <strong>השלמת טקסט</strong> — זה כל מה שמודל שפה עושה ביסודו.
+      הוא מקבל רצף של מילים (טוקנים) ומנחש את <strong>המילה הבאה</strong>.
+      אחרי שניחש מילה, הוא מוסיף אותה לטקסט וממשיך לנחש שוב.
     </div>
     <div class="card">
-      <h3>What is happening here?</h3>
+      <h3>מה קורה כאן?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        <strong>Black</strong> = the text given to the model (prompt)<br>
-        <strong style="color:var(--blue)">Blue</strong> = what the model generated<br><br>
-        At each step, the model looks at <strong>all the preceding text</strong> and decides what the most
-        likely next word is. Click "Next" to watch it work.
+        <strong>שחור</strong> = הטקסט שניתן למודל (prompt)<br>
+        <strong style="color:var(--blue)">כחול</strong> = מה שהמודל יצר<br><br>
+        בכל שלב, המודל מסתכל על <strong>כל הטקסט הקודם</strong> ומחליט מהי
+        המילה הבאה הסבירה ביותר. לחצו "הבא" כדי לראות אותו עובד.
       </div>
     </div>
     <div class="narration">
-      <strong>The problem:</strong> Without guidance, the model simply keeps writing text.
-      It doesn't "understand" that it needs to answer a question or help someone.
-      It just completes text statistically.
+      <strong>הבעיה:</strong> ללא הכוונה, המודל פשוט ממשיך לכתוב טקסט.
+      הוא לא "מבין" שהוא צריך לענות על שאלה או לעזור למישהו.
+      הוא פשוט משלים טקסט באופן סטטיסטי.
     </div>
   `;
 
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="completionStep=0;render()">Reset</button>
+    <button class="ctrl-btn" onclick="completionStep=0;render()">איפוס</button>
     <button class="ctrl-btn primary-btn" onclick="stepCompletion()" ${completionStep >= COMPLETION_GENERATED.length ? 'disabled' : ''}>
-      Next &rarr;
+      הבא &larr;
     </button>
   `;
 }
@@ -461,42 +461,42 @@ function renderTemplate() {
 
   document.getElementById('vizPanel').innerHTML = `
     <div class="card" style="margin-bottom:12px;">
-      <h3>The idea: it is all still text completion!</h3>
+      <h3>הרעיון: הכול עדיין השלמת טקסט!</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        The chat is a <strong>clever illusion</strong>. In practice, your messages and the model's responses are arranged
-        inside a <strong>text template</strong> with special tags. The model sees all of this as one long piece of plain
-        text and simply — <strong>completes the continuation</strong>.
+        הצ׳אט הוא <strong>אשליה חכמה</strong>. בפועל, ההודעות שלכם והתשובות של המודל מסודרות
+        בתוך <strong>תבנית טקסט</strong> עם תגיות מיוחדות. המודל רואה את כל זה כקטע טקסט אחד ארוך
+        ופשוט — <strong>משלים את ההמשך</strong>.
       </div>
     </div>
     <div class="template-box"><pre style="margin:0;white-space:pre-wrap;">${highlighted}</pre></div>
     <div class="arrow-label">
       <span class="arrow">&#x2191;</span>
-      What the model actually sees — plain text with special tags
+      מה שהמודל באמת רואה — טקסט רגיל עם תגיות מיוחדות
     </div>
   `;
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>The Chat Template</strong> is the trick that turns a completion model into an assistant.
-      Each message is wrapped in special tags that the model learned to recognize during training.
+      <strong>תבנית הצ׳אט</strong> היא הטריק שהופך מודל השלמה לעוזר.
+      כל הודעה עטופה בתגיות מיוחדות שהמודל למד לזהות במהלך האימון.
     </div>
     <div class="card">
-      <h3>The Tags</h3>
+      <h3>התגיות</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
         <span class="tmpl-tag tmpl-system" style="font-size:12px;">&lt;|system|&gt;</span>
-        — Instructions for the model (personality, rules)<br><br>
+        — הוראות למודל (אישיות, כללים)<br><br>
         <span class="tmpl-tag tmpl-user" style="font-size:12px;">&lt;|user|&gt;</span>
-        — The user's message<br><br>
+        — ההודעה של המשתמש<br><br>
         <span class="tmpl-tag tmpl-assistant" style="font-size:12px;">&lt;|assistant|&gt;</span>
-        — The model's response<br><br>
+        — התשובה של המודל<br><br>
         <span class="tmpl-tag" style="font-size:12px;color:var(--muted)">&lt;|end|&gt;</span>
-        — End of message
+        — סוף הודעה
       </div>
     </div>
     <div class="narration">
-      <strong>The key point:</strong> When you send a message in the chat, the application adds it
-      to this template and places the <span class="tmpl-tag tmpl-assistant" style="font-size:11px;">&lt;|assistant|&gt;</span> tag at the end.
-      The model "understands" that it is now its turn to speak — and completes the text as a response.
+      <strong>הנקודה המרכזית:</strong> כשאתם שולחים הודעה בצ׳אט, האפליקציה מוסיפה אותה
+      לתבנית ושמה את התגית <span class="tmpl-tag tmpl-assistant" style="font-size:11px;">&lt;|assistant|&gt;</span> בסוף.
+      המודל "מבין" שעכשיו תורו לדבר — ומשלים את הטקסט כתשובה.
     </div>
   `;
 
@@ -516,12 +516,12 @@ function renderChat() {
   }).join('');
 
   if (shown.length === 0) {
-    msgs = '<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:14px;">Click "Next" to start a conversation</div>';
+    msgs = '<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:14px;">לחצו "הבא" כדי להתחיל שיחה</div>';
   }
 
   document.getElementById('vizPanel').innerHTML = `
     <div class="chat-box">
-      <div class="chat-header">💬 Chat with a language model</div>
+      <div class="chat-header">💬 צ׳אט עם מודל שפה</div>
       <div class="chat-messages">${msgs}</div>
     </div>
     ${chatStep > 0 ? renderBehindTheScenes() : ''}
@@ -529,34 +529,34 @@ function renderChat() {
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>This is what the user sees</strong> — a clean and simple chat interface.
-      But behind the scenes, all messages pass through the <strong>chat template</strong>
-      that we saw in the previous step.
+      <strong>זה מה שהמשתמש רואה</strong> — ממשק צ׳אט נקי ופשוט.
+      אבל מאחורי הקלעים, כל ההודעות עוברות דרך <strong>תבנית הצ׳אט</strong>
+      שראינו בשלב הקודם.
     </div>
     <div class="card">
-      <h3>What happens at each step?</h3>
+      <h3>מה קורה בכל שלב?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        ${chatStep === 0 ? '1. The system defines the model\'s "personality"' :
-          chatStep === 1 ? '<strong>1. System instructions</strong> are added — they determine how the model will behave' :
-          chatStep === 2 ? '<strong>2. The user\'s message</strong> is added to the template with a user tag' :
-          chatStep === 3 ? '<strong>3. The model "completes"</strong> the text after the assistant tag' :
-          chatStep === 4 ? '<strong>4. A follow-up question</strong> — the entire history is sent again as one piece of text' :
-          '<strong>5. A follow-up answer</strong> — the model sees the entire conversation and completes'
+        ${chatStep === 0 ? '1. המערכת מגדירה את ה"אישיות" של המודל' :
+          chatStep === 1 ? '<strong>1. הוראות מערכת</strong> נוספות — הן קובעות איך המודל יתנהג' :
+          chatStep === 2 ? '<strong>2. הודעת המשתמש</strong> נוספת לתבנית עם תגית משתמש' :
+          chatStep === 3 ? '<strong>3. המודל "משלים"</strong> את הטקסט אחרי תגית העוזר' :
+          chatStep === 4 ? '<strong>4. שאלת המשך</strong> — כל ההיסטוריה נשלחת שוב כטקסט אחד' :
+          '<strong>5. תשובת המשך</strong> — המודל רואה את כל השיחה ומשלים'
         }
       </div>
     </div>
     ${chatStep >= 3 ? `
     <div class="narration">
-      <strong>Note:</strong> With each new message, <strong>the entire conversation</strong> is sent again to the model.
-      It has no "memory" — it reads everything from the beginning each time.
-      That is why there is a <strong>context window</strong> limit — the maximum amount of text the model can receive at once.
+      <strong>שימו לב:</strong> עם כל הודעה חדשה, <strong>כל השיחה</strong> נשלחת מחדש למודל.
+      אין לו "זיכרון" — הוא קורא הכול מההתחלה בכל פעם.
+      לכן יש מגבלת <strong>חלון הקשר</strong> — כמות הטקסט המרבית שהמודל יכול לקבל בבת אחת.
     </div>` : ''}
   `;
 
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="chatStep=0;render()">Reset</button>
+    <button class="ctrl-btn" onclick="chatStep=0;render()">איפוס</button>
     <button class="ctrl-btn primary-btn" onclick="stepChat()" ${chatStep >= CHAT_MESSAGES.length ? 'disabled' : ''}>
-      Next &rarr;
+      הבא &larr;
     </button>
   `;
 }
@@ -581,7 +581,7 @@ function renderBehindTheScenes() {
   }
 
   return `
-    <div class="arrow-label"><span class="arrow">&#x2193;</span> What the model actually sees</div>
+    <div class="arrow-label"><span class="arrow">&#x2193;</span> מה שהמודל באמת רואה</div>
     <div class="template-box" style="font-size:11px;"><pre style="margin:0;white-space:pre-wrap;">${tmpl}</pre></div>
   `;
 }
@@ -608,7 +608,7 @@ document.addEventListener('keydown', e => {
 render();
 
 (function(){
-  const KEY = 'intro-dismissed-chat';
+  const KEY = 'intro-dismissed-chat-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

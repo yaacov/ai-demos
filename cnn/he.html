@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CNN (LeNet)</title>
+<title>רשת CNN (LeNet)</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -136,6 +136,7 @@
   .formula {
     font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
     font-size: 13px; text-align: center; color: var(--primary); font-weight: 600; line-height: 1.8;
+    direction: ltr;
   }
   .formula .op { color: var(--muted); font-weight: 400; }
   .scale-note {
@@ -297,11 +298,11 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 12px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    line-height: 18px; text-align: center; margin-left: 6px;
+    line-height: 18px; text-align: center; margin-right: 6px;
   }
   .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
   .nav-github {
-    margin-left: auto;
+    margin-right: auto;
     color: var(--muted);
     transition: color 0.15s;
     display: inline-flex;
@@ -315,7 +316,7 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 9px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    text-decoration: none; margin-left: 6px;
+    text-decoration: none; margin-right: 6px;
     align-self: center;
   }
   .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -329,43 +330,43 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>Convolutional Neural Network</h2>
-    <p>CNNs are the architecture behind image recognition. LeNet (1989) by Yann LeCun was the first practical CNN, used by the USPS to read handwritten zip codes on envelopes. This demo walks through how a CNN processes a handwritten digit image step by step.</p>
-    <p>The visualization uses a simplified 12&times;12 pixel grid (real MNIST images are 28&times;28) so you can follow every computation by hand.</p>
+    <h2>רשת עצבית קונבולוציונית</h2>
+    <p>רשתות CNN הן הארכיטקטורה מאחורי זיהוי תמונות. LeNet (1989) של יאן לקון הייתה רשת ה-CNN המעשית הראשונה, ושימשה את הדואר האמריקני לקריאת מיקודים בכתב יד על מעטפות. הדגמה זו עוברת שלב אחר שלב על האופן שבו CNN מעבדת תמונה של ספרה בכתב יד.</p>
+    <p>ההמחשה משתמשת ברשת מופשטת של 12&times;12 פיקסלים (תמונות MNIST אמיתיות הן 28&times;28) כדי שתוכלו לעקוב אחר כל חישוב בעצמכם.</p>
     <ul>
-      <li>Follow the image through convolution, pooling, and classification</li>
-      <li>See how filters detect edges and patterns</li>
-      <li>Understand why CNNs work for images</li>
+      <li>עקבו אחר התמונה דרך קונבולוציה, איגום וסיווג</li>
+      <li>ראו כיצד מסננים מזהים קצוות ודפוסים</li>
+      <li>הבינו מדוע רשתות CNN עובדות לתמונות</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Convolutional_neural_network" target="_blank">Learn more on Wikipedia &#x2197;</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://he.wikipedia.org/wiki/%D7%A8%D7%A9%D7%AA_%D7%A2%D7%A6%D7%91%D7%99%D7%9D_%D7%A7%D7%95%D7%A0%D7%91%D7%95%D7%9C%D7%95%D7%A6%D7%99%D7%95%D7%A0%D7%99%D7%AA" target="_blank">&#x2197; למידע נוסף בוויקיפדיה</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 
 <nav class="nav-bar">
-  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
   <span class="nav-sep">/</span>
   <a class="nav-link active">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
 
-<h1>Convolutional Neural Network</h1>
+<h1>רשת עצבית קונבולוציונית</h1>
 <div class="step-bar" id="stepBar"></div>
 <div class="step-title" id="stepTitle"></div>
 
@@ -377,9 +378,9 @@
 </div>
 
 <div class="controls-bar">
-  <button class="ctrl-btn" id="btnBack" onclick="goStep(step-1)">&larr; Back</button>
-  <button class="ctrl-btn" id="btnReset" onclick="goStep(0)">Reset</button>
-  <button class="ctrl-btn primary-btn" id="btnNext" onclick="goStep(step+1)">Next &rarr;</button>
+  <button class="ctrl-btn" id="btnBack" onclick="goStep(step-1)">אחורה &rarr;</button>
+  <button class="ctrl-btn" id="btnReset" onclick="goStep(0)">איפוס</button>
+  <button class="ctrl-btn primary-btn" id="btnNext" onclick="goStep(step+1)">&larr; הבא</button>
 </div>
 
 <script>
@@ -476,13 +477,13 @@ const STEP_TO_PATH = [[0],[1],[1],[2],[3,4],[5],[6]];
 
 // --- STEP DEFINITIONS -------------------------------------------------------
 const STEPS = [
-  { title: 'Input Image',        render: renderInput,      narrate: narrInput },
-  { title: 'Convolution',        render: renderConv,       narrate: narrConv },
-  { title: 'Feature Maps',       render: renderFeatures,   narrate: narrFeatures },
-  { title: 'Max Pooling',        render: renderPooling,    narrate: narrPooling },
+  { title: 'תמונת קלט',        render: renderInput,      narrate: narrInput },
+  { title: 'קונבולוציה',        render: renderConv,       narrate: narrConv },
+  { title: 'מפות מאפיינים',       render: renderFeatures,   narrate: narrFeatures },
+  { title: 'איגום מקסימום',        render: renderPooling,    narrate: narrPooling },
   { title: 'Conv2 + Pool2',      render: renderConv2,      narrate: narrConv2 },
-  { title: 'Flatten + Dense',    render: renderFlatten,    narrate: narrFlatten },
-  { title: 'Classification',     render: renderOutput,     narrate: narrOutput },
+  { title: 'שטיחה + שכבה צפופה',    render: renderFlatten,    narrate: narrFlatten },
+  { title: 'סיווג',     render: renderOutput,     narrate: narrOutput },
 ];
 
 let step = 0;
@@ -512,7 +513,7 @@ function renderStepBar() {
     const cls = i === step ? 'active' : i < step ? 'done' : '';
     return `<div class="step-dot ${cls}" onclick="goStep(${i})" title="${s.title}"></div>`;
   }).join('');
-  document.getElementById('stepTitle').innerHTML = `<strong>Step ${step + 1}/${STEPS.length}</strong>  ${STEPS[step].title}`;
+  document.getElementById('stepTitle').innerHTML = `<strong>שלב ${step + 1}/${STEPS.length}</strong>  ${STEPS[step].title}`;
 }
 
 function renderPathBar() {
@@ -583,14 +584,14 @@ function renderFeatureMap(data, cellSize, label, color) {
 function renderInput() {
   const grid = renderGrid(IMG, 24, pixelBg, 'inputGrid');
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Handwritten digit: "7"</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">12&times;12 pixels, grayscale 0&ndash;255</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px;">ספרה בכתב יד: "7"</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">12&times;12 פיקסלים, גווני אפור 0&ndash;255</div>
     ${grid}
     <div class="predict-label" style="margin-top:16px;">
-      Goal: classify this image as a digit <strong>0&ndash;9</strong>
+      המטרה: לסווג את התמונה כספרה <strong>0&ndash;9</strong>
     </div>
     <div style="margin-top:16px;color:var(--muted);font-size:13px;text-align:center;max-width:400px;line-height:1.6;">
-      A CNN processes the image through layers of filters and pooling to extract features, then classifies the result.
+      רשת CNN מעבדת את התמונה דרך שכבות של מסננים ואיגום כדי לחלץ מאפיינים, ואז מסווגת את התוצאה.
     </div>
   </div>`;
 }
@@ -607,7 +608,7 @@ function renderConv() {
 
   const grid = renderGrid(IMG, cellSz, pixelBg, 'convGrid');
   const fm = FEATURE_MAPS[1];
-  const fmGrid = renderFeatureMap(fm, 20, 'Output: 10x10 feature map', 'var(--orange)');
+  const fmGrid = renderFeatureMap(fm, 20, 'פלט: מפת מאפיינים 10x10', 'var(--orange)');
 
   let patchCells = '';
   for (let i = 0; i < 3; i++)
@@ -625,7 +626,7 @@ function renderConv() {
   const result = Math.max(0, sum).toFixed(2);
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">A 3&times;3 filter slides across the image</div>
+    <div class="flow-label">מסנן 3&times;3 גולש על פני התמונה</div>
     <div class="grid-wrap" id="convWrap">
       ${grid}
       <div class="filter-overlay" id="filterOverlay" style="width:${filterPx}px;height:${filterPx}px;top:0;left:0;"></div>
@@ -633,13 +634,13 @@ function renderConv() {
 
     <div class="tensor-op-flow" style="margin-top:12px;">
       <div class="tensor-operand">
-        <div style="font-size:10px;color:var(--muted);font-weight:600;">Patch (row ${demoPos[0]}, col ${demoPos[1]})</div>
+        <div style="font-size:10px;color:var(--muted);font-weight:600;">Patch (שורה ${demoPos[0]}, עמודה ${demoPos[1]})</div>
         <div class="filter-box">${patchCells}</div>
         <span class="shape-badge mat">[3x3]</span>
       </div>
       <div class="tensor-op-sym">&odot;</div>
       <div class="tensor-operand">
-        <div style="font-size:10px;color:var(--orange);font-weight:600;">Vertical Edge Filter</div>
+        <div style="font-size:10px;color:var(--orange);font-weight:600;">מסנן קצוות אנכיים</div>
         ${renderFilterWeights(fw)}
         <span class="shape-badge mat">[3x3]</span>
       </div>
@@ -685,12 +686,12 @@ function renderFeatures() {
   ).join('<div style="width:8px"></div>');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">4 different filters, 4 different feature maps</div>
+    <div class="flow-label">4 מסננים שונים, 4 מפות מאפיינים שונות</div>
     <div class="flow-row" style="gap:16px;">${filterCards}</div>
     <div class="flow-arrow">&darr;</div>
     <div class="flow-row" style="gap:4px;overflow-x:auto;width:100%;justify-content:center;">${maps}</div>
     <div style="margin-top:8px;font-size:12px;color:var(--muted);text-align:center;">
-      Each 10&times;10 map highlights where a specific pattern was detected
+      כל מפה 10&times;10 מדגישה היכן זוהה דפוס מסוים בקלט
     </div>
   </div>`;
 }
@@ -705,13 +706,13 @@ function renderPooling() {
   const pooled = POOLED_MAPS[mapIdx];
 
   const grid = renderGrid(fm, cellSz, v => featureBg(v, mx), 'poolGrid');
-  const poolGrid = renderFeatureMap(pooled, 36, 'Pooled: 5x5', 'var(--orange)');
+  const poolGrid = renderFeatureMap(pooled, 36, 'לאחר איגום: 5x5', 'var(--orange)');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Max Pooling: take the maximum of each 2&times;2 region</div>
+    <div class="flow-label">איגום מקסימום: לקיחת המקסימום מכל אזור 2&times;2</div>
     <div class="flow-row" style="gap:24px;align-items:flex-start;">
       <div style="display:flex;flex-direction:column;align-items:center;">
-        <div class="feature-label" style="color:var(--orange)">Feature Map (10&times;10)</div>
+        <div class="feature-label" style="color:var(--orange)">מפת מאפיינים (10&times;10)</div>
         <div class="grid-wrap" id="poolWrap">
           ${grid}
           <div class="pool-overlay" id="poolOverlay" style="width:${2*cellSz+gap}px;height:${2*cellSz+gap}px;top:0;left:0;"></div>
@@ -721,7 +722,7 @@ function renderPooling() {
       <div id="poolResult" style="opacity:0;transition:opacity 0.5s;margin-top:30px;">${poolGrid}</div>
     </div>
     <div style="margin-top:12px;font-size:12px;color:var(--secondary);text-align:center;max-width:420px;line-height:1.6;">
-      Each 2&times;2 block &rarr; keep the <strong>maximum</strong> value. The map shrinks from 10&times;10 to 5&times;5, keeping the strongest activations.
+      כל בלוק 2&times;2 &rarr; שומרים את הערך ה<strong>מקסימלי</strong>. המפה מצטמצמת מ-10&times;10 ל-5&times;5, ושומרת על ההפעלות החזקות ביותר.
     </div>
   </div>`;
 
@@ -750,18 +751,18 @@ function renderConv2() {
   ).join('<div style="width:4px"></div>');
 
   const conv2Viz = CONV2_MAPS.map((m, i) =>
-    renderFeatureMap(m, 30, `Feature ${i+1}`, FILTERS[i].color)
+    renderFeatureMap(m, 30, `מאפיין ${i+1}`, FILTERS[i].color)
   ).join('<div style="width:8px"></div>');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Deeper layers detect higher-level patterns</div>
+    <div class="flow-label">שכבות עמוקות יותר מזהות דפוסים ברמה גבוהה יותר</div>
     <div class="flow-row" style="gap:4px;">${pooledViz}</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);">4 pooled maps (5&times;5)</div>
-    <div class="flow-arrow">&darr; Conv2 (3&times;3 filters)</div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);">4 מפות מאוגמות (5&times;5)</div>
+    <div class="flow-arrow">&darr; Conv2 (מסנני 3&times;3)</div>
     <div class="flow-row" style="gap:8px;">${conv2Viz}</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);">4 feature maps (3&times;3)</div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);">4 מפות מאפיינים (3&times;3)</div>
     <div style="margin-top:12px;font-size:12px;color:var(--secondary);text-align:center;max-width:420px;line-height:1.6;">
-      Conv2 combines patterns from <strong>all</strong> input channels. Each new filter looks at combinations of edges to detect shapes like angles, curves, and intersections.
+      Conv2 משלב דפוסים מ<strong>כל</strong> ערוצי הקלט. כל מסנן חדש מחפש שילובים של קצוות כדי לזהות צורות כמו זוויות, עיקולים וצמתים.
     </div>
   </div>`;
 }
@@ -789,20 +790,20 @@ function renderFlatten() {
   ).join('<div style="width:4px"></div>');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Flatten 2D maps into a 1D vector, then classify</div>
+    <div class="flow-label">שטיחת מפות דו-ממדיות לוקטור חד-ממדי, ואז סיווג</div>
 
     <div class="flow-row" style="gap:4px;">${mapsViz}</div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;">4 &times; 3&times;3 = 36 values</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;">4 &times; 3&times;3 = 36 ערכים</div>
 
     <div class="flow-arrow">&darr; Flatten</div>
 
     <div style="display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:500px;">${flatCells}</div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;">36-element vector</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;">וקטור בן 36 איברים</div>
 
-    <div class="flow-arrow">&darr; Dense layer (36 &rarr; 10)</div>
+    <div class="flow-arrow">&darr; שכבה צפופה (36 &rarr; 10)</div>
 
     <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">${denseNodes}</div>
-    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">10 output neurons (one per digit)</div>
+    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px;">10 נוירוני פלט (אחד לכל ספרה)</div>
   </div>`;
 }
 
@@ -827,7 +828,7 @@ function renderOutput() {
   }).join('');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Softmax &rarr; probability for each digit</div>
+    <div class="flow-label">Softmax &rarr; הסתברות לכל ספרה</div>
 
     <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">${denseNodes}</div>
 
@@ -836,13 +837,13 @@ function renderOutput() {
     <div style="width:100%;max-width:380px;margin-top:8px;">${bars}</div>
 
     <div class="predict-label" style="margin-top:16px;">
-      Prediction: <strong>"7"</strong> with 92% confidence
+      תחזית: <strong>"7"</strong> עם ביטחון של 92%
     </div>
 
     <div style="margin-top:16px;text-align:center;">
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;max-width:400px;">
-        The CNN correctly identifies the handwritten digit. During training, backpropagation adjusts
-        <strong>all</strong> filter weights and dense layer weights to minimize classification error.
+        רשת ה-CNN מזהה בהצלחה את הספרה בכתב יד. במהלך האימון, הפצת שגיאה לאחור (backpropagation) מכוונת
+        את <strong>כל</strong> משקלות המסננים והשכבה הצפופה כדי למזער את שגיאת הסיווג.
       </div>
     </div>
   </div>`;
@@ -852,106 +853,106 @@ function renderOutput() {
 function narrInput() {
   return `
     <div class="narration">
-      <strong>The input:</strong> a grayscale image of a handwritten digit.
-      Each pixel is a number from 0 (background) to 255 (full intensity).
-      The CNN must decide which digit (0&ndash;9) it represents.
+      <strong>הקלט:</strong> תמונה בגווני אפור של ספרה בכתב יד.
+      כל פיקסל הוא מספר מ-0 (רקע) עד 255 (עוצמה מלאה).
+      רשת ה-CNN צריכה להחליט איזו ספרה (0&ndash;9) היא מייצגת.
     </div>
     <div class="card">
-      <h3>What you will see</h3>
+      <h3>מה תראו</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        This image of a <strong>"7"</strong> flows through a CNN step by step:
-        convolution, pooling, more convolution, flattening, and finally classification.
+        תמונה זו של <strong>"7"</strong> עוברת דרך רשת CNN שלב אחר שלב:
+        קונבולוציה, איגום, קונבולוציה נוספת, שטיחה, ולבסוף סיווג.
       </div>
     </div>
     <div class="narration">
-      Unlike a fully-connected network that treats every pixel independently,
-      a CNN exploits <strong>spatial structure</strong> &mdash; nearby pixels matter more
-      than distant ones. This is why CNNs dominate image tasks.
+      בניגוד לרשת מקושרת מלאה שמתייחסת לכל פיקסל בנפרד,
+      רשת CNN מנצלת <strong>מבנה מרחבי</strong> &mdash; פיקסלים קרובים חשובים יותר
+      מרחוקים. זו הסיבה שרשתות CNN שולטות במשימות תמונה.
     </div>
     <div class="narration">
-      <div class="scale-note"><strong>Scale:</strong> MNIST uses 28&times;28 images.
-      LeNet (1989) used 32&times;32. ImageNet models process 224&times;224 with millions of parameters.
-      Here: 12&times;12 for clarity.</div>
+      <div class="scale-note"><strong>קנה מידה:</strong> MNIST משתמש בתמונות 28&times;28.
+      LeNet (1989) השתמש ב-32&times;32. מודלי ImageNet מעבדים 224&times;224 עם מיליוני פרמטרים.
+      כאן: 12&times;12 לשם בהירות.</div>
     </div>`;
 }
 
 function narrConv() {
   return `
     <div class="narration">
-      <strong>Convolution:</strong> a small filter (3&times;3) slides across the image.
-      At each position, it computes a weighted sum of the overlapping pixels.
-      The result is one value in the output <strong>feature map</strong>.
+      <strong>קונבולוציה:</strong> מסנן קטן (3&times;3) גולש על פני התמונה.
+      בכל מיקום, הוא מחשב סכום משוקלל של הפיקסלים החופפים.
+      התוצאה היא ערך אחד ב-<strong>מפת המאפיינים</strong>.
     </div>
     <div class="card">
-      <h3>How it works</h3>
+      <h3>איך זה עובד</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        1. Place the 3&times;3 filter over a patch of the image<br>
-        2. Multiply each pixel by the corresponding filter weight<br>
-        3. Sum all 9 products &rarr; one output value<br>
-        4. Apply ReLU (keep positive, zero out negative)<br>
-        5. Slide to the next position and repeat
+        1. מציבים את המסנן 3&times;3 על חלק מהתמונה<br>
+        2. כופלים כל פיקסל במשקל המתאים במסנן<br>
+        3. סוכמים את 9 המכפלות &rarr; ערך פלט אחד<br>
+        4. מפעילים ReLU (שומרים חיובי, מאפסים שלילי)<br>
+        5. גולשים למיקום הבא וחוזרים
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">
         out[i,j] <span class="op">=</span> ReLU(&sum; input[i+r, j+c] &times; filter[r,c])
       </div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        12&times;12 input with 3&times;3 filter &rarr; 10&times;10 output
+        קלט 12&times;12 עם מסנן 3&times;3 &rarr; פלט 10&times;10
       </div>
     </div>
     <div class="narration">
-      The filter shown here detects <strong>vertical edges</strong>: it responds strongly
-      where the image transitions from dark to light horizontally.
-      <div class="scale-note">The network <strong>learns</strong> the filter weights during training.
-      These are not hand-designed.</div>
+      המסנן המוצג כאן מזהה <strong>קצוות אנכיים</strong>: הוא מגיב בחוזקה
+      במקומות שבהם התמונה עוברת מכהה לבהיר במאוזן.
+      <div class="scale-note">הרשת <strong>לומדת</strong> את משקלות המסנן במהלך האימון.
+      הם לא מתוכננים ידנית.</div>
     </div>`;
 }
 
 function narrFeatures() {
   return `
     <div class="narration">
-      <strong>Multiple filters</strong> capture different features.
-      Each filter produces its own feature map, highlighting where
-      a specific pattern appears in the input.
+      <strong>מסננים מרובים</strong> לוכדים מאפיינים שונים.
+      כל מסנן מייצר מפת מאפיינים משלו, שמדגישה
+      היכן דפוס מסוים מופיע בקלט.
     </div>
     <div class="card">
-      <h3>What each filter detects</h3>
+      <h3>מה כל מסנן מזהה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong style="color:var(--blue)">Horizontal edge</strong> &mdash; top bar of the 7<br>
-        <strong style="color:var(--orange)">Vertical edge</strong> &mdash; stem of the 7<br>
-        <strong style="color:var(--aqua)">Diagonal</strong> &mdash; slanted strokes<br>
-        <strong style="color:var(--violet)">Corner</strong> &mdash; where edges meet<br><br>
-        Together, the 4 maps form a <strong>multi-channel representation</strong> of the image.
+        <strong style="color:var(--blue)">קצה אופקי</strong> &mdash; הקו העליון של ה-7<br>
+        <strong style="color:var(--orange)">קצה אנכי</strong> &mdash; הרגל של ה-7<br>
+        <strong style="color:var(--aqua)">אלכסון</strong> &mdash; קווים משופעים<br>
+        <strong style="color:var(--violet)">פינה</strong> &mdash; היכן שקצוות נפגשים<br><br>
+        יחד, 4 המפות יוצרות <strong>ייצוג רב-ערוצי</strong> של התמונה.
       </div>
     </div>
     <div class="narration">
-      In training, gradient descent adjusts filter weights to minimize classification error.
-      The network discovers which patterns are most useful on its own.
-      <div class="scale-note">LeNet: 6 filters in Conv1, 16 in Conv2.
-      Modern CNNs: 64&ndash;512 filters per layer.</div>
+      באימון, ירידת גרדיאנט (Gradient Descent) מכוונת את משקלות המסנן כדי למזער את שגיאת הסיווג.
+      הרשת מגלה בעצמה אילו דפוסים הכי שימושיים.
+      <div class="scale-note">LeNet: 6 מסננים ב-Conv1, 16 ב-Conv2.
+      רשתות CNN מודרניות: 64&ndash;512 מסננים לכל שכבה.</div>
     </div>`;
 }
 
 function narrPooling() {
   return `
     <div class="narration">
-      <strong>Max pooling</strong> reduces the spatial size of each feature map.
-      A 2&times;2 window slides across the map (stride 2), keeping only the
-      <strong>maximum</strong> value in each region.
+      <strong>איגום מקסימום</strong> מקטין את הגודל המרחבי של כל מפת מאפיינים.
+      חלון 2&times;2 גולש על המפה (צעד 2), ושומר רק את
+      הערך ה<strong>מקסימלי</strong> בכל אזור.
     </div>
     <div class="card">
-      <h3>Why pool?</h3>
+      <h3>למה לאגם?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>Reduces size:</strong> 10&times;10 &rarr; 5&times;5 (4&times; fewer values)<br><br>
-        <strong>Translation invariance:</strong> if the digit shifts by a pixel,
-        the same max is often selected, making the network robust to small shifts.<br><br>
-        <strong>Fewer parameters:</strong> smaller maps mean fewer weights in later layers.
+        <strong>הקטנת גודל:</strong> 10&times;10 &rarr; 5&times;5 (פי 4 פחות ערכים)<br><br>
+        <strong>אינווריאנס להזזה:</strong> אם הספרה זזה בפיקסל,
+        לרוב אותו מקסימום נבחר, מה שהופך את הרשת לעמידה בפני הזזות קטנות.<br><br>
+        <strong>פחות פרמטרים:</strong> מפות קטנות יותר משמען פחות משקלות בשכבות המאוחרות.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">
         out[i,j] <span class="op">=</span> max(in[2i..2i+1, 2j..2j+1])
       </div>
@@ -961,47 +962,47 @@ function narrPooling() {
 function narrConv2() {
   return `
     <div class="narration">
-      <strong>Deeper layers</strong> detect higher-level patterns.
-      Conv1 found edges; Conv2 finds <strong>combinations of edges</strong> &mdash;
-      corners, curves, junctions.
+      <strong>שכבות עמוקות יותר</strong> מזהות דפוסים ברמה גבוהה יותר.
+      Conv1 מצא קצוות; Conv2 מוצא <strong>שילובים של קצוות</strong> &mdash;
+      פינות, עיקולים, צמתים.
     </div>
     <div class="card">
-      <h3>Building a hierarchy</h3>
+      <h3>בניית היררכיה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>Layer 1:</strong> edges, gradients<br>
-        <strong>Layer 2:</strong> corners, simple shapes<br>
-        <strong>Layer 3+:</strong> parts, objects<br><br>
-        Each Conv2 filter spans <strong>all input channels</strong>, combining
-        information from every Conv1 filter. A 3&times;3&times;4 filter on a
-        5&times;5 input produces a 3&times;3 output.
+        <strong>שכבה 1:</strong> קצוות, גרדיאנטים<br>
+        <strong>שכבה 2:</strong> פינות, צורות פשוטות<br>
+        <strong>שכבה 3+:</strong> חלקים, אובייקטים<br><br>
+        כל מסנן Conv2 משתרע על <strong>כל ערוצי הקלט</strong>, ומשלב
+        מידע מכל מסנני Conv1. מסנן 3&times;3&times;4 על
+        קלט 5&times;5 מייצר פלט 3&times;3.
       </div>
     </div>
     <div class="narration">
-      In deeper networks (VGG, ResNet), this hierarchy continues for
-      dozens of layers, learning increasingly abstract representations.
-      <div class="scale-note">ResNet-50: 50 layers, 25M parameters.
-      LeNet: 2 conv layers, ~60K parameters.</div>
+      ברשתות עמוקות יותר (VGG, ResNet), היררכיה הזו נמשכת לאורך
+      עשרות שכבות, ולומדת ייצוגים מופשטים יותר ויותר.
+      <div class="scale-note">ResNet-50: 50 שכבות, 25M פרמטרים.
+      LeNet: 2 שכבות קונבולוציה, ~60K פרמטרים.</div>
     </div>`;
 }
 
 function narrFlatten() {
   return `
     <div class="narration">
-      <strong>Flatten:</strong> the 2D feature maps are unrolled into a single 1D vector.
-      4 maps of 3&times;3 = <strong>36 values</strong>.
+      <strong>שטיחה:</strong> מפות המאפיינים הדו-ממדיות נפרשות לוקטור חד-ממדי אחד.
+      4 מפות של 3&times;3 = <strong>36 ערכים</strong>.
     </div>
     <div class="card">
-      <h3>From spatial to semantic</h3>
+      <h3>ממרחבי לסמנטי</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The convolutional layers extracted <strong>where</strong> patterns occur.
-        The dense (fully connected) layer learns <strong>which combinations</strong>
-        of features correspond to which digit.<br><br>
-        Every one of the 36 input values connects to each of the 10 output neurons:
-        36 &times; 10 = 360 weights + 10 biases.
+        שכבות הקונבולוציה חילצו <strong>היכן</strong> הדפוסים מופיעים.
+        השכבה הצפופה (מקושרת מלאה) לומדת <strong>אילו שילובים</strong>
+        של מאפיינים מתאימים לאיזו ספרה.<br><br>
+        כל אחד מ-36 ערכי הקלט מתחבר לכל אחד מ-10 נוירוני הפלט:
+        36 &times; 10 = 360 משקלות + 10 הטיות.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Dense layer</h3>
+      <h3>שכבה צפופה</h3>
       <div class="formula">y <span class="op">=</span> W &middot; x <span class="op">+</span> b</div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
         W: <span class="shape-badge mat">[10x36]</span> &nbsp;
@@ -1014,18 +1015,18 @@ function narrFlatten() {
 function narrOutput() {
   return `
     <div class="narration">
-      <strong>Softmax</strong> converts the 10 raw output values into probabilities
-      that sum to 1. The highest probability is the network's prediction.
+      <strong>Softmax</strong> ממיר את 10 ערכי הפלט הגולמיים להסתברויות
+      שסכומן 1. ההסתברות הגבוהה ביותר היא התחזית של הרשת.
     </div>
     <div class="card">
-      <h3>The prediction</h3>
+      <h3>התחזית</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The CNN predicts <strong style="color:var(--blue)">"7"</strong> with 92% confidence.
-        The small remaining probability is spread across similar-looking digits
-        (1, 2) &mdash; digits with similar strokes.<br><br>
-        During training, the network sees thousands of labeled examples. Backpropagation
-        adjusts <strong>every weight</strong> &mdash; filter weights, dense layer weights,
-        biases &mdash; to minimize the cross-entropy loss.
+        רשת ה-CNN חוזה <strong style="color:var(--blue)">"7"</strong> עם ביטחון של 92%.
+        ההסתברות הנותרת הקטנה מתפזרת בין ספרות דומות
+        (1, 2) &mdash; ספרות עם קווים דומים.<br><br>
+        במהלך האימון, הרשת רואה אלפי דוגמאות מתוייקות. הפצת שגיאה לאחור
+        (backpropagation) מכוונת את <strong>כל משקל</strong> &mdash; משקלות המסננים, משקלות השכבה הצפופה,
+        הטיות &mdash; כדי למזער את הפסד cross-entropy.
       </div>
     </div>
     <div class="formula-card">
@@ -1034,15 +1035,15 @@ function narrOutput() {
         P(digit=k) <span class="op">=</span> e<sup>z<sub>k</sub></sup> <span class="op">/</span> &sum; e<sup>z<sub>j</sub></sup>
       </div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Ensures all probabilities are positive and sum to 1.
+        מבטיח שכל ההסתברויות חיוביות וסכומן 1.
       </div>
     </div>
     <div class="narration">
-      <strong>LeNet's impact:</strong> in the 1990s, LeNet read ~10% of all handwritten
-      checks in the US. Today, CNNs power face recognition, medical imaging, self-driving
-      cars, and much more.
-      <div class="scale-note">LeNet: ~60K params, 2 conv layers.
-      Modern image models: 100M+ params, 100+ layers.</div>
+      <strong>ההשפעה של LeNet:</strong> בשנות ה-90, LeNet קרא כ-10% מכל הצ'קים בכתב יד
+      בארה"ב. כיום, רשתות CNN מפעילות זיהוי פנים, הדמיה רפואית, נהיגה אוטונומית
+      ועוד.
+      <div class="scale-note">LeNet: ~60K פרמטרים, 2 שכבות קונבולוציה.
+      מודלי תמונה מודרניים: 100M+ פרמטרים, 100+ שכבות.</div>
     </div>`;
 }
 
@@ -1056,7 +1057,7 @@ document.addEventListener('keydown', e => {
 renderAll();
 
 (function(){
-  const KEY = 'intro-dismissed-cnn';
+  const KEY = 'intro-dismissed-cnn-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

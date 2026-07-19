@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הדגמות AI</title>
+<style>
+  :root {
+    --surface: #fcfcfb;
+    --page: #f0ede4;
+    --primary: #0b0b0b;
+    --secondary: #52514e;
+    --muted: #898781;
+    --gridline: #d5d0c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19;
+      --page: #121210;
+      --primary: #e8e6de;
+      --secondary: #b0ae9f;
+      --muted: #7a786e;
+      --gridline: #2e2e2a;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 64px;
+  }
+  h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; }
+  .subtitle {
+    color: var(--secondary);
+    font-size: 0.95rem;
+    max-width: 36rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  ul {
+    list-style: none;
+    width: 100%;
+    max-width: 36rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  a {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--gridline);
+    border-radius: 6px;
+    padding: 14px 18px;
+    color: var(--primary);
+    text-decoration: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  a:hover { border-color: var(--secondary); }
+  a strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+  a span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+  .nav-bar {
+    width: 100%; max-width: 36rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    background: var(--surface); border: 1px solid var(--gridline);
+    border-radius: 6px; padding: 6px 12px; margin-bottom: 24px;
+    font-size: 13px;
+  }
+  .nav-bar-title { font-weight: 700; color: var(--primary); }
+  .nav-github {
+    margin-right: auto;
+    color: var(--muted);
+    transition: color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
+  }
+  .nav-github:hover { color: var(--blue); }
+  .nav-lang-toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: transparent; border: 2px solid var(--muted);
+    color: var(--muted); font-size: 9px; font-weight: 700;
+    padding: 0; cursor: pointer; transition: all 0.15s;
+    text-decoration: none; margin-right: 6px;
+    align-self: center;
+  }
+  .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
+</style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <span class="nav-bar-title">הדגמות AI</span>
+    <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  </nav>
+  <h1>הדגמות AI</h1>
+  <p class="subtitle">המחשות אינטראקטיביות ממכונות טיורינג ועד מודלי שפה גדולים מודרניים. כל הדגמה היא קובץ HTML יחיד — פתחו אחת ושחקו.</p>
+  <ul>
+    <li><a href="timeline/he.html"><strong>ציר זמן</strong><span>אבני דרך ב-AI/NLP, ‏1936–2026</span></a></li>
+    <li><a href="turing-machine/he.html"><strong>מכונת טיורינג</strong><span>הרצת מכונת טיורינג דטרמיניסטית צעד אחר צעד</span></a></li>
+    <li><a href="nondeterministic-turing-machine/he.html"><strong>מכונת טיורינג לא דטרמיניסטית</strong><span>חישוב מסתעף ואינטואיציה ל-P מול NP</span></a></li>
+    <li><a href="turing-test/he.html"><strong>מבחן טיורינג</strong><span>שפטו מי הצד האנושי</span></a></li>
+    <li><a href="word-vectors/he.html"><strong>וקטורי מילים</strong><span>גררו שיכונים; נסו אריתמטיקת וקטורים</span></a></li>
+    <li><a href="cnn/he.html"><strong>CNN</strong><span>צפו בקונבולוציה, מאגר וסיווג צעד אחר צעד</span></a></li>
+    <li><a href="transformer/he.html"><strong>טרנספורמר</strong><span>טוקנים דרך קשב לחיזוי המילה הבאה</span></a></li>
+    <li><a href="chat/he.html"><strong>צ׳אט</strong><span>איך השלמת טקסט הופכת לעוזר בשיחה</span></a></li>
+    <li><a href="tool-usage/he.html"><strong>שימוש בכלים</strong><span>קריאות כלים מובנות למערכות חיצוניות</span></a></li>
+  </ul>
+</body>
+</html>

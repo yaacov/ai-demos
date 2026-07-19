@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Word Vectors</title>
+<title>וקטורי מילים</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -109,6 +109,7 @@
   .formula {
     font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
     font-size: 13px; text-align: center; color: var(--primary); font-weight: 600; line-height: 1.8;
+    direction: ltr;
   }
   .formula .op { color: var(--muted); font-weight: 400; }
   .scale-note {
@@ -176,13 +177,13 @@
     font-size: 11px; font-weight: 700; color: var(--muted); padding: 4px 6px;
     border-bottom: 2px solid var(--gridline); text-align: center;
   }
-  .vec-table th:first-child { text-align: left; }
+  .vec-table th:first-child { text-align: right; }
   .vec-table td {
     padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--gridline);
     font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace; font-size: 11px;
   }
   .vec-table td:first-child {
-    text-align: left; font-family: inherit; font-weight: 600;
+    text-align: right; font-family: inherit; font-weight: 600;
   }
 
   /* 2D Scatter */
@@ -228,6 +229,7 @@
     display: flex; align-items: center; gap: 12px; justify-content: center;
     flex-wrap: wrap; padding: 20px; background: var(--surface);
     border: 1px solid var(--gridline); border-radius: 12px;
+    direction: ltr;
   }
   .arith-word {
     font-size: 18px; font-weight: 700; padding: 10px 20px;
@@ -244,11 +246,12 @@
     border-radius: 6px; border: 1px solid var(--gridline);
     background: var(--surface); color: var(--secondary);
     cursor: pointer; transition: all 0.15s;
+    direction: ltr;
   }
   .preset-btn:hover { border-color: var(--blue); color: var(--blue); }
   .preset-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
   .neighbors-list { margin-top: 12px; }
-  .neighbor-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+  .neighbor-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; direction: ltr; }
   .neighbor-word { font-weight: 600; width: 70px; text-align: right; font-size: 14px; }
   .neighbor-bar-bg { flex: 1; height: 22px; background: var(--gridline); border-radius: 4px; overflow: hidden; }
   .neighbor-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
@@ -291,11 +294,11 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 12px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    line-height: 18px; text-align: center; margin-left: 6px;
+    line-height: 18px; text-align: center; margin-right: 6px;
   }
   .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
   .nav-github {
-    margin-left: auto;
+    margin-right: auto;
     color: var(--muted);
     transition: color 0.15s;
     display: inline-flex;
@@ -309,7 +312,7 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 9px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    text-decoration: none; margin-left: 6px;
+    text-decoration: none; margin-right: 6px;
     align-self: center;
   }
   .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -323,49 +326,49 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>Word Vectors (Embeddings)</h2>
-    <p>Computers cannot understand words directly — they work with numbers. Word vectors (embeddings) solve this by representing each word as a list of numbers — a point in space.</p>
-    <p>The magic: words with similar meanings end up near each other. Even more remarkably, the directions between words capture relationships like gender, tense, and geography.</p>
+    <h2>וקטורי מילים (Embeddings)</h2>
+    <p>מחשבים אינם מבינים מילים באופן ישיר — הם עובדים עם מספרים. וקטורי מילים (embeddings) פותרים זאת על ידי ייצוג כל מילה כרשימת מספרים — נקודה במרחב.</p>
+    <p>התוצאה: מילים עם משמעויות דומות מגיעות לקרבה זו לזו. יתרה מכך — הכיוונים בין מילים לוכדים יחסים כמו מגדר, זמן דקדוקי וגיאוגרפיה.</p>
     <ul>
-      <li>3D Space — see how similar words cluster together in a hand-crafted embedding</li>
-      <li>High-Dimensional — explore a realistic projection of 50+ words from high-D space</li>
-      <li>Arithmetic — discover that king − man + woman = queen</li>
+      <li>מרחב תלת-ממדי — ראו כיצד מילים דומות מתקבצות יחד ב-embedding בנוי ידנית</li>
+      <li>רב-ממדי — חקרו הטלה מציאותית של 50+ מילים ממרחב רב-ממדי</li>
+      <li>אריתמטיקה — גלו ש-king − man + woman = queen</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Word_embedding" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Word_embedding" target="_blank">למידע נוסף בוויקיפדיה &#8592;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 <nav class="nav-bar">
-  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link active">Word Vectors</a>
+  <a class="nav-link active">וקטורי מילים</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <a class="nav-link" href="../cnn/he.html">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
 
-<h1>Word Vectors</h1>
-<p class="subtitle">Words as points in space — similar meanings, nearby positions</p>
+<h1>וקטורי מילים</h1>
+<p class="subtitle">מילים כנקודות במרחב — משמעויות דומות, מיקומים קרובים</p>
 
 <div style="display:flex;justify-content:center;margin-bottom:8px;">
   <div class="mode-tabs">
-    <button class="mode-tab active" onclick="switchMode('3d')">3D Space</button>
-    <button class="mode-tab" onclick="switchMode('highdim')">High-Dimensional</button>
-    <button class="mode-tab" onclick="switchMode('arithmetic')">Arithmetic</button>
+    <button class="mode-tab active" onclick="switchMode('3d')">מרחב תלת-ממדי</button>
+    <button class="mode-tab" onclick="switchMode('highdim')">רב-ממדי</button>
+    <button class="mode-tab" onclick="switchMode('arithmetic')">אריתמטיקה</button>
   </div>
 </div>
 
@@ -410,13 +413,13 @@ const WORDS_3D = [
 ];
 
 const GROUPS_HD = {
-  country:   { color:'blue',    label:'Countries' },
-  capital:   { color:'aqua',    label:'Capitals' },
-  male:      { color:'orange',  label:'Male' },
-  female:    { color:'magenta', label:'Female' },
-  verb:      { color:'green',   label:'Verbs (base)' },
-  verb_past: { color:'yellow',  label:'Verbs (past)' },
-  animal:    { color:'violet',  label:'Animals' },
+  country:   { color:'blue',    label:'מדינות' },
+  capital:   { color:'aqua',    label:'בירות' },
+  male:      { color:'orange',  label:'זכר' },
+  female:    { color:'magenta', label:'נקבה' },
+  verb:      { color:'green',   label:'פעלים (בסיס)' },
+  verb_past: { color:'yellow',  label:'פעלים (עבר)' },
+  animal:    { color:'violet',  label:'חיות' },
 };
 
 const WORDS_HD = [
@@ -665,35 +668,36 @@ function side3D() {
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>What are word embeddings?</strong><br>
-      Each word is mapped to a list of numbers — a vector. These numbers position the word in a geometric space.
-      Words with similar meanings end up near each other.
+      <strong>מהן הטמעות מילים?</strong><br>
+      כל מילה ממופה לרשימת מספרים — וקטור. המספרים האלה ממקמים את המילה במרחב גיאומטרי.
+      מילים עם משמעויות דומות מגיעות לקרבה זו לזו.
     </div>
     <div class="card">
-      <h3>Vector Table</h3>
+      <h3>טבלת וקטורים</h3>
       <table class="vec-table">
-        <tr><th>Word</th><th>x</th><th>y</th><th>z</th></tr>
+        <tr><th>מילה</th><th>x</th><th>y</th><th>z</th></tr>
         ${rows}
       </table>
     </div>
     <div class="narration">
-      Drag to rotate the 3D space.
-      Notice how semantic similarity becomes geometric proximity.
-      <div class="scale-note">Here: 3D for clarity. Real embeddings use hundreds to thousands of dimensions (Word2Vec: 300, GPT-3: 12,288).</div>
+      גררו כדי לסובב את המרחב התלת-ממדי.
+      שימו לב כיצד דמיון סמנטי הופך לקרבה גיאומטרית.
+      <div class="scale-note">כאן: תלת-ממד לשם בהירות. הטמעות אמיתיות משתמשות במאות עד אלפי ממדים (Word2Vec: 300, GPT-3: 12,288).</div>
     </div>`;
 }
 
 function controls3D() {
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="rotX=-20;rotY=30;zoom3D=1;render()">Reset View</button>`;
+    <button class="ctrl-btn" onclick="rotX=-20;rotY=30;zoom3D=1;render()">איפוס תצוגה</button>`;
 }
 
 // ── HIGH-DIM RENDERING ───────────────────────────────────────────────────────
 
 function renderHighDim() {
   const W = 760, H = 480;
+  const filterLabels = { all: 'הכל', geography: 'גיאוגרפיה', gender: 'מגדר', tense: 'זמן דקדוקי' };
   const filterBtns = ['all','geography','gender','tense'].map(f =>
-    `<button class="filter-btn${activeFilter===f?' active':''}" onclick="setFilter('${f}')">${f === 'all' ? 'All' : f[0].toUpperCase()+f.slice(1)}</button>`
+    `<button class="filter-btn${activeFilter===f?' active':''}" onclick="setFilter('${f}')">${filterLabels[f]}</button>`
   ).join('');
 
   const matchWords = new Set();
@@ -761,22 +765,21 @@ function setFilter(f) {
 function sideHighDim() {
   const filterInfo = {
     all: `<div class="narration">
-      <strong>50 words in 10 dimensions</strong>, projected to 2D. Each word is a point; nearby points have similar meanings.
-      Use the filter buttons to highlight specific relationship patterns.
+      <strong>50 מילים ב-10 ממדים</strong>, מוטלות לדו-ממד. כל מילה היא נקודה; נקודות קרובות הן מילים עם משמעויות דומות.
+      השתמשו בכפתורי הסינון כדי להדגיש דפוסי יחסים ספציפיים.
     </div>`,
     geography: `<div class="narration">
-      <strong>Geography:</strong> Each dashed line connects a country to its capital. Notice the lines are roughly
-      <strong>parallel</strong> — the direction from country → capital is consistent. The "capital of" relationship
-      is a single direction in vector space.
+      <strong>גיאוגרפיה:</strong> כל קו מקווקו מחבר מדינה לבירתה. שימו לב שהקווים <strong>מקבילים</strong>
+      בערך — הכיוון ממדינה לבירה הוא עקבי. היחס "בירה של" הוא כיוון יחיד במרחב הוקטורי.
     </div>`,
     gender: `<div class="narration">
-      <strong>Gender:</strong> Each line connects a male word to its female counterpart. Again, the lines are roughly
-      parallel — "gender" is encoded as a consistent direction. This is what makes arithmetic like
-      <strong>king − man + woman = queen</strong> work.
+      <strong>מגדר:</strong> כל קו מחבר מילה זכרית למקבילתה הנקבית. שוב, הקווים מקבילים
+      בערך — "מגדר" מקודד ככיוון עקבי. זה מה שמאפשר לאריתמטיקה כמו
+      <strong>king − man + woman = queen</strong> לעבוד.
     </div>`,
     tense: `<div class="narration">
-      <strong>Verb tense:</strong> Each line connects a base form to its past tense.
-      The "past tense" transformation is another consistent direction —
+      <strong>זמן דקדוקי:</strong> כל קו מחבר צורת בסיס לזמן העבר שלה.
+      ההמרה ל"עבר" היא כיוון עקבי נוסף —
       <strong>walked − walk ≈ ran − run ≈ swam − swim</strong>.
     </div>`,
   };
@@ -784,23 +787,23 @@ function sideHighDim() {
   document.getElementById('sidePanel').innerHTML = `
     ${filterInfo[activeFilter]}
     <div class="card">
-      <h3>Why project to 2D?</h3>
+      <h3>למה להטיל לדו-ממד?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        Real word vectors live in <strong>hundreds to thousands of dimensions</strong> (Word2Vec: 300, GPT-3: 12,288).
-        We project down using PCA — finding the 2 directions of greatest variation.<br><br>
-        Some structure is lost, but the main clusters and directions survive.
+        וקטורי מילים אמיתיים חיים ב<strong>מאות עד אלפי ממדים</strong> (Word2Vec: 300, GPT-3: 12,288).
+        אנו מטילים למטה באמצעות PCA — מציאת 2 הכיוונים עם השונות הגדולה ביותר.<br><br>
+        חלק מהמבנה אובד, אך האשכולות והכיוונים העיקריים שורדים.
       </div>
     </div>
     <div class="card">
-      <h3>What to look for</h3>
+      <h3>על מה לשים לב</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong style="color:var(--blue)">Countries</strong> cluster near their <strong style="color:var(--aqua)">capitals</strong>.<br>
-        <strong style="color:var(--orange)">Male</strong> and <strong style="color:var(--magenta)">female</strong> pairs align along a consistent axis.<br>
-        <strong style="color:var(--green)">Verbs</strong> group by action type, with <strong style="color:var(--yellow)">past tense</strong> shifted in the same direction.
+        <strong style="color:var(--blue)">מדינות</strong> מתקבצות ליד ה<strong style="color:var(--aqua)">בירות</strong> שלהן.<br>
+        זוגות <strong style="color:var(--orange)">זכר</strong> ו<strong style="color:var(--magenta)">נקבה</strong> מיושרים לאורך ציר עקבי.<br>
+        <strong style="color:var(--green)">פעלים</strong> מקובצים לפי סוג הפעולה, כאשר <strong style="color:var(--yellow)">זמן העבר</strong> מוסט באותו כיוון.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Dimensionality</h3>
+      <h3>ממדיות</h3>
       <div class="formula">
         10D vectors → PCA → 2D
       </div>
@@ -810,7 +813,7 @@ function sideHighDim() {
 
 function controlsHighDim() {
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="activeFilter='all';zoomHD=1;panHDx=0;panHDy=0;render()">Reset View</button>`;
+    <button class="ctrl-btn" onclick="activeFilter='all';zoomHD=1;panHDx=0;panHDy=0;render()">איפוס תצוגה</button>`;
 }
 
 // ── ARITHMETIC RENDERING ─────────────────────────────────────────────────────
@@ -881,8 +884,8 @@ function renderArithmetic() {
         </svg>
         ${miniPoints}
       </div>
-      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted)">
-        <span style="color:var(--blue)">⤏ dashed</span> = relationship (${bWord} → ${aWord}) &nbsp;
+      <div style="text-align:center;margin-top:6px;font-size:11px;color:var(--muted);direction:ltr">
+        <span style="color:var(--blue)">⤇ dashed</span> = relationship (${bWord} → ${aWord}) &nbsp;
         <span style="color:var(--aqua)">→ solid</span> = same direction from ${cWord}
       </div>`;
   }
@@ -910,42 +913,42 @@ function selectPreset(i) {
 function sideArithmetic() {
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>The most famous word vector property:</strong> relationships between words correspond to
-      <strong>directions</strong> in the space. Subtract "man" from "king" and you get the concept of
-      "royalty." Add that to "woman" and you land near "queen."
+      <strong>התכונה המפורסמת ביותר של וקטורי מילים:</strong> יחסים בין מילים מתאימים
+      ל<strong>כיוונים</strong> במרחב. חסרו "man" מ-"king" ותקבלו את המושג
+      "מלכותיות." הוסיפו את זה ל-"woman" ותגיעו קרוב ל-"queen."
     </div>
     <div class="card">
-      <h3>How it works</h3>
+      <h3>איך זה עובד</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>Compute:</strong> result = vec(A) − vec(B) + vec(C)<br><br>
-        <strong>Find:</strong> the word whose vector is most similar (highest cosine similarity) to the result.<br><br>
-        This works because the direction from B to A captures a relationship that transfers to C.
+        <strong>חישוב:</strong> <span dir="ltr">result = vec(A) − vec(B) + vec(C)</span><br><br>
+        <strong>מציאה:</strong> המילה שהוקטור שלה הכי דומה (דמיון קוסינוס הגבוה ביותר) לתוצאה.<br><br>
+        זה עובד כי הכיוון מ-B ל-A לוכד יחס שמתקיים גם עבור C.
       </div>
     </div>
     <div class="card">
-      <h3>Three relationship types</h3>
+      <h3>שלושה סוגי יחסים</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>Gender:</strong> king − man + woman = queen<br>
-        <strong>Geography:</strong> paris − france + japan = tokyo<br>
-        <strong>Tense:</strong> walked − walk + swim = swam<br><br>
-        Each works because the relationship is encoded as a consistent direction in vector space.
+        <strong>מגדר:</strong> <span dir="ltr">king − man + woman = queen</span><br>
+        <strong>גיאוגרפיה:</strong> <span dir="ltr">paris − france + japan = tokyo</span><br>
+        <strong>זמן דקדוקי:</strong> <span dir="ltr">walked − walk + swim = swam</span><br><br>
+        כל אחד עובד כי היחס מקודד ככיוון עקבי במרחב הוקטורי.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Cosine Similarity</h3>
+      <h3>דמיון קוסינוס</h3>
       <div class="formula">
         sim(a, b) <span class="op">=</span> a · b <span class="op">/</span> (‖a‖ × ‖b‖)
       </div>
       <div style="font-size:12px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Measures the angle between two vectors.
-        1 = identical direction, 0 = perpendicular.
+        מודד את הזווית בין שני וקטורים.
+        1 = כיוון זהה, 0 = ניצבים.
       </div>
     </div>`;
 }
 
 function controlsArithmetic() {
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="activePreset=null;render()">Reset</button>`;
+    <button class="ctrl-btn" onclick="activePreset=null;render()">איפוס</button>`;
 }
 
 // ── KEYBOARD ─────────────────────────────────────────────────────────────────
@@ -965,7 +968,7 @@ document.addEventListener('keydown', e => {
 render();
 
 (function(){
-  const KEY = 'intro-dismissed-word-vectors';
+  const KEY = 'intro-dismissed-word-vectors-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

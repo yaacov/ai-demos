@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Timeline</title>
+<title>ציר זמן של בינה מלאכותית</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -142,7 +142,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* scroll-snap removed for smooth drag */
     position: relative;
   }
 
@@ -192,8 +191,8 @@
   .tl-card {
     margin-top: 22px;
     width: 100%;
-    direction: ltr;
-    text-align: left;
+    direction: rtl;
+    text-align: right;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
@@ -219,6 +218,7 @@
     color: var(--secondary);
     font-weight: 500;
     white-space: nowrap;
+    direction: ltr;
   }
   .tl-title {
     font-size: 15px; font-weight: 700; margin-bottom: 8px; line-height: 1.4;
@@ -249,7 +249,6 @@
     align-items: center;
     justify-content: flex-start;
     padding-top: 18px;
-    /* scroll-snap removed for smooth drag */
     z-index: 2;
   }
   .tl-section-title {
@@ -265,7 +264,7 @@
   }
 
   /* ── Context strips (HW & Algorithm) ──────────────── */
-  .context-strips { padding: 0 56px; margin-top: 16px; margin-bottom: 4px; }
+  .context-strips { padding: 0 56px; margin-top: 16px; margin-bottom: 4px; direction: ltr; }
   .context-strip {
     display: flex; align-items: center; margin-bottom: 6px;
     position: relative;
@@ -461,11 +460,11 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 12px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  line-height: 18px; text-align: center; margin-left: 6px;
+  line-height: 18px; text-align: center; margin-right: 6px;
 }
 .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
 .nav-github {
-  margin-left: auto;
+  margin-right: auto;
   color: var(--muted);
   transition: color 0.15s;
   display: inline-flex;
@@ -479,7 +478,7 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 9px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  text-decoration: none; margin-left: 6px;
+  text-decoration: none; margin-right: 6px;
   align-self: center;
 }
 .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -493,42 +492,42 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>AI &amp; NLP Timeline</h2>
-    <p>This interactive timeline traces the key milestones that shaped artificial intelligence and natural language processing — from the theoretical foundations to today's large language models.</p>
-    <p>Each card highlights a breakthrough moment: who was behind it, what changed, and why it mattered for the AI we use today.</p>
+    <h2>ציר זמן של בינה מלאכותית ועיבוד שפה טבעית</h2>
+    <p>ציר זמן אינטראקטיבי זה עוקב אחר אבני הדרך המרכזיות שעיצבו את הבינה המלאכותית ועיבוד השפה הטבעית — מהיסודות התיאורטיים ועד למודלי השפה הגדולים של ימינו.</p>
+    <p>כל כרטיס מדגיש רגע פריצת דרך: מי עמד מאחוריו, מה השתנה, ולמה זה חשוב לבינה המלאכותית שאנחנו משתמשים בה היום.</p>
     <ul>
-      <li>Scroll horizontally to explore milestones from 1936 to 2026</li>
-      <li>Click the blue links on cards to jump to interactive demos</li>
-      <li>Each card explains the significance of that breakthrough</li>
+      <li>גללו אופקית כדי לחקור אבני דרך משנת 1936 ועד 2026</li>
+      <li>לחצו על הקישורים הכחולים בכרטיסים כדי לעבור להדגמות אינטראקטיביות</li>
+      <li>כל כרטיס מסביר את המשמעות של אותה פריצת דרך</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Natural_language_processing" target="_blank">למידע נוסף בוויקיפדיה &#x2197;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 <nav class="nav-bar">
-  <a class="nav-link active">Timeline</a>
+  <a class="nav-link active">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <a class="nav-link" href="../cnn/he.html">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
 
-<h1>Milestones in the History of Natural Language Processing</h1>
+<h1>אבני דרך בתולדות עיבוד השפה הטבעית</h1>
 
 <div class="timeline-wrap">
 
@@ -581,16 +580,16 @@
       <div class="tl-people">
         <span class="tl-person">Alan Turing</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Turing Machine</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">מכונת טיורינג</a></div>
       <div class="tl-body">
-        <strong>Alan Turing</strong> defines a mathematical model of computation: an infinite tape, a read/write head, and a transition table.
-        The model proves what can and cannot be computed.
+        <strong>אלן טיורינג</strong> מגדיר מודל מתמטי של חישוב: סרט אינסופי, ראש קורא/כותב, וטבלת מעברים.
+        המודל מוכיח מה ניתן ומה לא ניתן לחשב.
         <div class="tl-insight">
-          <strong>Significance:</strong> The theoretical foundation for every digital computer.
-          Every programming language and every processor implements the same computational model.
+          <strong>משמעות:</strong> היסוד התיאורטי לכל מחשב דיגיטלי.
+          כל שפת תכנות וכל מעבד מיישמים את אותו מודל חישובי.
         </div>
       </div>
-      <a class="tl-link" href="../turing-machine/index.html">Interactive Turing Machine &#x2192;</a>
+      <a class="tl-link" href="../turing-machine/he.html">מכונת טיורינג אינטראקטיבית &#x2190;</a>
     </div>
   </div>
 
@@ -602,15 +601,15 @@
       <div class="tl-people">
         <span class="tl-person">Alan Turing</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_test" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Turing Test</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Turing_test" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">מבחן טיורינג</a></div>
       <div class="tl-body">
-        <strong>Alan Turing</strong> publishes a paper asking: "Can machines think?"
-        He proposes a test: if a human judge cannot distinguish between a machine and a person in a text conversation, the machine "thinks."
+        <strong>אלן טיורינג</strong> מפרסם מאמר ושואל: "האם מכונות יכולות לחשוב?"
+        הוא מציע מבחן: אם שופט אנושי אינו מסוגל להבחין בין מכונה לאדם בשיחת טקסט, המכונה "חושבת."
         <div class="tl-insight">
-          <strong>Significance:</strong> Turing defined a criterion for measuring artificial intelligence before the technology even existed.
+          <strong>משמעות:</strong> טיורינג הגדיר קריטריון למדידת בינה מלאכותית עוד לפני שהטכנולוגיה בכלל קיימת.
         </div>
       </div>
-      <a class="tl-link" href="../turing-test/index.html">Interactive Turing Test &#x2192;</a>
+      <a class="tl-link" href="../turing-test/he.html">מבחן טיורינג אינטראקטיבי &#x2190;</a>
     </div>
   </div>
 
@@ -622,16 +621,16 @@
       <div class="tl-people">
         <span class="tl-person">Yann LeCun</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LeNet" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">LeNet — Handwritten Digit Recognition</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LeNet" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">LeNet — זיהוי ספרות בכתב יד</a></div>
       <div class="tl-body">
-        <strong>Yann LeCun</strong> develops LeNet — a convolutional neural network (CNN)
-        that recognizes handwritten digits. The US Postal Service (USPS) uses it to read zip codes.
+        <strong>Yann LeCun</strong> מפתח את LeNet — רשת נוירונים קונבולוציונית (CNN)
+        שמזהה ספרות בכתב יד. שירות הדואר של ארה"ב (USPS) משתמש בה כדי לקרוא מיקודים.
         <div class="tl-insight">
-          <strong>Significance:</strong> The first practical use of a neural network in production.
-          Proof that networks can solve real-world problems, not just academic ones.
+          <strong>משמעות:</strong> השימוש המעשי הראשון ברשת נוירונים בייצור.
+          הוכחה שרשתות יכולות לפתור בעיות מהעולם האמיתי, לא רק אקדמיות.
         </div>
       </div>
-      <a class="tl-link" href="../cnn/index.html">CNN Visualization &#x2192;</a>
+      <a class="tl-link" href="../cnn/he.html">תצוגה חזותית של CNN &#x2190;</a>
     </div>
   </div>
 
@@ -644,15 +643,15 @@
         <span class="tl-person">Jimmy Wales</span>
         <span class="tl-person">Larry Sanger</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Wikipedia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Wikipedia — The Free Encyclopedia</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Wikipedia" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">ויקיפדיה — האנציקלופדיה החופשית</a></div>
       <div class="tl-body">
-        <strong>Wikipedia</strong> launches as a free online encyclopedia that anyone can edit.
-        Within a few years it accumulated millions of articles in hundreds of languages —
-        the largest open knowledge repository in the world.
+        <strong>ויקיפדיה</strong> מושקת כאנציקלופדיה מקוונת חופשית שכל אחד יכול לערוך.
+        תוך מספר שנים היא צברה מיליוני ערכים במאות שפות —
+        מאגר הידע הפתוח הגדול בעולם.
         <div class="tl-insight">
-          <strong>Significance for AI:</strong> Wikipedia became the primary data source for training language models.
-          Nearly every modern NLP model was trained on its texts.
-          Its structured knowledge (categories, links, infoboxes) feeds knowledge graphs and search engines.
+          <strong>משמעות עבור בינה מלאכותית:</strong> ויקיפדיה הפכה למקור הנתונים העיקרי לאימון מודלי שפה.
+          כמעט כל מודל NLP מודרני אומן על הטקסטים שלה.
+          הידע המובנה שלה (קטגוריות, קישורים, תיבות מידע) מזין גרפי ידע ומנועי חיפוש.
         </div>
       </div>
     </div>
@@ -668,12 +667,12 @@
       </div>
       <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Google_Books" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Google Books</a></div>
       <div class="tl-body">
-        Google launches <strong>Google Books</strong> — a project to scan and digitize millions of books
-        from libraries around the world. To date, over 40 million volumes have been scanned.
+        Google משיקה את <strong>Google Books</strong> — פרויקט לסריקה ודיגיטציה של מיליוני ספרים
+        מספריות ברחבי העולם. עד היום, למעלה מ-40 מיליון כרכים נסרקו.
         <div class="tl-insight">
-          <strong>Significance for AI:</strong> The project created a massive text corpus
-          that led to tools like <strong>Google Ngram Viewer</strong> for analyzing language trends over hundreds of years.
-          The digitized books were used to train language models and develop advanced OCR.
+          <strong>משמעות עבור בינה מלאכותית:</strong> הפרויקט יצר מאגר טקסט עצום
+          שהוביל לכלים כמו <strong>Google Ngram Viewer</strong> לניתוח מגמות שפה לאורך מאות שנים.
+          הספרים המדוגיטלים שימשו לאימון מודלי שפה ולפיתוח OCR מתקדם.
         </div>
       </div>
     </div>
@@ -690,17 +689,17 @@
         <span class="tl-person">Yoshua Bengio</span>
         <span class="tl-person">Alex Krizhevsky</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Deep_learning" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Deep Networks + GPU</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Deep_learning" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">רשתות עמוקות + GPU</a></div>
       <div class="tl-body">
-        <strong>Neural networks</strong> — the idea has existed since the 1950s,
-        but computers were too weak. <strong>Hinton, LeCun, and Bengio</strong>
-        prove that deep networks can learn complex patterns.
+        <strong>רשתות נוירונים</strong> — הרעיון קיים מאז שנות ה-50,
+        אבל המחשבים היו חלשים מדי. <strong>Hinton, LeCun ו-Bengio</strong>
+        מוכיחים שרשתות עמוקות יכולות ללמוד דפוסים מורכבים.
         <br><br>
-        <strong>GPUs</strong> — graphics cards built for gaming
-        perform billions of matrix multiplications in parallel.
+        <strong>GPUs</strong> — כרטיסים גרפיים שנבנו למשחקים
+        מבצעים מיליארדי כפלי מטריצות במקביל.
         <div class="tl-insight">
-          <strong>2012:</strong> <strong>AlexNet</strong> uses a GPU
-          and wins the image recognition competition by a large margin. The GPU became the foundational hardware of AI.
+          <strong>2012:</strong> <strong>AlexNet</strong> משתמשת ב-GPU
+          וזוכה בתחרות זיהוי התמונות בפער גדול. ה-GPU הפך לחומרה הבסיסית של הבינה המלאכותית.
         </div>
       </div>
     </div>
@@ -714,17 +713,17 @@
       <div class="tl-people">
         <span class="tl-person">Tomas Mikolov</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Word2vec" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Word Vectors — Word2Vec</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Word2vec" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">וקטורי מילים — Word2Vec</a></div>
       <div class="tl-body">
-        A neural network that maps words to <strong>vectors</strong> in a high-dimensional space.
-        Similar words get nearby vectors. Vector arithmetic reflects semantic relationships:
+        רשת נוירונים שממפה מילים ל<strong>וקטורים</strong> במרחב רב-ממדי.
+        מילים דומות מקבלות וקטורים קרובים. אריתמטיקה של וקטורים משקפת יחסים סמנטיים:
         <br><br>
         <strong>king − man + woman = queen</strong>
         <div class="tl-insight">
-          <strong>Significance:</strong> Word relationships are learned from text, not from hand-written rules.
+          <strong>משמעות:</strong> יחסים בין מילים נלמדים מטקסט, לא מחוקים שנכתבו ידנית.
         </div>
       </div>
-      <a class="tl-link" href="../word-vectors/index.html">Word Vectors Visualization &#x2192;</a>
+      <a class="tl-link" href="../word-vectors/he.html">תצוגה חזותית של וקטורי מילים &#x2190;</a>
     </div>
   </div>
 
@@ -739,17 +738,17 @@
         <span class="tl-person">Niki Parmar</span>
         <span class="tl-person">Jakob Uszkoreit</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Transformer Architecture</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">ארכיטקטורת הטרנספורמר</a></div>
       <div class="tl-body">
-        The paper <strong>"Attention Is All You Need"</strong>
-        introduces the <strong>Transformer</strong> — a structure that processes entire sentences in parallel
-        using an <strong>Attention mechanism</strong>, instead of word-by-word.
+        המאמר <strong>"Attention Is All You Need"</strong>
+        מציג את ה<strong>טרנספורמר</strong> — מבנה שמעבד משפטים שלמים במקביל
+        באמצעות מנגנון <strong>Attention</strong>, במקום מילה אחר מילה.
         <div class="tl-insight">
-          <strong>Significance:</strong> Parallel processing fully utilizes the GPU.
-          All modern language models use components from this architecture.
+          <strong>משמעות:</strong> עיבוד מקבילי מנצל את ה-GPU במלואו.
+          כל מודלי השפה המודרניים משתמשים ברכיבים מארכיטקטורה זו.
         </div>
       </div>
-      <a class="tl-link" href="../transformer/index.html">Transformer Visualization &#x2192;</a>
+      <a class="tl-link" href="../transformer/he.html">תצוגה חזותית של טרנספורמר &#x2190;</a>
     </div>
   </div>
 
@@ -762,19 +761,19 @@
         <span class="tl-person">OpenAI</span>
         <span class="tl-person">Sam Altman</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/ChatGPT" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">ChatGPT — AI for Everyone</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/ChatGPT" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">ChatGPT — בינה מלאכותית לכולם</a></div>
       <div class="tl-body">
-        <strong>OpenAI</strong> launches <strong>ChatGPT</strong> in November 2022 —
-        a simple chat interface on top of the GPT-3.5 model.
-        Within five days — one million users. Within two months — 100 million.
-        The fastest-growing product in history.
+        <strong>OpenAI</strong> משיקה את <strong>ChatGPT</strong> בנובמבר 2022 —
+        ממשק צ׳אט פשוט מעל מודל GPT-3.5.
+        תוך חמישה ימים — מיליון משתמשים. תוך חודשיים — 100 מיליון.
+        המוצר עם הצמיחה המהירה ביותר בהיסטוריה.
         <div class="tl-insight">
-          <strong>Significance:</strong> For the first time, anyone can chat with a language model without technical knowledge.
-          ChatGPT transformed AI from an academic topic into an everyday tool,
-          and launched an arms race among the major tech companies.
+          <strong>משמעות:</strong> לראשונה, כל אחד יכול לשוחח עם מודל שפה ללא ידע טכני.
+          ChatGPT הפך את הבינה המלאכותית מנושא אקדמי לכלי יומיומי,
+          והשיק מרוץ חימוש בין חברות הטכנולוגיה הגדולות.
         </div>
       </div>
-      <a class="tl-link" href="../chat/index.html">From Sentence Completion to Chat &#x2192;</a>
+      <a class="tl-link" href="../chat/he.html">מהשלמת משפטים לצ׳אט &#x2190;</a>
     </div>
   </div>
 
@@ -786,14 +785,14 @@
       <div class="tl-people">
         <span class="tl-person">Hugo Touvron</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LLaMA" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Open Source — Llama</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/LLaMA" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">קוד פתוח — Llama</a></div>
       <div class="tl-body">
-        Until 2023, the most powerful language models were closed-source.
-        <strong>Llama</strong> was released as open source.
+        עד 2023, מודלי השפה החזקים ביותר היו בקוד סגור.
+        <strong>Llama</strong> שוחרר כקוד פתוח.
         <div class="tl-insight">
-          <strong>Significance:</strong> Relatively small models on affordable hardware
-          achieve performance close to closed-source models.
-          Accessible to researchers and startups.
+          <strong>משמעות:</strong> מודלים קטנים יחסית על חומרה נגישה
+          משיגים ביצועים קרובים למודלים בקוד סגור.
+          נגישים לחוקרים ולסטארטאפים.
         </div>
       </div>
     </div>
@@ -808,17 +807,17 @@
         <span class="tl-person">Tri Dao</span>
         <span class="tl-person">Benjamin Lee</span>
       </div>
-      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Context_window" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">Long Context Window</a></div>
+      <div class="tl-title"><a href="https://en.wikipedia.org/wiki/Context_window" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed var(--muted)">חלון הקשר ארוך</a></div>
       <div class="tl-body">
-        The context window = the amount of text the model processes at once.
-        Previously: a few pages. Text beyond the window — the model doesn't see it.
+        חלון ההקשר = כמות הטקסט שהמודל מעבד בבת אחת.
+        בעבר: כמה עמודים. טקסט מעבר לחלון — המודל לא רואה אותו.
         <br><br>
-        Gemini and others expanded the window to millions of tokens.
+        Gemini ואחרים הרחיבו את החלון למיליוני טוקנים.
         <div class="tl-insight">
-          <strong>Significance:</strong> An entire book, a codebase, or an hour of video — in a single request.
+          <strong>משמעות:</strong> ספר שלם, מאגר קוד, או שעה של וידאו — בבקשה אחת.
         </div>
       </div>
-      <a class="tl-link" href="../tool-usage/index.html">Tool Usage Visualization &#x2192;</a>
+      <a class="tl-link" href="../tool-usage/he.html">תצוגה חזותית של שימוש בכלים &#x2190;</a>
     </div>
   </div>
 
@@ -827,7 +826,7 @@
 
 <script>
 (function(){
-  const KEY = 'intro-dismissed-timeline';
+  const KEY = 'intro-dismissed-timeline-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

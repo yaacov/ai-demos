@@ -77,12 +77,12 @@
   }
 
   .nav-bar {
-    width: 100%; max-width: 1060px; display: flex; gap: 4px; margin-bottom: 6px;
+    width: 100%; max-width: 1200px; display: flex; gap: 4px; margin-bottom: 6px;
     background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
     padding: 4px; align-items: center;
   }
   .nav-link {
-    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 16px;
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 10px;
     border-radius: 4px; border: none; background: transparent; color: var(--secondary);
     cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
   }
@@ -92,7 +92,7 @@
 
   h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0; }
   .subtitle { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.02em; margin-bottom: 4px; }
-  .container { width: 100%; max-width: 1060px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+  .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
 
   .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .algo-bar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); margin-right: 4px; }
@@ -273,6 +273,16 @@
   align-self: center;
 }
 .nav-github:hover { color: var(--blue); }
+.nav-lang-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 9px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  text-decoration: none; margin-left: 6px;
+  align-self: center;
+}
+.nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
 .intro-wiki {
   display: inline-block; margin-bottom: 16px;
   color: var(--blue); font-size: 13px; text-decoration: none;
@@ -314,6 +324,7 @@
     <span class="nav-sep">/</span>
     <a class="nav-link" href="../tool-usage/index.html">Tools</a>
     <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
     <button class="intro-reopen" title="About this demo">?</button>
   </nav>
   <h1>Turing Test</h1>

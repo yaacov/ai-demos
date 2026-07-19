@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מבחן טיורינג — סימולציה אינטראקטיבית</title>
+<style>
+  :root {
+    --surface:        #fcfcfb;
+    --page:           #f0ede4;
+    --primary:        #0b0b0b;
+    --secondary:      #52514e;
+    --muted:          #898781;
+    --gridline:       #d5d0c4;
+    --baseline:       #c3c2b7;
+    --blue:           #2a78d6;
+    --red:            #c03030;
+    --good:           #0ca30c;
+    --critical:       #d03b3b;
+    --metal-light:    #d4d4d0;
+    --metal-mid:      #a8a8a2;
+    --metal-dark:     #6e6e68;
+    --card-bg:        #fdfbf0;
+    --card-border:    #c8c0a8;
+    --narration-bg:   #f8f5ea;
+    --narration-border:#ddd8c4;
+    --head-accent:    #b08030;
+    --state-active:   #2a78d6;
+    --judge-bg:       #f4f0e0;
+    --human-accent:   #2a78d6;
+    --machine-accent: #c03030;
+    --highlight-bg:   rgba(192,48,48,0.12);
+    --highlight-border:#c03030;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface:      #1a1a19;
+      --page:         #121210;
+      --primary:      #e8e6de;
+      --secondary:    #b0ae9f;
+      --muted:        #7a786e;
+      --gridline:     #2e2e2a;
+      --baseline:     #3a3a35;
+      --blue:         #5a9ae8;
+      --red:          #d04040;
+      --good:         #30a030;
+      --critical:     #d04040;
+      --metal-light:  #55554f;
+      --metal-mid:    #3e3e39;
+      --metal-dark:   #2a2a26;
+      --card-bg:      #1e1e1a;
+      --card-border:  #3a3832;
+      --narration-bg: #1e1e1a;
+      --narration-border:#3a3832;
+      --head-accent:  #c89040;
+      --state-active: #5a9ae8;
+      --judge-bg:     #1e1e1a;
+      --human-accent: #5a9ae8;
+      --machine-accent:#d04040;
+      --highlight-bg: rgba(208,64,64,0.15);
+      --highlight-border:#d04040;
+    }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 16px;
+  }
+
+  .nav-bar {
+    width: 100%; max-width: 1200px; display: flex; gap: 4px; margin-bottom: 6px;
+    background: var(--surface); border: 1px solid var(--gridline); border-radius: 6px;
+    padding: 4px; align-items: center;
+  }
+  .nav-link {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 6px 10px;
+    border-radius: 4px; border: none; background: transparent; color: var(--secondary);
+    cursor: pointer; text-decoration: none; transition: all 0.15s; display: inline-block;
+  }
+  .nav-link:hover { background: var(--page); color: var(--primary); }
+  .nav-link.active { background: var(--primary); color: var(--page); font-weight: 600; }
+  .nav-sep { color: var(--muted); font-size: 0.7rem; padding: 0 2px; }
+
+  h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0; }
+  .subtitle { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.02em; margin-bottom: 4px; }
+  .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+
+  .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .algo-bar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); margin-left: 4px; }
+  .algo-btn {
+    font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
+  }
+  .algo-btn:hover { border-color: var(--baseline); color: var(--primary); }
+  .algo-btn.selected { background: var(--primary); color: var(--page); border-color: var(--primary); }
+
+  .chat-row { display: flex; gap: 10px; align-items: stretch; flex: 1; min-height: 0; overflow: hidden; }
+  @media (max-width: 740px) { .chat-row { flex-direction: column; } }
+  .chat-panel {
+    flex: 1; min-width: 0; min-height: 0; background: var(--surface); border: 2px solid var(--gridline);
+    border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .chat-panel.revealed-human { border-color: var(--human-accent); }
+  .chat-panel.revealed-machine { border-color: var(--machine-accent); }
+  .chat-label {
+    background: var(--metal-dark); color: var(--metal-light); padding: 5px 12px;
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em;
+    text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .chat-label .reveal-tag {
+    font-size: 0.6rem; padding: 2px 8px; border-radius: 3px; font-weight: 700;
+    letter-spacing: 0.04em; display: none;
+  }
+  .chat-label .reveal-tag.human { background: var(--human-accent); color: #fff; display: inline-block; }
+  .chat-label .reveal-tag.machine { background: var(--machine-accent); color: #fff; display: inline-block; }
+  .chat-body {
+    padding: 8px; display: flex; flex-direction: column; gap: 6px;
+    overflow-y: auto; flex: 1; min-height: 0;
+  }
+
+  .msg { display: flex; flex-direction: column; gap: 1px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg-sender {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--muted); padding: 0 4px;
+  }
+  .msg-bubble {
+    padding: 7px 10px; border-radius: 8px; font-size: 0.78rem; line-height: 1.5;
+    max-width: 95%; position: relative;
+  }
+  .msg.judge .msg-bubble {
+    background: var(--judge-bg); border: 1px solid var(--gridline);
+    color: var(--primary); align-self: flex-start;
+  }
+  .msg.entity .msg-bubble {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    color: var(--secondary); align-self: flex-end;
+  }
+  .msg.judge .msg-sender { color: var(--head-accent); }
+
+  .telltale {
+    background: transparent; border-bottom: 2px solid transparent;
+    transition: background 0.4s, border-color 0.4s; padding: 0 1px; border-radius: 2px;
+  }
+  .telltale.revealed {
+    background: var(--highlight-bg);
+    border-bottom-color: var(--highlight-border);
+  }
+  .telltale-tip {
+    display: none; font-size: 0.6rem; color: var(--machine-accent); font-weight: 600;
+    font-style: italic; margin-top: 2px; padding-right: 4px;
+  }
+  .telltale-tip.revealed { display: block; }
+
+  .controls-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-inline-start: auto; }
+  .ctrl-btn {
+    font-family: inherit; font-size: 0.75rem; font-weight: 600; padding: 5px 14px; border-radius: 4px;
+    border: 1px solid var(--metal-mid); background: linear-gradient(180deg, var(--metal-light) 0%, var(--metal-mid) 100%);
+    color: var(--primary); cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.1s; letter-spacing: 0.02em;
+  }
+  .ctrl-btn:hover { filter: brightness(1.05); }
+  .ctrl-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); transform: translateY(1px); }
+  .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .step-counter { font-size: 0.7rem; color: var(--muted); margin: 0 4px; }
+
+  .judge-panel {
+    background: var(--surface); border: 2px solid var(--gridline); border-radius: 6px;
+    padding: 8px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .judge-panel.decided { border-color: var(--head-accent); }
+  .judge-title {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .judge-prompt { font-size: 0.88rem; font-weight: 600; color: var(--primary); margin-bottom: 6px; }
+  .judge-buttons { display: flex; gap: 8px; justify-content: center; margin-bottom: 4px; }
+  .guess-btn {
+    font-family: inherit; font-size: 0.82rem; font-weight: 700; padding: 6px 20px;
+    border-radius: 4px; border: 2px solid var(--gridline); background: var(--surface);
+    color: var(--primary); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em;
+  }
+  .guess-btn:hover { border-color: var(--state-active); background: color-mix(in srgb, var(--state-active) 8%, var(--surface)); }
+  .guess-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .guess-btn.correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 12%, var(--surface)); color: var(--good); }
+  .guess-btn.wrong { border-color: var(--critical); background: color-mix(in srgb, var(--critical) 12%, var(--surface)); color: var(--critical); }
+  .judge-result {
+    font-size: 0.78rem; font-weight: 600; margin-top: 4px; padding: 6px 10px;
+    border-radius: 4px; display: none;
+  }
+  .judge-result.correct {
+    display: block; background: color-mix(in srgb, var(--good) 10%, var(--surface));
+    color: var(--good); border: 1px solid var(--good);
+  }
+  .judge-result.wrong {
+    display: block; background: color-mix(in srgb, var(--critical) 10%, var(--surface));
+    color: var(--critical); border: 1px solid var(--critical);
+  }
+  .judge-waiting { font-size: 0.75rem; color: var(--muted); font-style: italic; }
+
+  .scorecard {
+    background: var(--narration-bg); border: 1px solid var(--narration-border); border-radius: 6px;
+    padding: 6px 10px; display: none; flex-shrink: 0; max-height: 80px; overflow-y: auto;
+  }
+  .scorecard.visible { display: block; }
+  .scorecard-title {
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--muted); margin-bottom: 3px;
+  }
+  .scorecard-list { list-style: none; padding: 0; }
+  .scorecard-list li {
+    padding: 2px 0; font-size: 0.72rem; color: var(--secondary); line-height: 1.4;
+    border-bottom: 1px solid var(--narration-border); display: flex; align-items: baseline; gap: 4px;
+  }
+  .scorecard-list li:last-child { border-bottom: none; }
+  .scorecard-marker {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--machine-accent); flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+
+.intro-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  transition: opacity 0.3s;
+}
+.intro-card {
+  background: var(--surface); border: 1px solid var(--gridline);
+  border-radius: 16px; max-width: 560px; width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.intro-card h2 { font-size: 22px; margin-bottom: 12px; }
+.intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card li { margin-bottom: 4px; }
+.intro-start {
+  background: var(--blue); color: #fff; border: none;
+  padding: 10px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.intro-start:hover { filter: brightness(1.15); }
+.intro-reopen {
+  display: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 12px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  line-height: 18px; text-align: center; margin-right: 6px;
+}
+.intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
+.nav-github {
+  margin-right: auto;
+  color: var(--muted);
+  transition: color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+}
+.nav-github:hover { color: var(--blue); }
+.nav-lang-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: transparent; border: 2px solid var(--muted);
+  color: var(--muted); font-size: 9px; font-weight: 700;
+  padding: 0; cursor: pointer; transition: all 0.15s;
+  text-decoration: none; margin-right: 6px;
+  align-self: center;
+}
+.nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
+.intro-wiki {
+  display: inline-block; margin-bottom: 16px;
+  color: var(--blue); font-size: 13px; text-decoration: none;
+}
+.intro-wiki:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="intro-overlay">
+  <div class="intro-card">
+    <h2>מבחן טיורינג</h2>
+    <p>בשנת 1950, אלן טיורינג שאל: "האם מכונות יכולות לחשוב?" במקום להתווכח על פילוסופיה, הוא הציע מבחן מעשי: שופט אנושי משוחח עם שתי ישויות חבויות — אחת אנושית ואחת מכונה — דרך טקסט בלבד. אם השופט לא מצליח לזהות באופן מהימן מי היא מי, המכונה עוברת את המבחן.</p>
+    <p>הסימולציה האינטראקטיבית הזו מציבה אתכם בכיסא השופט. תקראו שיחות מקבילות ותנסו לזהות איזו ישות היא המכונה.</p>
+    <ul>
+      <li>קראו חילופי דברים משתי שיחות זו לצד זו</li>
+      <li>חפשו סימנים מסגירים — העבירו את העכבר מעל ההדגשות לרמזים</li>
+      <li>קבלו את הכרעתכם: איזו שיחה היא של המכונה?</li>
+    </ul>
+    <a class="intro-wiki" href="https://he.wikipedia.org/wiki/%D7%9E%D7%91%D7%97%D7%9F_%D7%98%D7%99%D7%95%D7%A8%D7%99%D7%A0%D7%92" target="_blank">למידע נוסף בוויקיפדיה &#8599;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
+  </div>
+</div>
+  <nav class="nav-bar">
+    <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link active">מבחן טיורינג</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../cnn/he.html">CNN</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../chat/he.html">צ׳אט</a>
+    <span class="nav-sep">/</span>
+    <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+    <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+    <button class="intro-reopen" title="על ההדגמה">?</button>
+  </nav>
+  <h1>מבחן טיורינג</h1>
+  <p class="subtitle">האם מכונה יכולה לרמות שופט אנושי? עיינו בשיחה והחליטו.</p>
+
+  <div class="container">
+    <div class="algo-bar">
+      <span class="algo-bar-label">תרחיש:</span>
+      <span id="scenario-row"></span>
+      <div class="controls-bar">
+        <button class="ctrl-btn" id="step-btn" onclick="step()">החלפה הבאה</button>
+        <span class="step-counter" id="step-counter">0 / 0 החלפות</span>
+        <button class="ctrl-btn" id="reset-btn" onclick="reset()">איפוס</button>
+      </div>
+    </div>
+
+    <div class="chat-row">
+      <div class="chat-panel" id="panel-a">
+        <div class="chat-label">
+          <span>שיחה A</span>
+          <span class="reveal-tag" id="reveal-a"></span>
+        </div>
+        <div class="chat-body" id="chat-a"></div>
+      </div>
+      <div class="chat-panel" id="panel-b">
+        <div class="chat-label">
+          <span>שיחה B</span>
+          <span class="reveal-tag" id="reveal-b"></span>
+        </div>
+        <div class="chat-body" id="chat-b"></div>
+      </div>
+    </div>
+
+    <div class="judge-panel" id="judge-panel">
+      <div class="judge-title">הכרעת השופט</div>
+      <div id="judge-content">
+        <div class="judge-waiting">קודם עברו על כל ההחלפות...</div>
+      </div>
+    </div>
+
+    <div class="scorecard" id="scorecard">
+      <div class="scorecard-title">סימנים מסגירים — מה חשף את המכונה?</div>
+      <ul class="scorecard-list" id="scorecard-list"></ul>
+    </div>
+
+  </div>
+
+<script>
+const SCENARIOS = {
+  'ספר אהוב': {
+    description: 'השופט שואל על ספר אהוב ולמה',
+    machineIs: 'B',
+    exchanges: [
+      {
+        judge: "מהו הספר האהוב עליך, ולמה?",
+        human: "אוף, כנראה 'הסתננות' של יהושע קנז? קראתי אותו בצבא ופשוט לא יכולתי להפסיק. זה מתחיל כל כך שקט ומשעמם ואז פתאום בום, אתה מבין שזה הדבר הכי עצוב שקראת אי פעם. חזרתי אליו שלוש פעמים מאז וכל פעם אני מגלה משהו חדש.",
+        machine: "שאלה מעולה! הספר האהוב עליי הוא '1984' מאת ג'ורג' אורוול. הנה הסיבות העיקריות: 1) הוא חוקר נושאים חשובים כמו טוטליטריזם ומעקב. 2) הנושאים שלו רלוונטיים גם היום. 3) הדמויות עמוקות ומורכבות. אשמח להרחיב על כל אחת מהנקודות האלה אם תרצו!",
+        telltales: [
+          { text: "שאלה מעולה!", tip: "פתיחה טיפוסית של צ׳אטבוט — אף אדם לא מחמיא לשאלה בשיחה רגילה" },
+          { text: "הנה הסיבות העיקריות: 1)", tip: "רשימה ממוספרת — בני אדם לא ממספרים את הסיבות שהם אוהבים ספר" },
+          { text: "אשמח להרחיב על כל אחת מהנקודות האלה אם תרצו!", tip: "הצעת שירות — מכונה שמחכה להוראות, לא אדם בשיחה" },
+        ],
+      },
+      {
+        judge: "איזה חלק נשאר איתך הכי הרבה זמן?",
+        human: "יש סצנה שהדמות הראשית יושבת בבית קפה ומסתכלת על אנשים ופתאום אתה מבין שהוא לגמרי לבד בעולם. סתם משפט אחד, משהו ממש פשוט, אבל אני נשבע שאני חושב על זה כל פעם שאני יושב לבד בבית קפה. יהושע קנז עשה לי משהו עם הסצנה הזו.",
+        machine: "החלק שנשאר איתי הכי הרבה זמן הוא ללא ספק הרעיון של 'מחשבה כפולה'. מחשבה כפולה היא היכולת להחזיק שתי אמונות סותרות בו-זמנית. מחשבה כפולה ממחישה כיצד ניתן לשלוט באנשים דרך השפה. בנוסף, הסצנה שבה וינסטון קורא את הספר של גולדשטיין היא בעלת חשיבות רבה להבנת מנגנוני הכוח.",
+        telltales: [
+          { text: "החלק שנשאר איתי הכי הרבה זמן הוא ללא ספק", tip: "מהדהד את ניסוח השאלה בדיוק — דפוס מכונה של שיקוף הקלט" },
+          { text: "מחשבה כפולה היא היכולת להחזיק שתי אמונות סותרות בו-זמנית. מחשבה כפולה ממחישה", tip: "חוזר על המונח 'מחשבה כפולה' פעמיים ברצף — אדם לא היה חוזר ככה" },
+          { text: "היא בעלת חשיבות רבה להבנת מנגנוני הכוח", tip: "מתאר 'חשיבות להבנה' במקום לספר מה הרגיש — בלי חוויה אישית" },
+        ],
+      },
+      {
+        judge: "האם אי פעם המלצת על הספר למישהו שלא אהב אותו?",
+        human: "כןןן החבר שלי אור. הוא היה כזה 'מה הספר המשעמם הזה אין עלילה' ואני כזה אוקיי אולי זה לא בשבילך... אבל באמת חבל כי הוא פספס את כל הנקודה. זה לא על העלילה זה על האווירה. אבל הוא יותר סוג של ספרי אקשן אז מה לעשות.",
+        machine: "כמודל שפה, אין לי יכולת להמליץ אישית על ספרים או לנהל שיחות עם אנשים אחרים. עם זאת, אוכל לציין שהעדפות קריאה הן סובייקטיביות ומשתנות מאדם לאדם. ספרים שונים מתאימים לקוראים שונים, וזה בסדר גמור. האם יש משהו נוסף שאוכל לעזור בו?",
+        telltales: [
+          { text: "כמודל שפה, אין לי יכולת", tip: "מתייחס לעצמו כ'מודל שפה' — חשיפה ישירה שזו מכונה!" },
+          { text: "אוכל לציין שהעדפות קריאה הן סובייקטיביות ומשתנות מאדם לאדם", tip: "אמירה ריקה ושחוקה במקום סיפור — מכונה שממלאת מקום" },
+          { text: "האם יש משהו נוסף שאוכל לעזור בו?", tip: "סיום של צ׳אטבוט — אף אדם לא אומר את זה בשיחה" },
+        ],
+      },
+      {
+        judge: "אם יכולת לפגוש את המחבר, מה היית אומר לו?",
+        human: "בטוח הייתי נהיה כל מבולבל ואומר משהו טיפשי כמו 'הספר שלך גרם לי לבכות באוטובוס' חחח. אבל ברצינות הייתי רוצה לשאול אותו איך הוא כתב משהו כל כך עצוב בלי שזה מרגיש מניפולטיבי. והמשפטים שלו מטורפים, הייתי רוצה לדעת אם זה בא לו טבעי או שהוא עבד על זה.",
+        machine: "אם הייתה לי ההזדמנות לפגוש את ג'ורג' אורוול, הייתי שואל אותו את השאלות הבאות: ראשית, מהם ההשפעות העיקריות על כתיבת הרומן. שנית, כיצד הוא רואה את הרלוונטיות של הספר בעידן הדיגיטלי. שלישית, איזו דמות הייתה האהובה עליו לכתיבה. ראוי לציין שאורוול (ששמו האמיתי היה אריק ארתור בלייר) נפטר בשנת 1950.",
+        telltales: [
+          { text: "הייתי שואל אותו את השאלות הבאות: ראשית,", tip: "מארגן שיחה דמיונית כרשימה ממוספרת — אף אדם לא מתכנן שיחה ככה" },
+          { text: "כיצד הוא רואה את הרלוונטיות של הספר בעידן הדיגיטלי", tip: "שאלת ראיון תבניתית — לא שאלה שאדם מתרגש ממנה" },
+          { text: "ראוי לציין שאורוול (ששמו האמיתי היה אריק ארתור בלייר) נפטר בשנת 1950.", tip: "מוסיף הערת שוליים עובדתית שאיש לא ביקש — מכונה שפולטת מידע" },
+        ],
+      },
+    ],
+    signs: [
+      "פותח תשובות ב'שאלה מעולה!' — דפוס צ׳אטבוט קלאסי",
+      "ממספר סיבות ברשימות (1, 2, 3) במקום לדבר בצורה טבעית",
+      "מתייחס לעצמו כ'מודל שפה' — חושף שזו מכונה",
+      "מסיים ב'אשמח לעזור' ו'האם יש משהו נוסף' — שפת שירות לקוחות",
+      "חוזר על מילים ומונחים באופן מכני ('מחשבה כפולה... מחשבה כפולה')",
+      "מוסיף עובדות שאיש לא שאל (תאריך פטירה, שם אמיתי)",
+    ],
+  },
+  'יום רע': {
+    description: 'השופט שואל על התמודדות עם יום רע',
+    machineIs: 'A',
+    exchanges: [
+      {
+        judge: "ספר לי על הפעם האחרונה שהיה לך יום ממש רע.",
+        machine: "בטח! אספר לכם על יום רע שחוויתי. באותו יום התרחשו מספר אירועים שליליים: 1) התעוררתי מאוחר. 2) פספסתי דדליין חשוב בעבודה. 3) היה לי אי-הבנה עם קולגה. 4) שכחתי את הארוחת צהריים בבית. כל אירוע בפני עצמו לא היה כל כך נורא, אבל השילוב שלהם יצר יום מאתגר במיוחד.",
+        human: "אוף, יום חמישי שעבר. האוטו לא התניע אז לקחתי אובר לעבודה וזה עלה לי כמו ארבעים שקל, ואז המנהל שלי קרא לי לפגישה ובעצם אמר לי שהמצגת שלי צריכה שכתוב מלא עד יום שישי. לא אכלתי צהריים בכלל מרוב לחץ. הגעתי הביתה ופשוט שכבתי על הספה וצפיתי בנטפליקס שלוש שעות ברצף.",
+        telltales: [
+          { text: "בטח! אספר לכם על יום רע שחוויתי.", tip: "'בטח!' — תגובת שירות, אף אדם לא אומר 'בטח!' כשמבקשים ממנו לספר על יום רע" },
+          { text: "1) התעוררתי מאוחר. 2) פספסתי דדליין חשוב בעבודה. 3) היה לי אי-הבנה עם קולגה. 4) שכחתי את הארוחת צהריים בבית.", tip: "רשימה ממוספרת של אירועים גנריים — בני אדם מספרים סיפור, לא נקודות" },
+          { text: "כל אירוע בפני עצמו לא היה כל כך נורא, אבל השילוב שלהם יצר יום מאתגר במיוחד.", tip: "מסכם באופן אנליטי — אדם היה אומר 'היה יום חרא' ולא מנתח את המבנה של היום" },
+        ],
+      },
+      {
+        judge: "איך הרגשת אחרי?",
+        machine: "שאלה טובה. אחרי היום הרע, הרגשתי מגוון רגשות, כולל: תסכול, עייפות ואכזבה מעצמי. עם זאת, חשוב לזכור שימים רעים הם חלק נורמלי מהחוויה האנושית. למדתי מהחוויה הזו שחשוב לנהל זמן טוב יותר, לתקשר בבהירות עם קולגות ולהכין ארוחות מראש. מקווה שהתשובה עזרה!",
+        human: "בעיקר קצת נבוך? כאילו אני מבוגר ופשוט קרסתי בגלל עבודה. אבל בן/בת הזוג שלי הכינ/ה לי ארוחת ערב בלי שביקשתי, זה היה ממש מתוק. למחרת כבר הרגשתי הרבה יותר טוב, לפעמים פשוט צריך לתת לעצמך להיות בפאנק ואז לצאת מזה.",
+        telltales: [
+          { text: "שאלה טובה.", tip: "שוב מחמיא לשאלה — דפוס צ׳אטבוט חוזר" },
+          { text: "הרגשתי מגוון רגשות, כולל: תסכול, עייפות ואכזבה מעצמי.", tip: "מפרט רגשות עם נקודתיים — אדם פשוט אומר 'הרגשתי חרא'" },
+          { text: "מקווה שהתשובה עזרה!", tip: "מסיים כמו עוזר וירטואלי — זו שיחה, לא שירות לקוחות" },
+        ],
+      },
+      {
+        judge: "אתה חושב שימים רעים גורמים לימים טובים להרגיש טוב יותר?",
+        human: "הממ אני לא יודע אם הייתי הולך עד לשם. כאילו יום רע הוא פשוט רע, אני לא יושב וחושב 'לפחות מחר ירגיש מדהים בהשוואה' אתה יודע? אבל כזה... כן אולי לטווח ארוך? כשאני מסתכל אחורה על תקופות ממש קשות זה כן גורם לי להעריך כשדברים רגועים. אבל זה לא אחד-לאחד.",
+        machine: "זו שאלה פילוסופית מרתקת! יש מספר דרכים לגשת לנושא הזה. מצד אחד, הניגוד חיוני להערכה — קשה להעריך אור בלי להכיר חושך. מצד שני, סבל אינו הכרחי כדי ליהנות מאושר. מחקר בפסיכולוגיה חיובית מראה שהסתגלות הדונית — כלומר, הנטייה האנושית להתייצב ברמת אושר קבועה — ממלאת תפקיד מרכזי. לסיכום, התשובה מורכבת ותלויה בפרספקטיבה אישית.",
+        telltales: [
+          { text: "זו שאלה פילוסופית מרתקת!", tip: "מסווג את השאלה כ'מרתקת פילוסופית' — אדם פשוט עונה, לא מתייג את השאלה" },
+          { text: "מצד אחד, הניגוד חיוני להערכה — קשה להעריך אור בלי להכיר חושך. מצד שני,", tip: "דפוס 'מצד אחד... מצד שני' — מבנה חיבור, לא שיחה" },
+          { text: "לסיכום, התשובה מורכבת ותלויה בפרספקטיבה אישית.", tip: "'לסיכום' — אף אדם לא מסכם את דבריו שלו בשיחה רגילה" },
+        ],
+      },
+    ],
+    signs: [
+      "פותח תשובות ב'בטח!', 'שאלה טובה!', 'שאלה מרתקת!' — דפוסי צ׳אטבוט",
+      "ממספר הכול ברשימות (1, 2, 3, 4) במקום לספר סיפור כמו אדם",
+      "מסיים ב'מקווה שעזר!' — שפת שירות לקוחות",
+      "משתמש בדפוס 'מצד אחד... מצד שני... לסיכום' כמו חיבור",
+      "מפרט רגשות כרשימה ('תסכול, עייפות ואכזבה') במקום לתאר חוויה",
+      "אף פרט ספציפי אחד — בלי שמות, מחירים, מקומות או זמנים אמיתיים",
+    ],
+  },
+  'בישול': {
+    description: 'השופט שואל על בישול וארוחה בלתי נשכחת',
+    machineIs: 'A',
+    exchanges: [
+      {
+        judge: "אתה אוהב לבשל? מה הדבר האחרון שהכנת?",
+        machine: "כן, בישול הוא תחביב נהדר! בישול מאפשר ביטוי יצירתי, חיסכון כספי ושליטה במרכיבים תזונתיים. המנה האחרונה שהכנתי הייתה פסטה פרימוורה. הנה המרכיבים: קישוא, פלפלים, עגבניות שרי, בזיליקום טרי, שמן זית ופסטה פנה. זמן הכנה: כ-30 דקות. רמת קושי: בינונית.",
+        human: "אני עובר תקופות עם זה. עכשיו אני בקטע של מוקפץ כי זה מהיר ואפשר לזרוק לתוך המחבת מה שגווע במקרר חחח. אתמול הכנתי אחד עם חזה עוף שעמד לפוג, פלפל עצוב אחד וחצי שקית ברוקולי קפוא. זרקתי רוטב סויה ושום ובאמת יצא מעולה.",
+        telltales: [
+          { text: "בישול מאפשר ביטוי יצירתי, חיסכון כספי ושליטה במרכיבים תזונתיים.", tip: "מפרט יתרונות של בישול כמו מאמר — אף אחד לא עושה את זה כששואלים 'אתה אוהב לבשל?'" },
+          { text: "הנה המרכיבים:", tip: "'הנה המרכיבים' — מציג מתכון פורמלי במקום לספר מה בישל" },
+          { text: "זמן הכנה: כ-30 דקות. רמת קושי: בינונית.", tip: "מוסיף מטא-דאטה כמו אתר מתכונים — אף אדם לא מדבר ככה" },
+        ],
+      },
+      {
+        judge: "מה הייתה הקטסטרופה הגדולה ביותר שלך במטבח?",
+        machine: "הקטסטרופה הגדולה ביותר שלי במטבח הייתה כשניסיתי להכין סופלה. הנה מה שקרה: הסופלה קרסה מיד עם ההוצאה מהתנור. סיבות אפשריות לכישלון: א) פתיחת דלת התנור לעיתים קרובות מדי. ב) הטמפרטורה לא הייתה אחידה. ג) ייתכן שחלבוני הביצה לא הוקצפו מספיק. מסקנה עיקרית: חשוב לעקוב אחר הוראות אפייה במדויק. אשמח לשתף עוד טיפים לאפיית סופלה!",
+        human: "אוי אלוהים כל כך הרבה. הכי גרוע זה כנראה כשניסיתי לטגן שניצלים בסיר רגיל והשמן התחיל לעשן ונכנסתי לפאניקה וזרקתי מים עליו?? שזה בדיוק מה שאסור לעשות כמובן. היה שמן בכל מקום, לתקרה היו כתמי שומן במשך חודשים. השותף שלי לדירה היה זועם. הזמנו פיצה באותו ערב חחח.",
+        telltales: [
+          { text: "הנה מה שקרה:", tip: "מציג סיפור כמו דוח אירוע — 'הנה מה שקרה' זה פורמט של מכונה" },
+          { text: "סיבות אפשריות לכישלון: א) פתיחת דלת התנור לעיתים קרובות מדי. ב) הטמפרטורה לא הייתה אחידה. ג) ייתכן שחלבוני הביצה לא הוקצפו מספיק.", tip: "ניתוח שורש בעיה עם רשימת א-ב-ג — אדם היה צוחק על עצמו, לא מנתח" },
+          { text: "אשמח לשתף עוד טיפים לאפיית סופלה!", tip: "מציע 'עוד טיפים' — שוב שפת שירות לקוחות, לא שיחה" },
+        ],
+      },
+      {
+        judge: "אם היית צריך לבשל למישהו שאתה רוצה להרשים, מה היית מכין?",
+        human: "ריזוטו כנראה? זה נראה מפואר אבל בעצם לא כל כך קשה, פשוט צריך לעמוד ולערבב חצי שעה וזה מעצבן. הייתי מכין ריזוטו פטריות עם פרמזן טוב. בפעם האחרונה שהכנתי את זה לדייט שמתי יותר מדי יין ובנוסף שתיתי יותר מדי יין בזמן הבישול אז זה היה סיפור בפני עצמו חחח.",
+        machine: "כדי להרשים, הייתי ממליץ על תפריט בן 3 מנות: **מנה ראשונה:** סלט קפרזה עם עגבניות שרי, מוצרלה טרייה ובזיליקום. **מנה עיקרית:** סלמון צרוב במחבת עם אספרגוס קלוי ורוטב לימון-שמיר. **קינוח:** עוגת שוקולד לבה. תפריט זה נבחר על בסיס הקריטריונים הבאים: איזון טעמים, מגוון מרקמים והצגה אסתטית. הערה: ניתן להחליף את הסלמון בחזה עוף למי שלא אוהב דגים.",
+        telltales: [
+          { text: "הייתי ממליץ על תפריט בן 3 מנות: **מנה ראשונה:**", tip: "מארגן את התשובה עם כותרות מודגשות כמו מדריך — לא ככה אנשים מדברים" },
+          { text: "תפריט זה נבחר על בסיס הקריטריונים הבאים: איזון טעמים, מגוון מרקמים והצגה אסתטית.", tip: "מצדיק בחירה עם 'קריטריונים' — כאילו מגיש הצעה, לא מתכנן ארוחה" },
+          { text: "הערה: ניתן להחליף את הסלמון בחזה עוף למי שלא אוהב דגים.", tip: "'הערה:' — מוסיף הערת שוליים כמו במסמך טכני" },
+        ],
+      },
+      {
+        judge: "מהי דעה על אוכל שיש לך שאנשים אחרים לא מסכימים איתה?",
+        human: "חומוס עם ביצה קשה זה הקומבו הכי טוב שיש ואני מוכן למות על הגבעה הזו. כולם מתנהגים כאילו זה מגעיל אבל לאנשים האלה פשוט יש חיך משעמם. וגם אני חושב שטחינה מוערכת יתר על המידה, זה טוב אבל לא צריך לשים את זה על הכול. החבר שלי אומר שיש לי טעם של ילד בן 5 אז ככה.",
+        machine: "דעה שנויה במחלוקת שיש לי: אננס על פיצה הוא שילוב מוצלח. אני מבין שרבים לא מסכימים, אבל יש סיבות טובות לתמוך בעמדה זו. ראשית, השילוב של מתוק ומלוח הוא עקרון קולינרי מוכר. שנית, מטבחים אסייתיים רבים משלבים פירות עם מנות מלוחות. שלישית, פיצה הוואית (שהומצאה על ידי סם פנופולוס בקנדה ב-1962) נמכרת במיליוני יחידות בשנה ברחבי העולם. עובדה מעניינת: פיצה הוואית בכלל לא מהוואי!",
+        telltales: [
+          { text: "יש סיבות טובות לתמוך בעמדה זו. ראשית,", tip: "מציג דעה על אוכל כטיעון עם 'ראשית, שנית, שלישית' — אדם פשוט אומר 'זה טעים'" },
+          { text: "שלישית, פיצה הוואית (שהומצאה על ידי סם פנופולוס בקנדה ב-1962) נמכרת במיליוני יחידות בשנה", tip: "נתונים סטטיסטיים ותאריכים בדעה על אוכל — מנוע חיפוש, לא אדם" },
+          { text: "עובדה מעניינת: פיצה הוואית בכלל לא מהוואי!", tip: "'עובדה מעניינת:' — דפוס בוט קלאסי של 'הידעת?'" },
+        ],
+      },
+    ],
+    signs: [
+      "מארגן תשובות עם כותרות מודגשות, 'הנה', 'הערה:', 'עובדה מעניינת:'",
+      "מוסיף מטא-דאטה כמו אתר מתכונים: זמן הכנה, רמת קושי, קריטריונים",
+      "עושה ניתוח שורש בעיה (א, ב, ג) על סופלה שקרסה",
+      "מציע 'עוד טיפים' ו'אשמח לעזור' — שפת צ׳אטבוט",
+      "מגן על דעות עם סטטיסטיקות ותאריכים במקום טעם אישי",
+      "לעולם לא מזכיר בלגן, מבוכה או אנשים ספציפיים",
+    ],
+  },
+};
+
+let currentScenario = null;
+let currentName = '';
+let exchangeIndex = 0;
+let guessedMachine = null;
+let revealed = false;
+
+function selectScenario(name) {
+  currentScenario = SCENARIOS[name];
+  currentName = name;
+  document.querySelectorAll('.algo-btn').forEach(b => b.classList.toggle('selected', b.textContent === name));
+  reset();
+}
+
+function reset() {
+  exchangeIndex = 0;
+  guessedMachine = null;
+  revealed = false;
+  document.getElementById('chat-a').innerHTML = '';
+  document.getElementById('chat-b').innerHTML = '';
+  document.getElementById('panel-a').className = 'chat-panel';
+  document.getElementById('panel-b').className = 'chat-panel';
+  document.getElementById('reveal-a').className = 'reveal-tag';
+  document.getElementById('reveal-a').textContent = '';
+  document.getElementById('reveal-b').className = 'reveal-tag';
+  document.getElementById('reveal-b').textContent = '';
+  document.getElementById('judge-panel').className = 'judge-panel';
+  document.getElementById('judge-content').innerHTML = '<div class="judge-waiting">קודם עברו על כל ההחלפות...</div>';
+  document.getElementById('scorecard').className = 'scorecard';
+  document.getElementById('scorecard-list').innerHTML = '';
+  document.getElementById('step-btn').disabled = false;
+  updateCounter();
+  clearTelltales();
+}
+
+function updateCounter() {
+  const total = currentScenario ? currentScenario.exchanges.length : 0;
+  document.getElementById('step-counter').textContent = `${exchangeIndex} / ${total} החלפות`;
+}
+
+function addMessage(panelId, sender, text, senderLabel) {
+  const chat = document.getElementById(panelId);
+  const msg = document.createElement('div');
+  msg.className = `msg ${sender}`;
+  msg.innerHTML = `<div class="msg-sender">${senderLabel}</div><div class="msg-bubble">${text}</div>`;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function wrapTelltales(text, telltales, panelId, exIdx) {
+  if (!telltales) return text;
+  let result = text;
+  telltales.forEach((t, i) => {
+    const id = `tt-${panelId}-${exIdx}-${i}`;
+    result = result.replace(t.text,
+      `<span class="telltale" id="${id}">${t.text}</span><span class="telltale-tip" id="${id}-tip">${t.tip}</span>`
+    );
+  });
+  return result;
+}
+
+function step() {
+  if (!currentScenario || exchangeIndex >= currentScenario.exchanges.length) return;
+
+  const ex = currentScenario.exchanges[exchangeIndex];
+  const machinePanel = currentScenario.machineIs === 'A' ? 'chat-a' : 'chat-b';
+  const humanPanel = currentScenario.machineIs === 'A' ? 'chat-b' : 'chat-a';
+
+  addMessage('chat-a', 'judge', ex.judge, 'שופט');
+  addMessage('chat-b', 'judge', ex.judge, 'שופט');
+
+  const machineText = wrapTelltales(ex.machine, ex.telltales, machinePanel, exchangeIndex);
+  addMessage(machinePanel, 'entity', machineText, machinePanel === 'chat-a' ? "ישות A" : "ישות B");
+  addMessage(humanPanel, 'entity', ex.human, humanPanel === 'chat-a' ? "ישות A" : "ישות B");
+
+  exchangeIndex++;
+  updateCounter();
+
+  if (exchangeIndex >= currentScenario.exchanges.length) {
+    document.getElementById('step-btn').disabled = true;
+    showJudgePrompt();
+  }
+}
+
+function showJudgePrompt() {
+  const content = document.getElementById('judge-content');
+  content.innerHTML = `
+    <div class="judge-prompt">איזו שיחה היא של המכונה?</div>
+    <div class="judge-buttons">
+      <button class="guess-btn" id="guess-a" onclick="makeGuess('A')">A הוא המכונה</button>
+      <button class="guess-btn" id="guess-b" onclick="makeGuess('B')">B הוא המכונה</button>
+    </div>
+    <div class="judge-result" id="judge-result"></div>
+  `;
+}
+
+function makeGuess(choice) {
+  if (guessedMachine) return;
+  guessedMachine = choice;
+  revealed = true;
+
+  const correct = choice === currentScenario.machineIs;
+  const resultEl = document.getElementById('judge-result');
+  const guessAEl = document.getElementById('guess-a');
+  const guessBEl = document.getElementById('guess-b');
+  const label = currentScenario.machineIs;
+
+  document.getElementById('judge-panel').className = 'judge-panel decided';
+
+  if (correct) {
+    resultEl.className = 'judge-result correct';
+    resultEl.textContent = `נכון! שיחה ${label} היא המכונה. ראית דרך החיקוי.`;
+  } else {
+    resultEl.className = 'judge-result wrong';
+    resultEl.textContent = `לא בדיוק! שיחה ${label} היא בעצם המכונה. היא רימתה אותך — המכונה עוברת את מבחן טיורינג (נגדך)!`;
+  }
+
+  if (currentScenario.machineIs === 'A') {
+    guessAEl.className = 'guess-btn correct';
+    guessBEl.className = 'guess-btn' + (choice === 'B' ? ' wrong' : '');
+  } else {
+    guessBEl.className = 'guess-btn correct';
+    guessAEl.className = 'guess-btn' + (choice === 'A' ? ' wrong' : '');
+  }
+  guessAEl.disabled = true;
+  guessBEl.disabled = true;
+
+  const machinePanel = currentScenario.machineIs === 'A' ? 'A' : 'B';
+  const humanPanel = currentScenario.machineIs === 'A' ? 'B' : 'A';
+
+  document.getElementById(`panel-${machinePanel.toLowerCase()}`).className = 'chat-panel revealed-machine';
+  document.getElementById(`panel-${humanPanel.toLowerCase()}`).className = 'chat-panel revealed-human';
+
+  const revealMachine = document.getElementById(`reveal-${machinePanel.toLowerCase()}`);
+  revealMachine.className = 'reveal-tag machine';
+  revealMachine.textContent = 'מכונה';
+
+  const revealHuman = document.getElementById(`reveal-${humanPanel.toLowerCase()}`);
+  revealHuman.className = 'reveal-tag human';
+  revealHuman.textContent = 'אדם';
+
+  document.querySelectorAll('.telltale').forEach(el => el.classList.add('revealed'));
+  document.querySelectorAll('.telltale-tip').forEach(el => el.classList.add('revealed'));
+
+  const scorecard = document.getElementById('scorecard');
+  const list = document.getElementById('scorecard-list');
+  scorecard.className = 'scorecard visible';
+  list.innerHTML = currentScenario.signs.map(s =>
+    `<li><span class="scorecard-marker"></span>${s}</li>`
+  ).join('');
+}
+
+function clearTelltales() {
+  document.querySelectorAll('.telltale').forEach(el => el.classList.remove('revealed'));
+  document.querySelectorAll('.telltale-tip').forEach(el => el.classList.remove('revealed'));
+}
+
+const scenarioRow = document.getElementById('scenario-row');
+Object.keys(SCENARIOS).forEach(name => {
+  const btn = document.createElement('button');
+  btn.className = 'algo-btn';
+  btn.textContent = name;
+  btn.title = SCENARIOS[name].description;
+  btn.onclick = () => selectScenario(name);
+  scenarioRow.appendChild(btn);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); step(); }
+  if (e.key === 'Escape') { e.preventDefault(); reset(); }
+});
+
+selectScenario('ספר אהוב');
+
+(function(){
+  const KEY = 'intro-dismissed-turing-test-he';
+  const overlay = document.querySelector('.intro-overlay');
+  const reopen = document.querySelector('.intro-reopen');
+  if (!overlay || !reopen) return;
+  function show() {
+    overlay.style.display = 'flex';
+    overlay.style.opacity = '1';
+    reopen.style.display = 'none';
+  }
+  function dismiss() {
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    reopen.style.display = 'block';
+    sessionStorage.setItem(KEY, '1');
+  }
+  if (sessionStorage.getItem(KEY)) {
+    overlay.style.display = 'none';
+    reopen.style.display = 'block';
+  }
+  overlay.querySelector('.intro-start').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  reopen.addEventListener('click', show);
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Escape' || e.key === 'Enter') && overlay.style.display !== 'none') dismiss();
+  });
+})();
+</script>
+</body>
+</html>

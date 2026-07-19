@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deterministic Turing Machine</title>
+<title>מכונת טיורינג דטרמיניסטית</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -105,7 +105,7 @@
 
   /* ── Algo bar ── */
   .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .algo-bar-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-right: 4px; }
+  .algo-bar-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-left: 4px; }
   .algo-btn {
     font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
     border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
@@ -114,7 +114,7 @@
   .algo-btn.selected { background: var(--primary); color: var(--page); border-color: var(--primary); }
   .tape-input-row { display: flex; gap: 6px; align-items: center; margin-inline-start: auto; }
   .tape-input-row label { font-size: 0.75rem; color: var(--muted); }
-  .tape-input-row input[type="text"] { font-family: 'Courier New', monospace; font-size: 0.85rem; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--primary); width: 140px; }
+  .tape-input-row input[type="text"] { font-family: 'Courier New', monospace; font-size: 0.85rem; padding: 4px 8px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--primary); width: 140px; direction: ltr; }
   .tape-input-row button { font-family: inherit; font-size: 0.75rem; padding: 4px 10px; border-radius: 3px; border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; }
 
   /* ── Machine SVG ── */
@@ -138,7 +138,7 @@
   .narration-title { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
   .narration-state { font-weight: 600; color: var(--primary); }
   .narration-desc { margin-top: 4px; }
-  .narration-action { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--narration-border); font-family: 'Courier New', monospace; font-size: 0.78rem; }
+  .narration-action { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--narration-border); font-family: 'Courier New', monospace; font-size: 0.78rem; direction: ltr; text-align: left; }
   .narration-action em { font-style: normal; color: var(--state-active); font-weight: 600; }
 
   /* ── State transition table ── */
@@ -148,7 +148,7 @@
     background: var(--metal-dark); color: var(--metal-light); padding: 6px 12px;
     font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;
   }
-  .fsc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .fsc-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; direction: ltr; }
   .fsc-table th {
     padding: 5px 6px; font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
     color: var(--muted); border-bottom: 2px solid var(--gridline); text-align: center;
@@ -300,7 +300,7 @@
   .reg-value {
     font-family: 'Courier New', monospace; font-size: 0.88rem; font-weight: 700;
     color: #30dd30; text-shadow: 0 0 6px rgba(48,221,48,0.3);
-    word-break: break-all;
+    word-break: break-all; direction: ltr;
   }
   .reg-note {
     font-size: 0.68rem; color: #4a7a4a; margin-inline-start: auto; flex-shrink: 0;
@@ -312,7 +312,7 @@
   .reg-step-label { color: #7aaa7a; font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
   .reg-step {
     font-family: 'Courier New', monospace; font-size: 0.82rem; color: #30dd30;
-    text-shadow: 0 0 6px rgba(48,221,48,0.3); line-height: 1.6;
+    text-shadow: 0 0 6px rgba(48,221,48,0.3); line-height: 1.6; direction: ltr; text-align: left;
   }
   .reg-step .dim { color: #4a7a4a; }
   .reg-step .hi { color: #80ff80; font-weight: 700; }
@@ -353,11 +353,11 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 12px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  line-height: 18px; text-align: center; margin-left: 6px;
+  line-height: 18px; text-align: center; margin-right: 6px;
 }
 .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
 .nav-github {
-  margin-left: auto;
+  margin-right: auto;
   color: var(--muted);
   transition: color 0.15s;
   display: inline-flex;
@@ -371,7 +371,7 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 9px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  text-decoration: none; margin-left: 6px;
+  text-decoration: none; margin-right: 6px;
   align-self: center;
 }
 .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -385,50 +385,50 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>Turing Machine</h2>
-    <p>In 1936, Alan Turing imagined the simplest possible computer: an infinite tape of cells, a read/write head that moves one step at a time, and a table of rules. Despite its simplicity, this theoretical machine can compute anything that any modern computer can.</p>
-    <p>This simulator lets you step through classic algorithms and watch the machine work — reading symbols, writing new ones, and changing state according to its rules.</p>
+    <h2>מכונת טיורינג</h2>
+    <p>ב-1936, אלן טיורינג דמיין את המחשב הפשוט ביותר האפשרי: סרט אינסופי של תאים, ראש קריאה/כתיבה שזז צעד אחד בכל פעם, וטבלת חוקים. למרות הפשטות, המכונה התאורטית הזו מסוגלת לחשב כל דבר שמחשב מודרני מסוגל לחשב.</p>
+    <p>סימולטור זה מאפשר לכם לצעוד דרך אלגוריתמים קלאסיים ולצפות במכונה עובדת — קוראת סמלים, כותבת חדשים, ומשנה מצב בהתאם לחוקיה.</p>
     <ul>
-      <li>Choose from four algorithms: Binary Increment, Palindrome, Unary Addition, Busy Beaver</li>
-      <li>Step through one instruction at a time or run continuously</li>
-      <li>Watch the tape, state diagram, and execution log update in real time</li>
+      <li>בחרו מבין ארבעה אלגוריתמים: הגדלה בינארית, פלינדרום, חיבור אונרי, Busy Beaver</li>
+      <li>צעדו הוראה אחת בכל פעם או הריצו ברציפות</li>
+      <li>צפו בסרט, טבלת המצבים ויומן הריצה מתעדכנים בזמן אמת</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Turing_machine" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://he.wikipedia.org/wiki/%D7%9E%D7%9B%D7%95%D7%A0%D7%AA_%D7%98%D7%99%D7%95%D7%A8%D7%99%D7%A0%D7%92" target="_blank">למידע נוסף בוויקיפדיה &#8592;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
   <nav class="nav-bar">
-    <a class="nav-link" href="../timeline/index.html">Timeline</a>
+    <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link active">Turing Machine</a>
+    <a class="nav-link active">מכונת טיורינג</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+    <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+    <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+    <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../cnn/index.html">CNN</a>
+    <a class="nav-link" href="../cnn/he.html">CNN</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../transformer/index.html">Transformer</a>
+    <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
     <span class="nav-sep">/</span>
-    <a class="nav-link" href="../chat/index.html">Chat</a>
+    <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
   </nav>
-  <h1>Turing Machine</h1>
+  <h1>מכונת טיורינג</h1>
 
   <div class="container">
     <div class="algo-bar">
-      <span class="algo-bar-label">Program:</span>
+      <span class="algo-bar-label">תוכנית:</span>
       <span id="algo-row"></span>
       <div class="tape-input-row">
-        <label for="tape-input">Tape:</label>
+        <label for="tape-input">סרט:</label>
         <input type="text" id="tape-input" spellcheck="false">
-        <button onclick="loadCustomTape()">Load</button>
+        <button onclick="loadCustomTape()">טעינה</button>
       </div>
     </div>
 
@@ -506,18 +506,18 @@
 
     <div class="status-bar">
       <div class="readout-panel">
-        <div class="readout"><div class="readout-label">State</div><div class="readout-value" id="ro-state">--</div></div>
-        <div class="readout"><div class="readout-label">Position</div><div class="readout-value" id="ro-pos">0</div></div>
-        <div class="readout"><div class="readout-label">Steps</div><div class="readout-value" id="ro-steps">0</div></div>
-        <div class="readout"><div class="readout-label">Symbol</div><div class="readout-value" id="ro-sym">_</div></div>
-        <div class="readout"><div class="readout-label">Status</div><div class="readout-value" id="ro-status">Ready</div></div>
+        <div class="readout"><div class="readout-label">מצב</div><div class="readout-value" id="ro-state">--</div></div>
+        <div class="readout"><div class="readout-label">מיקום</div><div class="readout-value" id="ro-pos">0</div></div>
+        <div class="readout"><div class="readout-label">צעדים</div><div class="readout-value" id="ro-steps">0</div></div>
+        <div class="readout"><div class="readout-label">סמל</div><div class="readout-value" id="ro-sym">_</div></div>
+        <div class="readout"><div class="readout-label">סטטוס</div><div class="readout-value" id="ro-status">מוכן</div></div>
       </div>
       <div class="controls-bar">
-        <button class="ctrl-btn" id="step-btn" onclick="step()">Step</button>
-        <button class="ctrl-btn run-btn" id="run-btn" onclick="toggleRun()">Run</button>
-        <button class="ctrl-btn" id="reset-btn" onclick="reset()">Reset</button>
+        <button class="ctrl-btn" id="step-btn" onclick="step()">צעד</button>
+        <button class="ctrl-btn run-btn" id="run-btn" onclick="toggleRun()">הרצה</button>
+        <button class="ctrl-btn" id="reset-btn" onclick="reset()">איפוס</button>
         <div class="speed-control">
-          <label for="speed">Speed</label>
+          <label for="speed">מהירות</label>
           <input type="range" id="speed" min="1" max="10" value="5">
         </div>
       </div>
@@ -526,14 +526,14 @@
     <div class="main-row">
       <div class="left-col">
         <div class="fsc-card">
-          <div class="fsc-header">Finite State Control</div>
+          <div class="fsc-header">בקרת מצבים סופית</div>
           <div id="fsc-body"></div>
         </div>
       </div>
       <div class="right-col">
         <div class="narration" id="narration"></div>
         <div class="registers-card">
-          <div class="registers-header">Registers</div>
+          <div class="registers-header">רגיסטרים</div>
           <div class="registers-body" id="registers-body"></div>
         </div>
       </div>
@@ -550,21 +550,21 @@ const HEAD_X = 350;
 const TAPE_LEFT = HEAD_X - CENTER_CELL * CELL_W;
 
 const ALGORITHMS = {
-  'Binary Increment': {
-    description: 'Adds 1 to a binary number (e.g. 1011 → 1100)',
+  'הגדלה בינארית': {
+    description: 'מוסיפה 1 למספר בינארי (למשל 1011 → 1100)',
     initialTape: '1011',
     startState: 'goRight',
     haltStates: ['halt'],
     symbols: [
-      { sym: '0', meaning: 'Binary digit zero', example: 'Part of the binary number' },
-      { sym: '1', meaning: 'Binary digit one', example: 'Part of the binary number' },
-      { sym: '_', meaning: 'Blank — empty cell', example: 'Marks the end of the number' },
+      { sym: '0', meaning: 'ספרה בינארית אפס', example: 'חלק מהמספר הבינארי' },
+      { sym: '1', meaning: 'ספרה בינארית אחד', example: 'חלק מהמספר הבינארי' },
+      { sym: '_', meaning: 'ריק — תא ריק', example: 'מסמן את סוף המספר' },
     ],
     stateDescriptions: {
-      'goRight': 'Scanning right to find the end of the binary number.',
-      'add':     'Adding 1. If the digit is 1, writes 0 and carries left. If it\'s 0, writes 1 and stops carrying.',
-      'done':    'Carry complete. Moving left back to the start of the number.',
-      'halt':    'Done. The incremented binary number is now on the tape.',
+      'goRight': 'סורק ימינה כדי למצוא את סוף המספר הבינארי.',
+      'add':     'מוסיף 1. אם הספרה היא 1, כותב 0 ונושא שמאלה. אם היא 0, כותב 1 ומפסיק לשאת.',
+      'done':    'הנשיאה הושלמה. חוזר שמאלה לתחילת המספר.',
+      'halt':    'סיום. המספר הבינארי המוגדל נמצא כעת על הסרט.',
     },
     rules: [
       { state: 'goRight', read: '0', write: '0', move: 'R', next: 'goRight' },
@@ -583,31 +583,31 @@ const ALGORITHMS = {
       const initDec = initTape.length ? parseInt(initTape, 2) : 0;
       return {
         input: `${initTape}`,
-        inputNote: `= ${initDec} in decimal`,
+        inputNote: `= ${initDec} בעשרוני`,
         output: bits,
-        outputNote: `= ${dec} in decimal`,
+        outputNote: `= ${dec} בעשרוני`,
       };
     },
   },
-  'Palindrome': {
-    description: 'Checks whether a binary string reads the same forwards and backwards',
+  'פלינדרום': {
+    description: 'בודקת אם מחרוזת בינארית נקראת זהה מההתחלה ומהסוף',
     initialTape: '10101',
     startState: 'check0',
     haltStates: ['accept', 'reject'],
     symbols: [
-      { sym: '0', meaning: 'Binary digit zero', example: 'One of the characters to compare' },
-      { sym: '1', meaning: 'Binary digit one', example: 'One of the characters to compare' },
-      { sym: '_', meaning: 'Blank — erased or empty', example: 'Characters are erased after checking' },
+      { sym: '0', meaning: 'ספרה בינארית אפס', example: 'אחד התווים להשוואה' },
+      { sym: '1', meaning: 'ספרה בינארית אחד', example: 'אחד התווים להשוואה' },
+      { sym: '_', meaning: 'ריק — נמחק או ריק', example: 'תווים נמחקים לאחר בדיקה' },
     ],
     stateDescriptions: {
-      'check0':  'Looking at the leftmost remaining symbol. Remembers it and erases it.',
-      'have0':   'Remembered 0. Now scanning right to find the rightmost symbol.',
-      'have1':   'Remembered 1. Now scanning right to find the rightmost symbol.',
-      'match0':  'Checking: does the rightmost symbol match the 0 we remembered?',
-      'match1':  'Checking: does the rightmost symbol match the 1 we remembered?',
-      'goBack':  'Match succeeded! Moving left back to check the next pair.',
-      'accept':  'All pairs matched — the string is a palindrome.',
-      'reject':  'Mismatch found — the string is not a palindrome.',
+      'check0':  'מסתכל על הסמל השמאלי ביותר שנותר. זוכר אותו ומוחק.',
+      'have0':   'זכר 0. סורק ימינה כדי למצוא את הסמל הימני ביותר.',
+      'have1':   'זכר 1. סורק ימינה כדי למצוא את הסמל הימני ביותר.',
+      'match0':  'בודק: האם הסמל הימני ביותר תואם ל-0 שזכרנו?',
+      'match1':  'בודק: האם הסמל הימני ביותר תואם ל-1 שזכרנו?',
+      'goBack':  'ההתאמה הצליחה! חוזר שמאלה לבדוק את הזוג הבא.',
+      'accept':  'כל הזוגות תואמים — המחרוזת היא פלינדרום.',
+      'reject':  'נמצא אי-התאמה — המחרוזת אינה פלינדרום.',
     },
     rules: [
       { state: 'check0', read: '0', write: BLANK, move: 'R', next: 'have0' },
@@ -631,33 +631,33 @@ const ALGORITHMS = {
     ],
     interpret(tape, initTape, state) {
       const remaining = getTapeContent(tape);
-      let result = 'Checking...';
-      if (state === 'accept') result = 'Yes — palindrome';
-      else if (state === 'reject') result = 'No — not a palindrome';
+      let result = 'בודק...';
+      if (state === 'accept') result = 'כן — פלינדרום';
+      else if (state === 'reject') result = 'לא — לא פלינדרום';
       return {
         input: initTape,
         inputNote: `"${initTape}"`,
         output: result,
-        outputNote: remaining ? `Remaining: ${remaining}` : 'All symbols checked',
+        outputNote: remaining ? `נותרו: ${remaining}` : 'כל הסמלים נבדקו',
       };
     },
   },
-  'Unary Addition': {
-    description: 'Adds two unary numbers: 111 + 11 = 11111  (3 + 2 = 5)',
+  'חיבור אונרי': {
+    description: 'מחברת שני מספרים אונריים: 111 + 11 = 11111  (3 + 2 = 5)',
     initialTape: '111+11',
     startState: 'goRight',
     haltStates: ['halt'],
     symbols: [
-      { sym: '1', meaning: 'Tally mark — one unit', example: '111 means three, 11 means two' },
-      { sym: '+', meaning: 'Plus — addition operator', example: 'Separates the two numbers to add' },
-      { sym: '_', meaning: 'Blank — empty cell', example: 'End of tape data' },
+      { sym: '1', meaning: 'סימן ספירה — יחידה אחת', example: '111 פירושו שלוש, 11 פירושו שתיים' },
+      { sym: '+', meaning: 'פלוס — אופרטור חיבור', example: 'מפריד בין שני המספרים לחיבור' },
+      { sym: '_', meaning: 'ריק — תא ריק', example: 'סוף נתוני הסרט' },
     ],
     stateDescriptions: {
-      'goRight': 'Scanning right to find the + sign between the two numbers.',
-      'findEnd': 'Found the +. Replaced it with 1 (merging the numbers). Now finding the end.',
-      'erase':   'Erasing the last 1 to compensate for the extra 1 added when replacing the +.',
-      'rewind':  'Moving back to the start of the result.',
-      'halt':    'Done! The sum is on the tape as a single unary number.',
+      'goRight': 'סורק ימינה כדי למצוא את סימן ה-+ בין שני המספרים.',
+      'findEnd': 'מצא את ה-+. החליף אותו ב-1 (מיזוג המספרים). כעת מחפש את הסוף.',
+      'erase':   'מוחק את ה-1 האחרון כדי לפצות על ה-1 שנוסף בהחלפת ה-+.',
+      'rewind':  'חוזר לתחילת התוצאה.',
+      'halt':    'סיום! הסכום נמצא על הסרט כמספר אונרי יחיד.',
     },
     rules: [
       { state: 'goRight', read: '1', write: '1', move: 'R', next: 'goRight' },
@@ -674,26 +674,26 @@ const ALGORITHMS = {
       const parts = initTape.split('+');
       return {
         input: initTape,
-        inputNote: `${parts[0].length} + ${(parts[1]||'').length} in unary`,
-        output: content || '(empty)',
-        outputNote: `= ${ones} in decimal`,
+        inputNote: `${parts[0].length} + ${(parts[1]||'').length} באונרי`,
+        output: content || '(ריק)',
+        outputNote: `= ${ones} בעשרוני`,
       };
     },
   },
   'Busy Beaver 3': {
-    description: 'The 3-state champion: writes as many 1s as possible before halting',
+    description: 'האלוף בעל 3 המצבים: כותב כמה שיותר 1-ים לפני עצירה',
     initialTape: '',
     startState: 'A',
     haltStates: ['HALT'],
     symbols: [
-      { sym: '0', meaning: 'Empty cell (blank)', example: 'The tape starts filled with zeros' },
-      { sym: '1', meaning: 'Marked cell', example: 'The beaver writes 1 — the goal is to write as many as possible' },
+      { sym: '0', meaning: 'תא ריק (blank)', example: 'הסרט מתחיל מלא באפסים' },
+      { sym: '1', meaning: 'תא מסומן', example: 'ה-Beaver כותב 1 — המטרה היא לכתוב כמה שיותר' },
     ],
     stateDescriptions: {
-      'A':    'State A — one of the three working states in the busy beaver.',
-      'B':    'State B — the machine bounces between states filling the tape with 1s.',
-      'C':    'State C — if it reads 1 here, it halts. Otherwise keeps writing.',
-      'HALT': 'Halted! The beaver wrote 6 ones in 14 steps — the proven maximum for 3 states.',
+      'A':    'מצב A — אחד משלושת מצבי העבודה של ה-Busy Beaver.',
+      'B':    'מצב B — המכונה קופצת בין מצבים וממלאת את הסרט ב-1-ים.',
+      'C':    'מצב C — אם קורא 1 כאן, עוצר. אחרת ממשיך לכתוב.',
+      'HALT': 'עצר! ה-Beaver כתב 6 אחדות ב-14 צעדים — המקסימום המוכח ל-3 מצבים.',
     },
     rules: [
       { state: 'A', read: '0', write: '1', move: 'R', next: 'B' },
@@ -707,10 +707,10 @@ const ALGORITHMS = {
       let ones = 0;
       for (const k in tape) { if (tape[k] === '1') ones++; }
       return {
-        input: '(empty tape)',
-        inputNote: 'All cells start as 0',
-        output: `${ones} ones written`,
-        outputNote: `in ${stepCount} steps`,
+        input: '(סרט ריק)',
+        inputNote: 'כל התאים מתחילים כ-0',
+        output: `${ones} אחדות נכתבו`,
+        outputNote: `ב-${stepCount} צעדים`,
       };
     },
   },
@@ -791,7 +791,7 @@ function step() {
   const rule = findRule(currentState, sym);
   if (!rule) {
     currentState = currentAlgo.haltStates.includes('reject') ? 'reject' : currentAlgo.haltStates[0];
-    lastAction = { desc: `No matching rule — machine halted.` };
+    lastAction = { desc: `אין חוק מתאים — המכונה עצרה.` };
     renderAll();
     return;
   }
@@ -805,21 +805,21 @@ function step() {
 
   lastAction = {
     prevState, sym, rule,
-    desc: `In state "${prevState}", read "${sym}" → wrote "${rule.write}", moved ${rule.move === 'R' ? 'right →' : '← left'}, now in state "${rule.next}"`
+    desc: `במצב "${prevState}", קרא "${sym}" → כתב "${rule.write}", זז ${rule.move === 'R' ? 'ימינה →' : '← שמאלה'}, כעת במצב "${rule.next}"`
   };
 
   renderAll();
 }
 
 function toggleRun() {
-  if (running) { stopRun(); } else { running = true; document.getElementById('run-btn').textContent = 'Pause'; runLoop(); }
+  if (running) { stopRun(); } else { running = true; document.getElementById('run-btn').textContent = 'השהיה'; runLoop(); }
 }
 function runLoop() {
   if (!running || isHalted()) { stopRun(); return; }
   step();
   runTimer = setTimeout(runLoop, 1000 / document.getElementById('speed').value);
 }
-function stopRun() { running = false; clearTimeout(runTimer); document.getElementById('run-btn').textContent = 'Run'; }
+function stopRun() { running = false; clearTimeout(runTimer); document.getElementById('run-btn').textContent = 'הרצה'; }
 
 // ── Tape rendering ──
 function renderTape() {
@@ -866,8 +866,8 @@ function renderReadouts() {
   document.getElementById('ro-steps').textContent = stepCount;
   document.getElementById('ro-sym').textContent = readCell(headPos);
   const s = document.getElementById('ro-status');
-  if (halted) { s.textContent = currentState === 'accept' ? 'Accept' : currentState === 'reject' ? 'Reject' : 'Halt'; s.className = 'readout-value' + hc; }
-  else { s.textContent = running ? 'Running' : 'Ready'; s.className = 'readout-value'; }
+  if (halted) { s.textContent = currentState === 'accept' ? 'קבלה' : currentState === 'reject' ? 'דחייה' : 'עצר!'; s.className = 'readout-value' + hc; }
+  else { s.textContent = running ? 'רץ' : 'מוכן'; s.className = 'readout-value'; }
 }
 
 // ── Narration ──
@@ -876,15 +876,15 @@ function renderNarration() {
   const desc = currentAlgo.stateDescriptions[currentState] || '';
   const halted = isHalted();
 
-  let html = `<div class="narration-title">What's Happening</div>`;
-  html += `<div><span class="narration-state">State: ${currentState}</span></div>`;
+  let html = `<div class="narration-title">מה קורה</div>`;
+  html += `<div><span class="narration-state">מצב: ${currentState}</span></div>`;
   html += `<div class="narration-desc">${desc}</div>`;
 
   if (!halted && !lastAction) {
     const sym = readCell(headPos);
     const rule = findRule(currentState, sym);
     if (rule) {
-      html += `<div class="narration-action">Next: reads "<em>${sym}</em>" → will write "<em>${rule.write}</em>", move ${rule.move === 'R' ? 'right →' : '← left'}, go to <em>${rule.next}</em></div>`;
+      html += `<div class="narration-action">הבא: קורא "<em>${sym}</em>" → יכתוב "<em>${rule.write}</em>", יזוז ${rule.move === 'R' ? 'ימינה →' : '← שמאלה'}, יעבור ל-<em>${rule.next}</em></div>`;
     }
   } else if (lastAction) {
     html += `<div class="narration-action">${lastAction.desc}</div>`;
@@ -902,7 +902,7 @@ function renderRulesStructure() {
   let html = '';
   currentAlgo.rules.forEach((r, i) => {
     html += `<div class="rule-row" data-idx="${i}">
-      <span class="rule-cell cond-label" style="width:24px">If</span>
+      <span class="rule-cell cond-label" style="width:24px">אם</span>
       <span class="rule-cell state-c">${r.state}</span>
       <span class="rule-cell sym">${r.read}</span>
       <span class="rule-cell sep">→</span>
@@ -959,7 +959,7 @@ function renderStateDiagram() {
   const halted = isHalted();
 
   let html = '<table class="fsc-table"><thead><tr>';
-  html += `<th class="corner"><span class="corner-input">Read ↓</span><span class="corner-state">State →</span></th>`;
+  html += `<th class="corner"><span class="corner-input">↓ קלט</span><span class="corner-state">→ מצב</span></th>`;
   syms.forEach(s => {
     const isActiveCol = s === curSym && !halted;
     html += `<th class="col-head${isActiveCol ? ' active-col' : ''}">${s}</th>`;
@@ -979,9 +979,9 @@ function renderStateDiagram() {
       const cls = 'action-cell' + (isActive ? ' active-cell' : '') + (!rule ? ' empty' : '');
       if (rule) {
         html += `<td class="${cls}">`;
-        html += `<div class="fsc-output-line"><span class="fsc-tag">Write:</span><span class="fsc-val write-val">${rule.write}</span></div>`;
-        html += `<div class="fsc-output-line"><span class="fsc-tag">Move:</span><span class="fsc-val dir-val">${rule.move === 'R' ? '→' : '←'}</span></div>`;
-        html += `<div class="fsc-output-line"><span class="fsc-tag">Next:</span><span class="fsc-val next-val">${rule.next}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">כתוב:</span><span class="fsc-val write-val">${rule.write}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">הזז:</span><span class="fsc-val dir-val">${rule.move === 'R' ? '→' : '←'}</span></div>`;
+        html += `<div class="fsc-output-line"><span class="fsc-tag">הבא:</span><span class="fsc-val next-val">${rule.next}</span></div>`;
         html += `</td>`;
       } else {
         html += `<td class="${cls}">—</td>`;
@@ -1005,33 +1005,33 @@ function renderRegisters() {
   let html = '';
 
   html += `<div class="reg-row">
-    <div class="reg-label">Input</div>
+    <div class="reg-label">קלט</div>
     <div class="reg-value">${interp.input}</div>
     <div class="reg-note">${interp.inputNote}</div>
   </div>`;
 
   html += `<div class="reg-row">
-    <div class="reg-label">Tape Now</div>
+    <div class="reg-label">סרט כעת</div>
     <div class="reg-value">${interp.output}</div>
     <div class="reg-note">${interp.outputNote}</div>
   </div>`;
 
   html += `<div class="reg-divider"></div>`;
-  html += `<div class="reg-step-label">Current Transition</div>`;
+  html += `<div class="reg-step-label">מעבר נוכחי</div>`;
 
   if (halted) {
-    html += `<div class="reg-step"><span class="hi">${currentState}</span> <span class="dim">— Machine halted</span></div>`;
+    html += `<div class="reg-step"><span class="hi">${currentState}</span> <span class="dim">— המכונה עצרה</span></div>`;
   } else if (rule) {
     html += `<div class="reg-step">`;
-    html += `<span class="dim">State</span> <span class="hi">${currentState}</span>`;
-    html += ` <span class="dim">Read</span> <span class="hi">${sym}</span>`;
+    html += `<span class="dim">מצב</span> <span class="hi">${currentState}</span>`;
+    html += ` <span class="dim">קרא</span> <span class="hi">${sym}</span>`;
     html += ` <span class="dim">→</span>`;
-    html += ` <span class="dim">Write</span> <span class="hi">${rule.write}</span>`;
-    html += ` <span class="dim">Move</span> <span class="hi">${rule.move === 'R' ? '→ right' : '← left'}</span>`;
-    html += ` <span class="dim">Go to</span> <span class="hi">${rule.next}</span>`;
+    html += ` <span class="dim">כתוב</span> <span class="hi">${rule.write}</span>`;
+    html += ` <span class="dim">הזז</span> <span class="hi">${rule.move === 'R' ? '→ ימינה' : '← שמאלה'}</span>`;
+    html += ` <span class="dim">עבור ל-</span> <span class="hi">${rule.next}</span>`;
     html += `</div>`;
   } else {
-    html += `<div class="reg-step"><span class="dim">No matching rule — will halt</span></div>`;
+    html += `<div class="reg-step"><span class="dim">אין חוק מתאים — המכונה תעצור</span></div>`;
   }
 
   el.innerHTML = html;
@@ -1090,10 +1090,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { e.preventDefault(); reset(); }
 });
 
-selectAlgorithm('Binary Increment');
+selectAlgorithm('הגדלה בינארית');
 
 (function(){
-  const KEY = 'intro-dismissed-turing-machine';
+  const KEY = 'intro-dismissed-turing-machine-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

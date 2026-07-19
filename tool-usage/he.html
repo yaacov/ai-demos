@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool Use</title>
+<title>שימוש בכלים</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -138,11 +138,11 @@
     font-size: 14px; line-height: 1.6;
   }
   .chat-msg.user .chat-bubble {
-    background: var(--blue); color: #fff; border-radius: 12px 12px 12px 4px;
+    background: var(--blue); color: #fff; border-radius: 12px 12px 4px 12px;
   }
   .chat-msg.assistant .chat-bubble {
     background: var(--card-bg); border: 1px solid var(--card-border);
-    color: var(--primary); border-radius: 12px 12px 4px 12px;
+    color: var(--primary); border-radius: 12px 12px 12px 4px;
   }
   .chat-msg.tool-call .chat-bubble {
     background: rgba(235,104,52,0.08); border: 1px dashed var(--orange);
@@ -237,7 +237,7 @@
   }
   .intro-card h2 { font-size: 22px; margin-bottom: 12px; }
   .intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
-  .intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+  .intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 20px 20px 0; }
   .intro-card li { margin-bottom: 4px; }
   .intro-start {
     background: var(--blue); color: #fff; border: none;
@@ -252,11 +252,11 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 12px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    line-height: 18px; text-align: center; margin-left: 6px;
+    line-height: 18px; text-align: center; margin-right: 6px;
   }
   .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
   .nav-github {
-    margin-left: auto;
+    margin-right: auto;
     color: var(--muted);
     transition: color 0.15s;
     display: inline-flex;
@@ -270,7 +270,7 @@
     background: transparent; border: 2px solid var(--muted);
     color: var(--muted); font-size: 9px; font-weight: 700;
     padding: 0; cursor: pointer; transition: all 0.15s;
-    text-decoration: none; margin-left: 6px;
+    text-decoration: none; margin-right: 6px;
     align-self: center;
   }
   .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -284,47 +284,47 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>Tool Use</h2>
-    <p>A language model can only generate text — it lives inside a bubble with no access to the outside world. It can't check today's weather, look up a flight, or run a calculation on its own.</p>
-    <p><strong>Tools</strong> break the bubble. Like a doctor writing a prescription instead of manufacturing the medicine, the model writes a structured request (a tool call) that an external system executes, then feeds the result back into the conversation.</p>
+    <h2>שימוש בכלים</h2>
+    <p>מודל שפה יכול רק לייצר טקסט — הוא חי בתוך בועה ללא גישה לעולם החיצון. הוא לא יכול לבדוק את מזג האוויר היום, לחפש טיסה, או לבצע חישוב בעצמו.</p>
+    <p><strong>כלים</strong> פורצים את הבועה. כמו רופא שכותב מרשם במקום לייצר את התרופה, המודל כותב בקשה מובנית (קריאת כלי) שמערכת חיצונית מבצעת, ואז מחזירה את התוצאה לתוך השיחה.</p>
     <ul>
-      <li><strong>The Problem</strong> — see what happens without tools</li>
-      <li><strong>Tool Definition</strong> — learn how tools are described to the model</li>
-      <li><strong>Tools in Action</strong> — watch the full tool-call flow step by step</li>
+      <li><strong>הבעיה</strong> — ראו מה קורה בלי כלים</li>
+      <li><strong>הגדרת כלי</strong> — למדו איך כלים מתוארים למודל</li>
+      <li><strong>כלים בפעולה</strong> — צפו בתהליך קריאת הכלי צעד אחר צעד</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Large_language_model#Tool_use" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Large_language_model#Tool_use" target="_blank">למידע נוסף בוויקיפדיה &#x2197;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 <nav class="nav-bar">
-  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <a class="nav-link" href="../cnn/he.html">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../transformer/index.html">Transformer</a>
+  <a class="nav-link" href="../transformer/he.html">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link active">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link active">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
-<h1>Tool Use</h1>
+<h1>שימוש בכלים</h1>
 
 <div style="display:flex;justify-content:center;margin-bottom:16px;">
   <div class="mode-tabs">
-    <button class="mode-tab active" onclick="switchMode('problem')">The Problem</button>
-    <button class="mode-tab" onclick="switchMode('definition')">Tool Definition</button>
-    <button class="mode-tab" onclick="switchMode('action')">Tools in Action</button>
+    <button class="mode-tab active" onclick="switchMode('problem')">הבעיה</button>
+    <button class="mode-tab" onclick="switchMode('definition')">הגדרת כלי</button>
+    <button class="mode-tab" onclick="switchMode('action')">כלים בפעולה</button>
   </div>
 </div>
 
@@ -342,14 +342,14 @@ let mode = 'problem';
 let actionStep = 0;
 
 const ACTION_STEPS = [
-  { type: 'user', text: 'What is the weather in Tel Aviv right now?' },
+  { type: 'user', text: 'מה מזג האוויר בתל אביב כרגע?' },
   { type: 'tool-call', label: 'Tool Call', text: 'get_weather(city="Tel Aviv")' },
   { type: 'tool-result', label: 'Tool Result', text: '{"temp": 31, "humidity": 65, "condition": "sunny", "wind": "15 km/h"}' },
-  { type: 'assistant', text: 'The current weather in Tel Aviv: 31°C, sunny, humidity 65%, wind 15 km/h.' },
-  { type: 'user', text: 'And what about Jerusalem?' },
+  { type: 'assistant', text: 'מזג האוויר הנוכחי בתל אביב: 31°C, שמשי, לחות 65%, רוח 15 קמ"ש.' },
+  { type: 'user', text: 'ומה לגבי ירושלים?' },
   { type: 'tool-call', label: 'Tool Call', text: 'get_weather(city="Jerusalem")' },
   { type: 'tool-result', label: 'Tool Result', text: '{"temp": 26, "humidity": 40, "condition": "partly_cloudy", "wind": "10 km/h"}' },
-  { type: 'assistant', text: 'In Jerusalem: 26°C, partly cloudy, humidity 40%, wind 10 km/h. 5 degrees cooler than Tel Aviv.' },
+  { type: 'assistant', text: 'בירושלים: 26°C, מעונן חלקית, לחות 40%, רוח 10 קמ"ש. קריר יותר ב-5 מעלות מתל אביב.' },
 ];
 
 const FLOW_STEPS = [
@@ -381,31 +381,31 @@ function render() {
 function renderProblem() {
   document.getElementById('vizPanel').innerHTML = `
     <div class="chat-box">
-      <div class="chat-header">\u{1F4AC} Chat without Tools</div>
+      <div class="chat-header">\u{1F4AC} צ׳אט ללא כלים</div>
       <div class="chat-messages">
         <div class="chat-msg user">
           <div class="chat-avatar user-avatar">U</div>
-          <div class="chat-bubble">What is the weather in Tel Aviv right now?</div>
+          <div class="chat-bubble">מה מזג האוויר בתל אביב כרגע?</div>
         </div>
         <div class="chat-msg assistant">
           <div class="chat-avatar assistant-avatar">AI</div>
           <div class="chat-bubble">
-            I'm sorry, I don't have access to real-time information.
-            I'm a language model — I can only generate text based on what I learned during training.
-            I cannot check the weather, search the internet, or access external systems.
+            מצטער, אין לי גישה למידע בזמן אמת.
+            אני מודל שפה — אני יכול רק לייצר טקסט על בסיס מה שלמדתי באימון.
+            אינני יכול לבדוק מזג אוויר, לחפש באינטרנט, או לגשת למערכות חיצוניות.
           </div>
         </div>
       </div>
     </div>
     <div class="card" style="border-color:var(--red);border-style:dashed;">
-      <h3 style="color:var(--red);">The Limitation</h3>
+      <h3 style="color:var(--red);">המגבלה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        A language model is <strong>text only</strong>. It cannot:
-        <ul style="margin:8px 16px 0;padding:0;">
-          <li>Access the internet or up-to-date information</li>
-          <li>Run code or perform precise calculations</li>
-          <li>Read or write files</li>
-          <li>Send emails or messages</li>
+        מודל שפה הוא <strong>טקסט בלבד</strong>. הוא לא יכול:
+        <ul style="margin:8px 0 0 16px;padding:0;">
+          <li>לגשת לאינטרנט או למידע עדכני</li>
+          <li>להריץ קוד או לבצע חישובים מדויקים</li>
+          <li>לקרוא או לכתוב קבצים</li>
+          <li>לשלוח אימיילים או הודעות</li>
         </ul>
       </div>
     </div>
@@ -413,23 +413,23 @@ function renderProblem() {
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>A language model lives in a bubble.</strong> It was trained on text from the past
-      and can only generate new text. It has no hands, no eyes, and no connection to the world.
+      <strong>מודל שפה חי בתוך בועה.</strong> הוא אומן על טקסט מהעבר
+      ויכול רק לייצר טקסט חדש. אין לו ידיים, אין לו עיניים, ואין לו חיבור לעולם.
     </div>
     <div class="card">
-      <h3>The Solution: Tools</h3>
+      <h3>הפתרון: כלים</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        Instead of trying to give the model direct access to systems —
-        we define <strong>Tools</strong> that it can "call."
+        במקום לנסות לתת למודל גישה ישירה למערכות —
+        מגדירים <strong>כלים</strong> שהוא יכול “לקרוא להם”.
         <br><br>
-        The model doesn't run the tools itself. It only <strong>decides when and how to use them</strong>,
-        and the system executes and returns the result.
+        המודל לא מריץ את הכלים בעצמו. הוא רק <strong>מחליט מתי ואיך להשתמש בהם</strong>,
+        והמערכת מבצעת ומחזירה את התוצאה.
       </div>
     </div>
     <div class="narration">
-      <strong>Like a doctor writing a prescription:</strong> the doctor doesn't manufacture the medicine —
-      they write an order, and the pharmacy fulfills it. The model writes a "tool call,"
-      and the system executes it.
+      <strong>כמו רופא שכותב מרשם:</strong> הרופא לא מייצר את התרופה —
+      הוא כותב הוראה, ובית המרקחת ממלא אותה. המודל כותב “קריאת כלי”,
+      והמערכת מבצעת אותה.
     </div>
   `;
 
@@ -480,40 +480,40 @@ function renderDefinition() {
 
   document.getElementById('vizPanel').innerHTML = `
     <div class="card" style="margin-bottom:12px;">
-      <h3>Tool Definition = An Addition to the Chat Template</h3>
+      <h3>הגדרת כלי = תוספת לתבנית הצ׳אט</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        The tools are defined <strong>inside the system message</strong> as JSON.
-        The model learns from the description when to use each tool and which parameters to send.
+        הכלים מוגדרים <strong>בתוך הודעת המערכת</strong> כ-JSON.
+        המודל לומד מהתיאור מתי להשתמש בכל כלי ואילו פרמטרים לשלוח.
       </div>
     </div>
     <div class="template-box"><pre style="margin:0;white-space:pre-wrap;">${toolDef}</pre></div>
     <div class="arrow-label">
       <span class="arrow">&#x2191;</span>
-      The tools are defined as part of the template — the model sees them as text
+      הכלים מוגדרים כחלק מהתבנית — המודל רואה אותם כטקסט
     </div>
   `;
 
   document.getElementById('sidePanel').innerHTML = `
     <div class="narration">
-      <strong>Tools are text.</strong>
-      There is no "magic" — the model simply sees a textual description of each tool
-      and learns during training when and how to generate a call to it.
+      <strong>כלים הם טקסט.</strong>
+      אין כאן “קסם” — המודל פשוט רואה תיאור טקסטואלי של כל כלי
+      ולומד במהלך האימון מתי ואיך לייצר קריאה אליו.
     </div>
     <div class="card">
-      <h3>Each tool is defined by:</h3>
+      <h3>כל כלי מוגדר על ידי:</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
         <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">1</span>
-        <strong>Name</strong> — a unique identifier<br><br>
+        <strong>שם</strong> — מזהה ייחודי<br><br>
         <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">2</span>
-        <strong>Description</strong> — when to use it<br><br>
+        <strong>תיאור</strong> — מתי להשתמש בו<br><br>
         <span style="display:inline-block;width:18px;height:18px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;font-size:11px;font-weight:700;line-height:18px;">3</span>
-        <strong>Parameters</strong> — what needs to be sent
+        <strong>פרמטרים</strong> — מה צריך לשלוח
       </div>
     </div>
     <div class="narration">
-      <strong>Examples of tools:</strong>
-      Web search, weather checking, code execution, file reading,
-      sending emails, database access — any API can become a tool.
+      <strong>דוגמאות לכלים:</strong>
+      חיפוש באינטרנט, בדיקת מזג אוויר, הרצת קוד, קריאת קבצים,
+      שליחת אימיילים, גישה למסד נתונים — כל API יכול להפוך לכלי.
     </div>
   `;
 
@@ -564,62 +564,62 @@ function renderAction() {
   }).join('');
 
   if (!msgs) {
-    msgs = '<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:14px;">Click "Next" to begin</div>';
+    msgs = '<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:14px;">לחצו על "הבא" כדי להתחיל</div>';
   }
 
   document.getElementById('vizPanel').innerHTML = `
     <div class="flow-diagram">${flowHtml}</div>
     <div class="chat-box">
-      <div class="chat-header">\u{1F527} Chat with Tools</div>
+      <div class="chat-header">\u{1F527} צ׳אט עם כלים</div>
       <div class="chat-messages">${msgs}</div>
     </div>
     ${actionStep > 0 ? renderTemplate() : ''}
   `;
 
   const sideNarrations = [
-    `<div class="narration"><strong>Click "Next"</strong> to see the tool-use process step by step.</div>`,
+    `<div class="narration"><strong>לחצו על "הבא"</strong> כדי לראות את תהליך השימוש בכלים צעד אחר צעד.</div>`,
 
-    `<div class="narration"><strong>Step 1:</strong> The user asks a question that requires real-time information.
-      The model cannot answer from its own knowledge.</div>`,
+    `<div class="narration"><strong>שלב 1:</strong> המשתמש שואל שאלה שדורשת מידע בזמן אמת.
+      המודל לא יכול לענות מהידע שלו.</div>`,
 
-    `<div class="narration"><strong>Step 2:</strong> The model <strong>does not try to guess</strong>.
-      Instead, it generates a <strong>tool call</strong> — structured text that says
-      "I need to invoke the get_weather tool with the parameter Tel Aviv."</div>
-    <div class="card"><h3>What happens behind the scenes?</h3>
+    `<div class="narration"><strong>שלב 2:</strong> המודל <strong>לא מנסה לנחש</strong>.
+      במקום זאת, הוא מייצר <strong>קריאת כלי</strong> — טקסט מובנה שאומר
+      "אני צריך להפעיל את הכלי get_weather עם הפרמטר תל אביב."</div>
+    <div class="card"><h3>מה קורה מאחורי הקלעים?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        The model <strong>does not run</strong> the tool. It only generates text describing the call.
-        <strong>The system</strong> (the code running the model) detects the call, executes the tool, and returns the result.
+        המודל <strong>לא מריץ</strong> את הכלי. הוא רק מייצר טקסט שמתאר את הקריאה.
+        <strong>המערכת</strong> (הקוד שמריץ את המודל) מזהה את הקריאה, מבצעת את הכלי, ומחזירה את התוצאה.
       </div>
     </div>`,
 
-    `<div class="narration"><strong>Step 3:</strong> The system ran the tool and received a result.
-      The result is inserted back into the template as JSON — the model sees it as text.</div>`,
+    `<div class="narration"><strong>שלב 3:</strong> המערכת הריצה את הכלי וקיבלה תוצאה.
+      התוצאה מוכנסת חזרה לתבנית כ-JSON — המודל רואה אותה כטקסט.</div>`,
 
-    `<div class="narration"><strong>Step 4:</strong> Now the model has the information it needs.
-      It <strong>interprets the JSON</strong> and composes a natural-language answer.</div>
-    <div class="card"><h3>The Loop</h3>
+    `<div class="narration"><strong>שלב 4:</strong> עכשיו למודל יש את המידע שהוא צריך.
+      הוא <strong>מפרש את ה-JSON</strong> ומרכיב תשובה בשפה טבעית.</div>
+    <div class="card"><h3>הלולאה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        1. User asks a question<br>
-        2. Model decides: answer directly or call a tool?<br>
-        3. If a tool — the system runs it and returns the result<br>
-        4. The model composes a final answer
+        1. המשתמש שואל שאלה<br>
+        2. המודל מחליט: לענות ישירות או לקרוא לכלי?<br>
+        3. אם כלי — המערכת מריצה אותו ומחזירה תוצאה<br>
+        4. המודל מרכיב תשובה סופית
       </div>
     </div>`,
 
-    `<div class="narration"><strong>Follow-up question:</strong> The user asks about a different city.
-      The entire history — including previous tool calls — is sent to the model again.</div>`,
+    `<div class="narration"><strong>שאלת המשך:</strong> המשתמש שואל על עיר אחרת.
+      כל ההיסטוריה — כולל קריאות כלי קודמות — נשלחת למודל מחדש.</div>`,
 
-    `<div class="narration"><strong>Second call:</strong> The model recognizes that the get_weather tool is needed here too,
-      but this time with a different parameter — Jerusalem.</div>`,
+    `<div class="narration"><strong>קריאה שנייה:</strong> המודל מזהה שגם כאן נדרש הכלי get_weather,
+      אבל הפעם עם פרמטר אחר — ירושלים.</div>`,
 
-    `<div class="narration"><strong>Second result:</strong> The system runs the tool again and returns the data for Jerusalem.</div>`,
+    `<div class="narration"><strong>תוצאה שנייה:</strong> המערכת מריצה את הכלי שוב ומחזירה את הנתונים עבור ירושלים.</div>`,
 
-    `<div class="narration"><strong>Smart answer:</strong> The model doesn't just present the data —
-      it <strong>compares</strong> the two cities because it can see the entire history in its context window.</div>
-    <div class="card"><h3>Tools + Context Window</h3>
+    `<div class="narration"><strong>תשובה חכמה:</strong> המודל לא רק מציג את הנתונים —
+      הוא <strong>משווה</strong> בין שתי הערים כי הוא רואה את כל ההיסטוריה בחלון ההקשר שלו.</div>
+    <div class="card"><h3>כלים + חלון הקשר</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.7;">
-        The larger the context window, the more the model can manage <strong>longer conversations with tools</strong> —
-        remembering previous results, comparing them, and building complex answers.
+        ככל שחלון ההקשר גדול יותר, המודל יכול לנהל <strong>שיחות ארוכות יותר עם כלים</strong> —
+        לזכור תוצאות קודמות, להשוות ביניהן, ולבנות תשובות מורכבות.
       </div>
     </div>`,
   ];
@@ -627,9 +627,9 @@ function renderAction() {
   document.getElementById('sidePanel').innerHTML = sideNarrations[actionStep] || sideNarrations[sideNarrations.length - 1];
 
   document.getElementById('controlsBar').innerHTML = `
-    <button class="ctrl-btn" onclick="actionStep=0;render()">Reset</button>
+    <button class="ctrl-btn" onclick="actionStep=0;render()">איפוס</button>
     <button class="ctrl-btn primary-btn" onclick="stepAction()" ${actionStep >= ACTION_STEPS.length ? 'disabled' : ''}>
-      Next &rarr;
+      הבא &larr;
     </button>
   `;
 }
@@ -657,7 +657,7 @@ function renderTemplate() {
   }
 
   return `
-    <div class="arrow-label"><span class="arrow">&#x2193;</span> What the model actually sees</div>
+    <div class="arrow-label"><span class="arrow">&#x2193;</span> מה שהמודל רואה בפועל</div>
     <div class="template-box" style="font-size:11px;"><pre style="margin:0;white-space:pre-wrap;">${tmpl}</pre></div>
   `;
 }
@@ -683,7 +683,7 @@ document.addEventListener('keydown', e => {
 render();
 
 (function(){
-  const KEY = 'intro-dismissed-tool-usage';
+  const KEY = 'intro-dismissed-tool-usage-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;

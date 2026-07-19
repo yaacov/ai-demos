@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Transformer</title>
+<title>טרנספורמר</title>
 <style>
   :root {
     --surface:        #fcfcfb;
@@ -140,11 +140,12 @@
   .formula {
     font-family: "SF Mono", "Cascadia Mono", "Consolas", monospace;
     font-size: 13px; text-align: center; color: var(--primary); font-weight: 600; line-height: 1.8;
+    direction: ltr;
   }
   .formula .op { color: var(--muted); font-weight: 400; }
   .dim-badge {
     display: inline-block; background: var(--blue); color: #fff; font-size: 11px;
-    font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-left: 6px;
+    font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-right: 6px;
   }
   .scale-note {
     font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 8px;
@@ -385,7 +386,7 @@
 }
 .intro-card h2 { font-size: 22px; margin-bottom: 12px; }
 .intro-card p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin-bottom: 12px; }
-.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 0 20px 20px; }
+.intro-card ul { color: var(--secondary); font-size: 13px; line-height: 1.7; margin: 12px 20px 20px 0; }
 .intro-card li { margin-bottom: 4px; }
 .intro-start {
   background: var(--blue); color: #fff; border: none;
@@ -400,11 +401,11 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 12px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  line-height: 18px; text-align: center; margin-left: 6px;
+  line-height: 18px; text-align: center; margin-right: 6px;
 }
 .intro-reopen:hover { border-color: var(--blue); color: var(--blue); }
 .nav-github {
-  margin-left: auto;
+  margin-right: auto;
   color: var(--muted);
   transition: color 0.15s;
   display: inline-flex;
@@ -418,7 +419,7 @@
   background: transparent; border: 2px solid var(--muted);
   color: var(--muted); font-size: 9px; font-weight: 700;
   padding: 0; cursor: pointer; transition: all 0.15s;
-  text-decoration: none; margin-left: 6px;
+  text-decoration: none; margin-right: 6px;
   align-self: center;
 }
 .nav-lang-toggle:hover { border-color: var(--blue); color: var(--blue); }
@@ -432,42 +433,42 @@
 <body>
 <div class="intro-overlay">
   <div class="intro-card">
-    <h2>The Transformer</h2>
-    <p>The Transformer is the architecture behind GPT, Claude, and every modern language model. Introduced in the 2017 paper "Attention Is All You Need," it revolutionized AI by processing entire sentences in parallel rather than word by word.</p>
-    <p>This visualization walks you through the architecture step by step — with tiny vectors you can follow by hand — from an input sentence all the way to a next-word prediction.</p>
+    <h2>הטרנספורמר</h2>
+    <p>הטרנספורמר הוא הארכיטקטורה שמאחורי GPT, Claude, וכל מודל שפה מודרני. הוא הוצג במאמר משנת 2017 בשם "Attention Is All You Need", וחולל מהפכה בבינה מלאכותית בכך שהוא מעבד משפטים שלמים במקביל במקום מילה אחר מילה.</p>
+    <p>ההדגמה הזו מלווה אתכם בארכיטקטורה צעד אחר צעד — עם וקטורים קטנים שאפשר לעקוב אחריהם ידנית — ממשפט קלט ועד לחיזוי המילה הבאה.</p>
     <ul>
-      <li>Follow 10 steps: tokenization, embedding, attention, feed-forward, and prediction</li>
-      <li>See the actual matrix operations with small, readable numbers</li>
-      <li>Understand why attention lets the model capture relationships between all words at once</li>
+      <li>עקבו אחרי 10 שלבים: טוקניזציה, שיכון (embedding), קשב (attention), רשת הזנה קדמית, וחיזוי</li>
+      <li>ראו את פעולות המטריצות בפועל עם מספרים קטנים וקריאים</li>
+      <li>הבינו מדוע מנגנון הקשב מאפשר למודל ללכוד יחסים בין כל המילים בו-זמנית</li>
     </ul>
-    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)" target="_blank">Learn more on Wikipedia ↗</a><br>
-    <button class="intro-start">Start Exploring</button>
+    <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)" target="_blank">למידע נוסף בוויקיפדיה &#x2197;</a><br>
+    <button class="intro-start">התחילו לחקור</button>
   </div>
 </div>
 <nav class="nav-bar">
-  <a class="nav-link" href="../timeline/index.html">Timeline</a>
+  <a class="nav-link" href="../timeline/he.html">ציר זמן</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-machine/index.html">Turing Machine</a>
+  <a class="nav-link" href="../turing-machine/he.html">מכונת טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../nondeterministic-turing-machine/index.html">Nondeterministic TM</a>
+  <a class="nav-link" href="../nondeterministic-turing-machine/he.html">מכונה לא דטרמיניסטית</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../turing-test/index.html">Turing Test</a>
+  <a class="nav-link" href="../turing-test/he.html">מבחן טיורינג</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../word-vectors/index.html">Word Vectors</a>
+  <a class="nav-link" href="../word-vectors/he.html">וקטורי מילים</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../cnn/index.html">CNN</a>
+  <a class="nav-link" href="../cnn/he.html">CNN</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link active">Transformer</a>
+  <a class="nav-link active">טרנספורמר</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../chat/index.html">Chat</a>
+  <a class="nav-link" href="../chat/he.html">צ׳אט</a>
   <span class="nav-sep">/</span>
-  <a class="nav-link" href="../tool-usage/index.html">Tools</a>
-  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="View on GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
-  <a class="nav-lang-toggle" href="he.html" title="עברית">עב</a>
-  <button class="intro-reopen" title="About this demo">?</button>
+  <a class="nav-link" href="../tool-usage/he.html">כלים</a>
+  <a class="nav-github" href="https://github.com/yaacov/ai-demos" target="_blank" title="צפייה ב-GitHub"><svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+  <a class="nav-lang-toggle" href="index.html" title="English">EN</a>
+  <button class="intro-reopen" title="על ההדגמה">?</button>
 </nav>
 
-<h1>Transformer</h1>
+<h1>טרנספורמר</h1>
 <div class="step-bar" id="stepBar"></div>
 <div class="step-title" id="stepTitle"></div>
 
@@ -479,9 +480,9 @@
 </div>
 
 <div class="controls-bar">
-  <button class="ctrl-btn" id="btnBack" onclick="goStep(step-1)">&larr; Back</button>
-  <button class="ctrl-btn" id="btnReset" onclick="goStep(0)">Reset</button>
-  <button class="ctrl-btn primary-btn" id="btnNext" onclick="goStep(step+1)">Next &rarr;</button>
+  <button class="ctrl-btn" id="btnBack" onclick="goStep(step-1)">&rarr; אחורה</button>
+  <button class="ctrl-btn" id="btnReset" onclick="goStep(0)">איפוס</button>
+  <button class="ctrl-btn primary-btn" id="btnNext" onclick="goStep(step+1)">הבא &larr;</button>
 </div>
 
 <script>
@@ -588,16 +589,16 @@ const PREDICTIONS = [
 
 // --- STEP DEFINITIONS -----------------------------------------------------
 const STEPS = [
-  { title: 'Input Sentence',         render: renderInput,      narrate: narrInput },
-  { title: 'Tokenization',           render: renderTokenize,   narrate: narrTokenize },
-  { title: 'Embedding',              render: renderEmbed,      narrate: narrEmbed },
-  { title: 'Positional Encoding',    render: renderPosition,   narrate: narrPosition },
-  { title: 'Q, K, V Projection',     render: renderQKV,        narrate: narrQKV },
-  { title: 'Attention Scores',       render: renderAttention,  narrate: narrAttention },
+  { title: 'משפט קלט',              render: renderInput,      narrate: narrInput },
+  { title: 'טוקניזציה',              render: renderTokenize,   narrate: narrTokenize },
+  { title: 'שיכון (Embedding)',       render: renderEmbed,      narrate: narrEmbed },
+  { title: 'קידוד מיקום',            render: renderPosition,   narrate: narrPosition },
+  { title: 'הטלת Q, K, V',           render: renderQKV,        narrate: narrQKV },
+  { title: 'ציוני קשב',              render: renderAttention,  narrate: narrAttention },
   { title: 'Scale & Softmax',        render: renderSoftmax,    narrate: narrSoftmax },
-  { title: 'Weighted Sum',           render: renderWeighted,   narrate: narrWeighted },
-  { title: 'Prediction',             render: renderPredict,    narrate: narrPredict },
-  { title: 'The n² Problem',    render: renderScale,      narrate: narrScale },
+  { title: 'סכום משוקלל',            render: renderWeighted,   narrate: narrWeighted },
+  { title: 'חיזוי',                  render: renderPredict,    narrate: narrPredict },
+  { title: 'בעיית n²',          render: renderScale,      narrate: narrScale },
 ];
 
 let step = 0;
@@ -637,11 +638,11 @@ function renderPathBar() {
   }
   if (step >= 2 && step <= 8) {
     el.innerHTML = `
-      <span class="path-pill">Layer 1 of 96</span>
+      <span class="path-pill">שכבה 1 מתוך 96</span>
       <span class="path-sep">&middot;</span>
-      <span class="path-pill">Attention head 1 of 96</span>
+      <span class="path-pill">ראש קשב 1 מתוך 96</span>
       <span class="path-sep">&middot;</span>
-      <span class="path-pill">Dim 4 (actual: 12,288)</span>`;
+      <span class="path-pill">ממד 4 (בפועל: 12,288)</span>`;
   } else {
     el.innerHTML = '';
   }
@@ -653,7 +654,7 @@ function renderStepBar() {
     const cls = i === step ? 'active' : i < step ? 'done' : '';
     return `<div class="step-dot ${cls}" onclick="goStep(${i})" title="${s.title}"></div>`;
   }).join('');
-  document.getElementById('stepTitle').innerHTML = `<strong>Step ${step + 1}/${STEPS.length}</strong>  ${STEPS[step].title}`;
+  document.getElementById('stepTitle').innerHTML = `<strong>שלב ${step + 1}/${STEPS.length}</strong>  ${STEPS[step].title}`;
 }
 
 // --- HELPERS ---------------------------------------------------------------
@@ -729,16 +730,16 @@ function attnMatrixHTML(mat, title) {
 function renderInput() {
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
     <div class="big-sentence">"The cat sat on ___"</div>
-    <div class="predict-label">Goal: predict the <strong>next word</strong></div>
+    <div class="predict-label">המטרה: לחזות את <strong>המילה הבאה</strong></div>
     <div style="margin-top:24px;color:var(--muted);font-size:13px;text-align:center;max-width:400px;line-height:1.6;">
-      A Transformer reads the entire sequence at once and produces a probability for every possible next word.
+      טרנספורמר קורא את כל הרצף בבת אחת ומייצר הסתברות לכל מילה אפשרית הבאה.
     </div>
   </div>`;
 }
 
 function renderTokenize() {
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Split into tokens</div>
+    <div class="flow-label">פיצול לטוקנים</div>
     <div class="big-sentence" style="font-size:22px;color:var(--muted)">The cat sat on</div>
     <div class="flow-arrow">&#x2193;</div>
     ${tokenBoxes()}
@@ -753,7 +754,7 @@ function renderEmbed() {
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
     ${tokenBoxes()}
     <div class="flow-arrow">&#x2193;</div>
-    <div class="flow-label">Look up embedding vector for each token</div>
+    <div class="flow-label">חיפוש וקטור שיכון לכל טוקן</div>
     <div class="vec-group" style="gap:4px;margin-top:8px;">${vecs}</div>
   </div>`;
 }
@@ -781,7 +782,7 @@ function renderQKV() {
   const tColor = tokenColor(ti);
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Example: how <span style="color:${tColor};font-weight:700">"${tName}"</span> becomes a Query</div>
+    <div class="flow-label">דוגמה: איך <span style="color:${tColor};font-weight:700">"${tName}"</span> הופך ל-Query</div>
 
     <div class="tensor-op-flow">
       <div class="tensor-operand">
@@ -807,11 +808,11 @@ function renderQKV() {
     </div>
 
     <div style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;">
-      Similarly: x × W<sub>K</sub> → K, &nbsp; x × W<sub>V</sub> → V &nbsp; (for every token)
+      באופן דומה: x × W<sub>K</sub> → K, &nbsp; x × W<sub>V</sub> → V &nbsp; (לכל טוקן)
     </div>
 
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--gridline);width:100%;">
-      <div class="flow-label" style="margin-bottom:8px;">All 4 tokens together: matrix × matrix → matrix</div>
+      <div class="flow-label" style="margin-bottom:8px;">כל 4 הטוקנים יחד: matrix × matrix → matrix</div>
       <div class="tensor-op-flow" style="background:transparent;border:none;padding:4px;">
         <div class="tensor-operand">
           <div style="font-size:10px;color:var(--muted);font-weight:600;">X (all tokens)</div>
@@ -872,7 +873,7 @@ function renderAttention() {
     <div id="attnGrid">${attnMatrixHTML(ATTN_RAW, 'Attention scores (Q · Kᵀ)')}</div>
 
     <div style="margin-top:10px;font-size:12px;color:var(--secondary);text-align:center;max-width:450px;line-height:1.6;">
-      Each cell = dot product (vector · vector → <span class="shape-badge scalar">[scalar]</span>):<br>
+      כל תא = מכפלה סקלרית (vector · vector → <span class="shape-badge scalar">[scalar]</span>):<br>
       ${example}
     </div>
     <div style="margin-top:10px;font-size:12px;color:var(--blue);text-align:center;font-weight:600;">
@@ -906,11 +907,11 @@ function renderSoftmax() {
     <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
       ${ATTN_WEIGHTS.map((row, i) => {
         const sum = row.reduce((a, b) => a + b, 0).toFixed(2);
-        return `<div style="font-size:11px;color:var(--muted)">Row sum of <span style="color:${tokenColor(i)};font-weight:600">${TOKENS[i]}</span> = ${sum}</div>`;
+        return `<div style="font-size:11px;color:var(--muted)">סכום שורה של <span style="color:${tokenColor(i)};font-weight:600">${TOKENS[i]}</span> = ${sum}</div>`;
       }).join('')}
     </div>
     <div style="margin-top:12px;font-size:12px;color:var(--blue);text-align:center;font-weight:600;">
-      Each row = one query. More tokens = more rows <strong>and</strong> more columns &rarr; n²
+      כל שורה = שאילתה אחת. יותר טוקנים = יותר שורות <strong>ויותר עמודות</strong> &rarr; n²
     </div>
   </div>`;
 }
@@ -949,7 +950,7 @@ function renderWeighted() {
       </div>
     </div>
 
-    <div class="flow-label">Focus: how <span style="color:${tokenColor(focusIdx)};font-weight:700">"${TOKENS[focusIdx]}"</span> gathers context</div>
+    <div class="flow-label">מיקוד: איך <span style="color:${tokenColor(focusIdx)};font-weight:700">"${TOKENS[focusIdx]}"</span> אוסף הקשר</div>
     <div id="weightedRows" style="display:flex;flex-direction:column;gap:4px;overflow-x:auto;width:100%;align-items:center;">${weightedRows}</div>
     <div class="flow-row" id="weightedSum" style="margin-top:4px;opacity:0">
       <div style="width:50px;text-align:right;font-size:11px;color:var(--muted)">sum =</div>
@@ -964,18 +965,18 @@ function renderWeighted() {
         12% <strong style="color:${tokenColor(0)}">The</strong>
       </div>
       <div style="font-size:11px;color:var(--muted);line-height:1.5;">
-        The output encodes context: "sat" + information from cat, on, The
+        הפלט מקודד הקשר: "sat" + מידע מ-cat, on, The
       </div>
     </div>
     <div id="weightedAllTokens" style="margin-top:16px;opacity:0;width:100%;">
-      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;">All 4 tokens after attention:</div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px;">כל 4 הטוקנים אחרי קשב:</div>
       <div class="flow-row" style="justify-content:center;gap:6px;flex-wrap:wrap;">
         ${TOKENS.map((t, i) => vecHTML(ATTN_OUTPUT[i], t, tokenColor(i))).join('')}
       </div>
       <div style="text-align:center;margin-top:8px;">
         <div style="font-size:18px;color:var(--muted)">&#x2193;</div>
         <div style="font-size:11px;color:var(--blue);font-weight:600;">
-          The last token's vector (<strong style="color:${tokenColor(3)}">"on"</strong>) → feed-forward → prediction: <strong>"the"</strong>
+          הוקטור של הטוקן האחרון (<strong style="color:${tokenColor(3)}">"on"</strong>) → רשת הזנה קדמית → חיזוי: <strong>"the"</strong>
         </div>
       </div>
     </div>
@@ -1018,16 +1019,16 @@ function renderPredict() {
   }).join('');
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label">Feed-Forward network &#x2192; vocabulary probabilities</div>
+    <div class="flow-label">רשת הזנה קדמית &#x2192; הסתברויות על פני אוצר המילים</div>
     <div class="flow-row" style="margin-bottom:16px;">
       ${TOKENS.map((t, i) => vecHTML(ATTN_OUTPUT[i], t, tokenColor(i))).join('<div style="width:8px"></div>')}
     </div>
     <div class="flow-arrow">&#x2193;</div>
-    <div style="font-size:12px;color:var(--muted);margin:4px 0;">Feed-forward + softmax over vocabulary</div>
+    <div style="font-size:12px;color:var(--muted);margin:4px 0;">Feed-forward + softmax על אוצר המילים</div>
     <div class="flow-arrow">&#x2193;</div>
     <div style="width:100%;max-width:360px;margin-top:8px;">${bars}</div>
     <div class="predict-label" style="margin-top:16px;">
-      Prediction: <strong>"the"</strong> &mdash; "The cat sat on <strong>the</strong> ..."
+      חיזוי: <strong>"the"</strong> &mdash; "The cat sat on <strong>the</strong> ..."
     </div>
   </div>`;
 }
@@ -1036,81 +1037,81 @@ function renderPredict() {
 function narrInput() {
   return `
     <div class="narration">
-      <strong>The task:</strong> given a sequence of words, predict what comes next.
-      The Transformer architecture (2017) powers GPT, BERT, and most language models.
+      <strong>המשימה:</strong> בהינתן רצף מילים, לחזות מה בא אחר כך.
+      ארכיטקטורת הטרנספורמר (2017) מניעה את GPT, BERT, ורוב מודלי השפה.
     </div>
     <div class="card">
-      <h3>What you will see</h3>
+      <h3>מה תראו</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The sentence <strong>"The cat sat on"</strong> flows through a Transformer, step by step.
-        4D vectors and 4 tokens so you can follow every number.
+        המשפט <strong>"The cat sat on"</strong> עובר דרך טרנספורמר, שלב אחר שלב.
+        וקטורים בני 4 ממדים ו-4 טוקנים כדי שתוכלו לעקוב אחרי כל מספר.
       </div>
     </div>
     <div class="narration">
-      Unlike an RNN that reads word by word, a Transformer processes
-      <strong>the entire sequence at once</strong>. Every word must "look at" every other word.
-      With 4 words that is trivial. With 100,000 — see the last step.
+      שלא כמו RNN שקורא מילה אחר מילה, טרנספורמר מעבד
+      <strong>את כל הרצף בבת אחת</strong>. כל מילה חייבת "להסתכל" על כל מילה אחרת.
+      עם 4 מילים זה טריוויאלי. עם 100,000 — ראו את השלב האחרון.
     </div>
     <div class="narration">
-      <div class="scale-note"><strong>Scale:</strong> GPT-3: 12,288 dimensions, 96 attention heads,
-      50,257 tokens. Here: 4 of everything.</div>
+      <div class="scale-note"><strong>קנה מידה:</strong> GPT-3: 12,288 ממדים, 96 ראשי קשב,
+      50,257 טוקנים. כאן: 4 מכל דבר.</div>
     </div>`;
 }
 
 function narrTokenize() {
   return `
     <div class="narration">
-      <strong>Tokenization</strong> splits text into units the model works with.
-      Each token receives a numeric ID from the vocabulary.
+      <strong>טוקניזציה</strong> מפצלת טקסט ליחידות שהמודל עובד איתן.
+      כל טוקן מקבל מזהה מספרי מתוך אוצר המילים.
     </div>
     <div class="card">
-      <h3>Why tokens?</h3>
+      <h3>למה טוקנים?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        Neural networks process numbers, not text.
-        Here: word = token. In practice, <strong>sub-word</strong> tokenization
-        is used ("playing" &rarr; "play" + "ing").
+        רשתות עצביות מעבדות מספרים, לא טקסט.
+        כאן: מילה = טוקן. בפועל, נעשה שימוש בטוקניזציה של <strong>תת-מילים</strong>
+        ("playing" &rarr; "play" + "ing").
       </div>
     </div>
     <div class="narration">
-      <div class="scale-note">Actual vocabulary: ~50,000. Here: 4.</div>
+      <div class="scale-note">אוצר מילים בפועל: ~50,000. כאן: 4.</div>
     </div>`;
 }
 
 function narrEmbed() {
   return `
     <div class="narration">
-      <strong>Embedding:</strong> each token ID looks up a learned vector from a table.
-      The vector represents the word's meaning.
+      <strong>שיכון (Embedding):</strong> כל מזהה טוקן מחפש וקטור נלמד מתוך טבלה.
+      הוקטור מייצג את משמעות המילה.
     </div>
     <div class="formula-card">
-      <h3>Dimensions</h3>
+      <h3>ממדים</h3>
       <div class="formula">
         Each word &rarr; [x<sub>1</sub>, x<sub>2</sub>, x<sub>3</sub>, x<sub>4</sub>]
       </div>
       <div style="font-size:12px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Words with similar meanings get similar vectors.
+        מילים בעלות משמעות דומה מקבלות וקטורים דומים.
       </div>
     </div>
     <div class="narration">
-      <div class="scale-note">In practice: 512 to 12,288 dimensions per word.</div>
+      <div class="scale-note">בפועל: 512 עד 12,288 ממדים לכל מילה.</div>
     </div>`;
 }
 
 function narrPosition() {
   return `
     <div class="narration">
-      <strong>Why positions?</strong> A Transformer processes all tokens at once, with no built-in order.
-      Without positional encoding, "Cat the sat on" and "The cat sat on" are identical.
+      <strong>למה מיקומים?</strong> טרנספורמר מעבד את כל הטוקנים בבת אחת, ללא סדר מובנה.
+      ללא קידוד מיקום, "Cat the sat on" ו-"The cat sat on" הם זהים.
     </div>
     <div class="card">
-      <h3>How it works</h3>
+      <h3>איך זה עובד</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        A fixed position vector is <strong>added</strong> to each embedding.
-        The original paper uses sine/cosine waves at different frequencies.
+        וקטור מיקום קבוע <strong>מתווסף</strong> לכל שיכון.
+        המאמר המקורי משתמש בגלי סינוס/קוסינוס בתדרים שונים.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">x<sub>combined</sub> <span class="op">=</span> x<sub>embed</sub> <span class="op">+</span> x<sub>pos</sub></div>
     </div>`;
 }
@@ -1118,24 +1119,24 @@ function narrPosition() {
 function narrQKV() {
   return `
     <div class="narration">
-      Each combined vector is multiplied by three learned weight matrices
-      to produce three vectors:
+      כל וקטור משולב מוכפל בשלוש מטריצות משקל נלמדות
+      כדי לייצר שלושה וקטורים:
     </div>
     <div class="card">
-      <h3>The three roles</h3>
+      <h3>שלושת התפקידים</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong style="color:var(--blue)">Q (Query)</strong> &mdash; "What information do I need?"<br>
-        <strong style="color:var(--aqua)">K (Key)</strong> &mdash; "What information do I have?"<br>
-        <strong style="color:var(--orange)">V (Value)</strong> &mdash; "What is my content?"<br><br>
-        In the attention step, each token's Q is compared to every other token's K.
-        High match &rarr; read that token's V.
+        <strong style="color:var(--blue)">Q (Query)</strong> &mdash; "איזה מידע אני צריך?"<br>
+        <strong style="color:var(--aqua)">K (Key)</strong> &mdash; "איזה מידע יש לי?"<br>
+        <strong style="color:var(--orange)">V (Value)</strong> &mdash; "מה התוכן שלי?"<br><br>
+        בשלב הקשב, ה-Q של כל טוקן מושווה ל-K של כל טוקן אחר.
+        התאמה גבוהה &rarr; קריאת ה-V של אותו טוקן.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">Q = X · W<sub>Q</sub><br>K = X · W<sub>K</sub><br>V = X · W<sub>V</sub></div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Three weight matrices learned during training.
+        שלוש מטריצות משקל שנלמדות במהלך האימון.
       </div>
     </div>`;
 }
@@ -1143,30 +1144,30 @@ function narrQKV() {
 function narrAttention() {
   return `
     <div class="narration">
-      <strong>Attention scores:</strong> a dot product between every pair of tokens.
-      Element-wise multiply and sum &rarr; a single similarity score.
+      <strong>ציוני קשב:</strong> מכפלה סקלרית בין כל זוג טוקנים.
+      כפל איבר-איבר וסכימה &rarr; ציון דמיון יחיד.
     </div>
     <div class="card">
-      <h3>Reading the matrix</h3>
+      <h3>קריאת המטריצה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>Row</strong> = querying token.<br>
-        <strong>Column</strong> = queried token.<br>
-        <strong>High score</strong> = strong connection.<br><br>
-        Example: <strong style="color:var(--aqua)">"sat"</strong> ↔
-        <strong style="color:var(--orange)">"cat"</strong> — the verb relates to its subject.
+        <strong>שורה</strong> = הטוקן השואל.<br>
+        <strong>עמודה</strong> = הטוקן הנשאל.<br>
+        <strong>ציון גבוה</strong> = קשר חזק.<br><br>
+        דוגמה: <strong style="color:var(--aqua)">"sat"</strong> ↔
+        <strong style="color:var(--orange)">"cat"</strong> — הפועל קשור לנושא שלו.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">Score<sub>ij</sub> <span class="op">=</span> Q<sub>i</sub> <span class="op">·</span> K<sub>j</sub></div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Dot product &rarr; one scalar per pair
+        מכפלה סקלרית &rarr; סקלר אחד לכל זוג
       </div>
     </div>
     <div class="narration">
       <div class="scale-note" style="color:var(--blue);font-weight:600;">
-        4 tokens &rarr; 16 computations.
-        1,000 &rarr; one million. 100,000 &rarr; 10 billion. See the last step.
+        4 טוקנים &rarr; 16 חישובים.
+        1,000 &rarr; מיליון. 100,000 &rarr; 10 מיליארד. ראו את השלב האחרון.
       </div>
     </div>`;
 }
@@ -1174,19 +1175,19 @@ function narrAttention() {
 function narrSoftmax() {
   return `
     <div class="narration">
-      <strong>Why normalize?</strong>
-      Large values cause softmax to concentrate 100% on one token and 0% on the rest.
-      Dividing by &radic;d<sub>k</sub> = &radic;4 = 2 stabilizes the distribution.
+      <strong>למה לנרמל?</strong>
+      ערכים גדולים גורמים ל-softmax לרכז 100% על טוקן אחד ו-0% על השאר.
+      חלוקה ב-&radic;d<sub>k</sub> = &radic;4 = 2 מייצבת את ההתפלגות.
     </div>
     <div class="card">
-      <h3>Softmax — normalize to probabilities</h3>
+      <h3>Softmax — נרמול להסתברויות</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        Softmax converts each row into a <strong>probability distribution</strong>: positive values, sum to 1.<br><br>
-        Each row = one token. More tokens = more rows <strong>and columns</strong> &rarr; n² cost.
+        Softmax ממירה כל שורה ל<strong>התפלגות הסתברות</strong>: ערכים חיוביים, סכום 1.<br><br>
+        כל שורה = טוקן אחד. יותר טוקנים = יותר שורות <strong>ועמודות</strong> &rarr; עלות n².
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">Attention <span class="op">=</span> softmax(Q·K<sup>T</sup> <span class="op">/</span> &radic;d<sub>k</sub>)</div>
     </div>`;
 }
@@ -1195,51 +1196,51 @@ function narrWeighted() {
   const maxIdx = ATTN_WEIGHTS[2].indexOf(Math.max(...ATTN_WEIGHTS[2]));
   return `
     <div class="card">
-      <h3>The attention matrix</h3>
+      <h3>מטריצת הקשב</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        Each row = one token's attention distribution. Each row sums to 1.<br><br>
-        Row of <strong style="color:${tokenColor(2)}">"sat"</strong>:
+        כל שורה = התפלגות הקשב של טוקן אחד. כל שורה מסתכמת ב-1.<br><br>
+        שורה של <strong style="color:${tokenColor(2)}">"sat"</strong>:
         [<span style="color:${tokenColor(0)}">0.12</span>,
          <span style="color:${tokenColor(1)};font-weight:700">0.45</span>,
          <span style="color:${tokenColor(2)}">0.24</span>,
          <span style="color:${tokenColor(3)}">0.19</span>]<br>
-        "sat" pays 45% attention to "cat", 24% to itself, 19% to "on", 12% to "The".
+        "sat" מקדיש 45% קשב ל-"cat", 24% לעצמו, 19% ל-"on", 12% ל-"The".
       </div>
     </div>
 
     <div class="card">
-      <h3>Why multiply by V?</h3>
+      <h3>למה להכפיל ב-V?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        Attention = <strong>whom to listen to</strong>. V = <strong>what the content is</strong>.<br>
-        The multiplication combines the two:<br><br>
-        0.45 × V<sub style="color:${tokenColor(1)}">cat</sub> = 45% of "cat"'s content<br>
-        0.12 × V<sub style="color:${tokenColor(0)}">The</sub> = 12% of "The"'s content<br><br>
-        Sum = weighted average of all V vectors, by relevance.
+        קשב = <strong>למי להקשיב</strong>. V = <strong>מה התוכן</strong>.<br>
+        ההכפלה משלבת את השניים:<br><br>
+        0.45 × V<sub style="color:${tokenColor(1)}">cat</sub> = 45% מהתוכן של "cat"<br>
+        0.12 × V<sub style="color:${tokenColor(0)}">The</sub> = 12% מהתוכן של "The"<br><br>
+        סכום = ממוצע משוקלל של כל וקטורי ה-V, לפי רלוונטיות.
       </div>
     </div>
 
     <div class="card">
-      <h3>What do we get?</h3>
+      <h3>מה מקבלים?</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The original vector of <strong style="color:${tokenColor(2)}">"sat"</strong> contained information about "sat" alone.<br>
-        The output <span style="color:var(--aqua)">[0.04, 0.28, 0.13, 0.08]</span>
-        encodes context: who sat (cat, 45%), the action (sat, 24%), and where (on, 19%).
+        הוקטור המקורי של <strong style="color:${tokenColor(2)}">"sat"</strong> הכיל מידע על "sat" בלבד.<br>
+        הפלט <span style="color:var(--aqua)">[0.04, 0.28, 0.13, 0.08]</span>
+        מקודד הקשר: מי ישב (cat, 45%), הפעולה (sat, 24%), והיכן (on, 19%).
       </div>
     </div>
 
     <div class="card">
-      <h3>From here to prediction</h3>
+      <h3>מכאן לחיזוי</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The last token (<strong style="color:${tokenColor(3)}">"on"</strong>)
-        has gathered information from the entire sentence.<br>
-        Next step: feed-forward projects the vector onto the vocabulary &rarr; softmax &rarr; probabilities.<br><br>
-        Without attention, "on" only knows it is a preposition.
-        With attention, it knows a cat sat — and points to "the" as the next word.
+        הטוקן האחרון (<strong style="color:${tokenColor(3)}">"on"</strong>)
+        אסף מידע מכל המשפט.<br>
+        שלב הבא: רשת הזנה קדמית מטילה את הוקטור על אוצר המילים &rarr; softmax &rarr; הסתברויות.<br><br>
+        ללא קשב, "on" יודע רק שהוא מילת יחס.
+        עם קשב, הוא יודע שחתול ישב — ומצביע על "the" כמילה הבאה.
       </div>
     </div>
 
     <div class="formula-card">
-      <h3>Shapes</h3>
+      <h3>צורות</h3>
       <div class="formula">
         Attention <span style="color:var(--aqua)">[4×4]</span>
         <span class="op">×</span>
@@ -1248,35 +1249,35 @@ function narrWeighted() {
         Output <span style="color:var(--aqua)">[4×4]</span>
       </div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        Per token: [1×4] × [4×4] = [1×4]<br>
-        All tokens: matrix × matrix → matrix
+        לכל טוקן: [1×4] × [4×4] = [1×4]<br>
+        כל הטוקנים: matrix × matrix → matrix
       </div>
     </div>
 
     <div class="narration">
-      <div class="scale-note">In practice: 8–96 attention heads in parallel, each learning different patterns.
-      Their outputs are concatenated and pass through additional layers.</div>
+      <div class="scale-note">בפועל: 8–96 ראשי קשב במקביל, כל אחד לומד דפוסים שונים.
+      הפלטים שלהם משורשרים ועוברים שכבות נוספות.</div>
     </div>`;
 }
 
 function narrPredict() {
   return `
     <div class="narration">
-      Each vector passes through a feed-forward network (two linear layers + nonlinearity),
-      independently at each position.
+      כל וקטור עובר דרך רשת הזנה קדמית (שתי שכבות ליניאריות + אי-ליניאריות),
+      באופן עצמאי בכל מיקום.
     </div>
     <div class="card">
-      <h3>Predicting the next word</h3>
+      <h3>חיזוי המילה הבאה</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        The last token's output is projected onto the vocabulary.
-        Softmax gives a probability for every word. Result: <strong>"the"</strong>
+        פלט הטוקן האחרון מוטל על אוצר המילים.
+        Softmax נותן הסתברות לכל מילה. תוצאה: <strong>"the"</strong>
         &mdash; "The cat sat on the mat."
       </div>
     </div>
     <div class="narration">
-      Steps 2&ndash;8 = <strong>one Transformer layer</strong>.
-      In practice: <strong>6 to 96</strong> such layers stacked one after another.
-      <div class="scale-note">GPT-3: 96 layers, 96 heads, 12,288 dimensions, 175B parameters.</div>
+      שלבים 2&ndash;8 = <strong>שכבת טרנספורמר אחת</strong>.
+      בפועל: <strong>6 עד 96</strong> שכבות כאלה מוערמות זו על גבי זו.
+      <div class="scale-note">GPT-3: 96 שכבות, 96 ראשים, 12,288 ממדים, 175 מיליארד פרמטרים.</div>
     </div>`;
 }
 
@@ -1301,9 +1302,9 @@ const SCALE_BAR_POINTS = [
 let currentN = 4;
 
 function fmtNum(n) {
-  if (n >= 1e12) return (n / 1e12).toFixed(1) + ' trillion';
-  if (n >= 1e9) return (n / 1e9).toFixed(1) + ' billion';
-  if (n >= 1e6) return (n / 1e6).toFixed(1) + ' million';
+  if (n >= 1e12) return (n / 1e12).toFixed(1) + ' טריליון';
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + ' מיליארד';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + ' מיליון';
   if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return n.toLocaleString();
 }
@@ -1390,7 +1391,7 @@ function renderScale() {
   const sliderIdx = SCALE_STOPS.indexOf(currentN);
 
   document.getElementById('vizPanel').innerHTML = `<div class="flow-section fade-in">
-    <div class="flow-label" style="font-size:14px;font-weight:700;color:var(--primary);">How many attention computations are needed?</div>
+    <div class="flow-label" style="font-size:14px;font-weight:700;color:var(--primary);">כמה חישובי קשב נדרשים?</div>
     <div id="scaleNLabel" style="font-size:20px;font-weight:700;color:var(--blue);margin:8px 0;">n = ${currentN.toLocaleString()}</div>
 
     <div class="scale-slider-wrap">
@@ -1403,22 +1404,22 @@ function renderScale() {
     <div class="scale-stats">
       <div class="scale-stat">
         <div class="scale-stat-val" id="scaleOps"></div>
-        <div class="scale-stat-label">Computations (n²)</div>
+        <div class="scale-stat-label">חישובים (n²)</div>
       </div>
       <div class="scale-stat">
         <div class="scale-stat-val" id="scaleMem"></div>
-        <div class="scale-stat-label">Memory (fp16)</div>
+        <div class="scale-stat-label">זיכרון (fp16)</div>
       </div>
       <div class="scale-stat">
         <div class="scale-stat-val" id="scaleMult"></div>
-        <div class="scale-stat-label">vs. 4 tokens</div>
+        <div class="scale-stat-label">לעומת 4 טוקנים</div>
       </div>
     </div>
 
-    <div class="scale-double-hint">Doubling n &rarr; 4× computations and memory</div>
+    <div class="scale-double-hint">הכפלת n &rarr; פי 4 חישובים וזיכרון</div>
 
     <div class="scale-bars">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-align:center;">Relative cost by context length (log scale)</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-align:center;">עלות יחסית לפי אורך הקשר (סקאלה לוגריתמית)</div>
       ${barsHTML}
     </div>
   </div>`;
@@ -1429,49 +1430,49 @@ function renderScale() {
 function narrScale() {
   return `
     <div class="narration">
-      <strong>The n² problem:</strong> every token is compared to every other token.
-      n tokens &rarr; n² computations.
+      <strong>בעיית n²:</strong> כל טוקן מושווה לכל טוקן אחר.
+      n טוקנים &rarr; n² חישובים.
     </div>
     <div class="card">
-      <h3>Orders of magnitude</h3>
+      <h3>סדרי גודל</h3>
       <div style="font-size:13px;color:var(--secondary);line-height:1.6;">
-        <strong>4</strong> &rarr; 16 computations<br>
-        <strong>1,000</strong> &rarr; one million<br>
-        <strong>128K</strong> &rarr; 16 billion<br><br>
-        Doubling the context length &rarr; 4× computations and memory.
+        <strong>4</strong> &rarr; 16 חישובים<br>
+        <strong>1,000</strong> &rarr; מיליון<br>
+        <strong>128K</strong> &rarr; 16 מיליארד<br><br>
+        הכפלת אורך ההקשר &rarr; פי 4 חישובים וזיכרון.
       </div>
     </div>
     <div class="formula-card">
-      <h3>Formula</h3>
+      <h3>נוסחה</h3>
       <div class="formula">
         Attention: O(n²·d)<br>
         <span class="op">Memory:</span> O(n²)
       </div>
       <div style="font-size:11px;color:var(--secondary);text-align:center;margin-top:6px;">
-        n = sequence length, d = vector dimension
+        n = אורך הרצף, d = ממד הוקטור
       </div>
     </div>
     <div class="narration">
-      <strong>Solutions:</strong>
-      <strong>Sparse Attention</strong> (partial attention),
-      <strong>Sliding Window</strong> (local attention),
-      <strong>Linear Attention</strong> (O(n) approximation),
-      <strong>FlashAttention</strong> (GPU optimization).
-      <div class="scale-note">GPT-4 Turbo: 128K tokens (~300 pages). Gemini 1.5 Pro: one million.</div>
+      <strong>פתרונות:</strong>
+      <strong>Sparse Attention</strong> (קשב חלקי),
+      <strong>Sliding Window</strong> (קשב מקומי),
+      <strong>Linear Attention</strong> (קירוב O(n)),
+      <strong>FlashAttention</strong> (אופטימיזציית GPU).
+      <div class="scale-note">GPT-4 Turbo: 128K טוקנים (~300 עמודים). Gemini 1.5 Pro: מיליון.</div>
     </div>`;
 }
 
 // --- INIT ------------------------------------------------------------------
 document.addEventListener('keydown', e => {
-  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); goStep(step + 1); }
-  if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(step - 1); }
+  if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); goStep(step - 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goStep(step + 1); }
   if (e.key === 'Escape') { e.preventDefault(); goStep(0); }
 });
 
 renderAll();
 
 (function(){
-  const KEY = 'intro-dismissed-transformer';
+  const KEY = 'intro-dismissed-transformer-he';
   const overlay = document.querySelector('.intro-overlay');
   const reopen = document.querySelector('.intro-reopen');
   if (!overlay || !reopen) return;
