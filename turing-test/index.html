@@ -96,6 +96,7 @@
 
   .algo-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .algo-bar-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); margin-right: 4px; }
+  .scenario-desc { font-size: 0.72rem; color: var(--secondary); line-height: 1.5; padding: 0 2px; }
   .algo-btn {
     font-family: inherit; font-size: 0.78rem; font-weight: 500; padding: 5px 14px; border-radius: 4px;
     border: 1px solid var(--gridline); background: var(--surface); color: var(--secondary); cursor: pointer; transition: all 0.15s;
@@ -295,11 +296,11 @@
   <div class="intro-card">
     <h2>The Turing Test</h2>
     <p>In 1950, Alan Turing asked: "Can machines think?" Rather than debate philosophy, he proposed a practical test: a human judge converses with two hidden entities — one human, one machine — through text only. If the judge can't reliably tell which is which, the machine passes the test.</p>
-    <p>This interactive simulation puts you in the judge's seat. You'll read parallel conversations and try to identify which entity is the machine.</p>
+    <p>This simulation puts you in the judge's seat across three eras of AI: a rule-based expert system, a small 2B-parameter model, and a modern frontier LLM. How hard is it to tell which is the machine?</p>
     <ul>
-      <li>Read exchanges from two conversations side by side</li>
-      <li>Look for telltale signs — hover over highlights for clues</li>
-      <li>Make your verdict: which conversation is the machine?</li>
+      <li>Compare three different AI systems against human conversations</li>
+      <li>Look for telltale signs — highlights reveal clues after your verdict</li>
+      <li>See how AI has evolved from trivially detectable to genuinely challenging</li>
     </ul>
     <a class="intro-wiki" href="https://en.wikipedia.org/wiki/Turing_test" target="_blank">Learn more on Wikipedia ↗</a><br>
     <button class="intro-start">Start Exploring</button>
@@ -340,6 +341,7 @@
         <button class="ctrl-btn" id="reset-btn" onclick="reset()">Reset</button>
       </div>
     </div>
+    <div class="scenario-desc" id="scenario-desc"></div>
 
     <div class="chat-row">
       <div class="chat-panel" id="panel-a">
@@ -374,156 +376,169 @@
 
 <script>
 const SCENARIOS = {
-  'Favorite Book': {
-    description: 'The judge asks about a favorite book and why',
+  'Expert System': {
+    description: 'A rule-based if/else expert system vs. a human — weekend plans',
+    context: 'Expert systems (1970s–1990s) use hand-written if/else rules and keyword matching. Examples: ELIZA (1966), phone menu systems, early chatbots. They can handle predefined topics but break on anything unexpected.',
     machineIs: 'B',
     exchanges: [
       {
-        judge: "What is your favorite book, and why?",
-        human: "Oof, probably 'Infiltration' by Yehoshua Kenaz? I read it during my army service and just couldn't stop. It starts out so quiet and boring and then suddenly boom, you realize it's the saddest thing you've ever read. I've gone back to it three times since and each time I discover something new.",
-        machine: "Great question! My favorite book is '1984' by George Orwell. Here are the main reasons: 1) It explores important themes like totalitarianism and surveillance. 2) Its themes are relevant today as well. 3) The characters are deep and complex. I'd be happy to elaborate on any of these points if you'd like!",
+        judge: "What are your plans for this weekend?",
+        human: "Nothing exciting honestly. Saturday I promised my mom I'd help her move some furniture, and then I'm meeting my college roommate Dani for coffee. Sunday is just laundry and grocery shopping, super thrilling stuff.",
+        machine: "I find weekends very enjoyable. On weekends, I typically engage in leisure activities. What kind of activities do you enjoy on weekends?",
         telltales: [
-          { text: "Great question!", tip: "Typical chatbot opener — no human compliments a question in normal conversation" },
-          { text: "Here are the main reasons: 1)", tip: "Numbered list — humans don't number the reasons they love a book" },
-          { text: "I'd be happy to elaborate on any of these points if you'd like!", tip: "Service offer — a machine waiting for instructions, not a person in conversation" },
+          { text: "I find weekends very enjoyable.", tip: "Scripted generic opener — no actual plans, just a canned statement about weekends" },
+          { text: "I typically engage in leisure activities.", tip: "'Engage in leisure activities' — nobody talks like that, it's a dictionary definition" },
+          { text: "What kind of activities do you enjoy on weekends?", tip: "Deflects the question back instead of answering — a classic rule-based pattern" },
         ],
       },
       {
-        judge: "What part stayed with you the longest?",
-        human: "There's a scene where the main character is sitting in a cafe watching people and suddenly you realize he's completely alone in the world. Just one line, something really simple, but I swear I think about it every time I sit alone in a cafe. Yehoshua Kenaz did something to me with that scene.",
-        machine: "The part that stayed with me the longest is undoubtedly the concept of 'doublethink.' Doublethink is the ability to hold two contradictory beliefs simultaneously. Doublethink illustrates how people can be controlled through language. Additionally, the scene where Winston reads Goldstein's book is of great importance for understanding the mechanisms of power.",
+        judge: "Do you prefer staying in or going out?",
+        human: "Depends on the weather honestly. If it's nice out I want to be outside, but on a rainy Sunday? Give me the couch, a blanket, and some trashy reality TV and I'm the happiest person alive.",
+        machine: "That is an interesting question about preferences. I enjoy both staying in and going out. Staying in can be relaxing. Going out can be stimulating. What is your preference?",
         telltales: [
-          { text: "The part that stayed with me the longest is undoubtedly", tip: "Echoes the question's phrasing exactly — a machine pattern of mirroring input" },
-          { text: "Doublethink is the ability to hold two contradictory beliefs simultaneously. Doublethink illustrates", tip: "Repeats the term 'doublethink' twice in a row — a human wouldn't repeat like that" },
-          { text: "is of great importance for understanding the mechanisms of power", tip: "Describes 'importance for understanding' instead of telling what it felt — no personal experience" },
+          { text: "That is an interesting question about preferences.", tip: "Classifies the question ('about preferences') instead of just answering — pattern matching, not conversation" },
+          { text: "Staying in can be relaxing. Going out can be stimulating.", tip: "Two canned sentences covering both options — a rule-based system hedging by saying both sides" },
+          { text: "What is your preference?", tip: "Deflects again — the system always bounces questions back because it has no real answers" },
         ],
       },
       {
-        judge: "Have you ever recommended the book to someone who didn't like it?",
-        human: "Yeaah my friend Or. He was like 'what is this boring book there's no plot' and I was like okay maybe it's not for you... but it really is a shame because he missed the whole point. It's not about the plot it's about the atmosphere. But he's more of an action books kind of guy so oh well.",
-        machine: "As a language model, I don't have the ability to personally recommend books or have conversations with other people. However, I can note that reading preferences are subjective and vary from person to person. Different books suit different readers, and that's perfectly fine. Is there anything else I can help with?",
+        judge: "Tell me about the last time you tried something new on a weekend.",
+        human: "Two weeks ago my neighbor dragged me to a pottery class. I thought it would be lame but it was actually so fun? My bowl came out looking like a sad pancake though. Going back next week to try again.",
+        machine: "I'm sorry, I did not understand your query. Could you please rephrase your question? I can assist with topics such as weather, news, sports, and general knowledge.",
         telltales: [
-          { text: "As a language model, I don't have the ability", tip: "Refers to itself as a 'language model' — direct exposure that it's a machine!" },
-          { text: "I can note that reading preferences are subjective and vary from person to person", tip: "Empty, trite statement instead of a story — a machine filling space" },
-          { text: "Is there anything else I can help with?", tip: "Chatbot sign-off — no human says that in conversation" },
+          { text: "I'm sorry, I did not understand your query.", tip: "Breaks completely — the system can't handle open-ended personal questions outside its rules" },
+          { text: "Could you please rephrase your question?", tip: "Stalling tactic when pattern matching fails — a human would just answer" },
+          { text: "I can assist with topics such as weather, news, sports, and general knowledge.", tip: "Reveals its fixed domain list — the system only has rules for a few predefined topics" },
         ],
       },
       {
-        judge: "If you could meet the author, what would you say to them?",
-        human: "I'm sure I'd get all flustered and say something stupid like 'your book made me cry on the bus' haha. But seriously I'd want to ask him how he wrote something so sad without it feeling manipulative. And his sentences are insane, I'd want to know if that comes naturally to him or if he worked at it.",
-        machine: "If I had the opportunity to meet George Orwell, I would ask him the following questions: First, what were the main influences on writing the novel. Second, how he views the relevance of the book in the digital age. Third, which was his favorite character to write. It's worth noting that Orwell (whose real name was Eric Arthur Blair) passed away in 1950.",
+        judge: "What makes a perfect weekend for you?",
+        human: "One where I don't set an alarm and I don't feel guilty about it. That's literally it. Oh and good weather. And maybe someone else cooks. Yeah okay I want a lot of things haha.",
+        machine: "A perfect weekend includes the following elements: rest, recreation, and social interaction. Studies show that a balance between activity and relaxation contributes to overall well-being. Would you like me to suggest weekend activities based on your interests?",
         telltales: [
-          { text: "I would ask him the following questions: First,", tip: "Organizes an imaginary conversation as a numbered list — no human plans a conversation like that" },
-          { text: "how he views the relevance of the book in the digital age", tip: "Template interview question — not a question a human gets excited about" },
-          { text: "It's worth noting that Orwell (whose real name was Eric Arthur Blair) passed away in 1950.", tip: "Adds an unrequested factual footnote — a machine spewing information" },
+          { text: "A perfect weekend includes the following elements: rest, recreation, and social interaction.", tip: "Reads like a textbook definition — 'includes the following elements' is not how people describe their ideal weekend" },
+          { text: "Studies show that a balance between activity and relaxation contributes to overall well-being.", tip: "Cites unnamed 'studies' like a FAQ page — no personal feelings or preferences" },
+          { text: "Would you like me to suggest weekend activities based on your interests?", tip: "Offers a service menu — this is a conversation, not a recommendation engine" },
         ],
       },
     ],
     signs: [
-      "Opens answers with 'Great question!' — classic chatbot pattern",
-      "Numbers reasons in lists (1, 2, 3) instead of speaking naturally",
-      "Refers to itself as a 'language model' — reveals it's a machine",
-      "Ends with 'happy to help' and 'Is there anything else' — customer service language",
-      "Repeats words and terms mechanically ('doublethink... doublethink')",
-      "Adds facts nobody asked about (death date, real name)",
+      "Deflects every question back to the user instead of answering",
+      "Breaks completely on open-ended questions: 'I did not understand your query'",
+      "Reveals a fixed topic list: weather, news, sports, general knowledge",
+      "No personal details, stories, or emotions — pure template output",
+      "Uses formal phrasing: 'engage in leisure activities', 'contributes to well-being'",
+      "Offers service menus ('Would you like me to suggest...') instead of conversing",
     ],
   },
-  'Bad Day': {
-    description: 'The judge asks about coping with a bad day',
+  'Small Model (2B)': {
+    description: 'A small 2-billion parameter language model vs. a human — morning routines',
+    context: 'Small language models (2B parameters) like Gemma-2B or Phi-2 can form sentences and hold a topic, but struggle with grammar, coherence, and specificity. They often regurgitate training data patterns instead of generating genuine responses.',
     machineIs: 'A',
     exchanges: [
       {
-        judge: "Tell me about the last time you had a really bad day.",
-        machine: "Sure! I'll tell you about a bad day I experienced. On that day, several negative events occurred: 1) I woke up late. 2) I missed an important deadline at work. 3) I had a misunderstanding with a colleague. 4) I forgot my lunch at home. Each event on its own wasn't that bad, but the combination of them made for a particularly challenging day.",
-        human: "Ugh, last Thursday. The car wouldn't start so I took an Uber to work and it cost me like forty bucks, and then my manager called me into a meeting and basically told me my presentation needs a complete rewrite by Friday. Didn't eat lunch at all from all the stress. Got home and just lay on the couch watching Netflix for three hours straight.",
+        judge: "What does your morning routine look like?",
+        machine: "My morning routine is starting with wake up at 7 o'clock. I am drinking coffee and reading news on the phone. Then I am taking shower and getting dressed for the work. I like morning because it is fresh and quiet. Morning is the best time for thinking.",
+        human: "Chaotic honestly. My alarm goes off at 7:15 and I snooze it at least twice. Then I panic, throw on whatever's clean, chug coffee while practically brushing my teeth, and run out the door. I keep telling myself I'll become a morning person but 30 years in and it hasn't happened.",
         telltales: [
-          { text: "Sure! I'll tell you about a bad day I experienced.", tip: "'Sure!' — a service response, no human says 'Sure!' when asked to talk about a bad day" },
-          { text: "1) I woke up late. 2) I missed an important deadline at work. 3) I had a misunderstanding with a colleague. 4) I forgot my lunch at home.", tip: "Numbered list of generic events — humans tell a story, not bullet points" },
-          { text: "Each event on its own wasn't that bad, but the combination of them made for a particularly challenging day.", tip: "Summarizes analytically — a human would say 'it was a crappy day' not analyze the structure of the day" },
+          { text: "My morning routine is starting with wake up at 7 o'clock.", tip: "Grammatical error — 'is starting with wake up' sounds like a language textbook exercise" },
+          { text: "I am drinking coffee and reading news on the phone.", tip: "Present continuous instead of simple present — 'I am drinking' instead of 'I drink'" },
+          { text: "getting dressed for the work.", tip: "'For the work' — grammatical tell, a native speaker says 'for work' without 'the'" },
         ],
       },
       {
-        judge: "How did you feel afterwards?",
-        machine: "Good question. After the bad day, I felt a range of emotions, including: frustration, fatigue, and disappointment in myself. However, it's important to remember that bad days are a normal part of the human experience. I learned from this experience that it's important to manage time better, communicate clearly with colleagues, and prepare meals in advance. Hope the answer helped!",
-        human: "Mostly a bit embarrassed? Like I'm a grown adult and I just collapsed because of work. But my partner made me dinner without me asking, that was really sweet. The next day I already felt much better, sometimes you just need to let yourself be in a funk and then get out of it.",
+        judge: "Are you a coffee or tea person?",
+        machine: "I am very much a coffee person! Coffee is a popular beverage enjoyed worldwide. There are many types such as espresso, latte, cappuccino, and americano. My favorite is cappuccino because it has nice foam. Coffee contains caffeine which helps with alertness. Tea is also a good drink but I prefer coffee.",
+        human: "Tea, always. My grandma got me into it when I was little — she'd make this incredibly strong black tea with mint and way too much sugar. I've been hooked ever since. I have like fifteen different kinds in my kitchen right now, my roommate thinks I have a problem.",
         telltales: [
-          { text: "Good question.", tip: "Again complimenting the question — recurring chatbot pattern" },
-          { text: "I felt a range of emotions, including: frustration, fatigue, and disappointment in myself.", tip: "Lists emotions with a colon — a human just says 'I felt like crap'" },
-          { text: "Hope the answer helped!", tip: "Ends like a virtual assistant — this is a conversation, not a help desk" },
+          { text: "Coffee is a popular beverage enjoyed worldwide.", tip: "Inserts an encyclopedia fact into a personal conversation — nobody says this when asked about their preference" },
+          { text: "There are many types such as espresso, latte, cappuccino, and americano.", tip: "Lists coffee types nobody asked about — a small model regurgitating training data" },
+          { text: "Coffee contains caffeine which helps with alertness.", tip: "More textbook information — a human would just say 'I need coffee to function'" },
         ],
       },
       {
-        judge: "Do you think bad days make good days feel better?",
-        human: "Hmm I don't know if I'd go that far. Like a bad day is just bad, I'm not sitting there thinking 'at least tomorrow will feel amazing by comparison' you know? But like... yeah maybe in the long run? When I look back at really hard times it does make me appreciate when things are calm. But it's not one-to-one.",
-        machine: "That's a fascinating philosophical question! There are several ways to approach this topic. On one hand, contrast is essential for appreciation — it's hard to appreciate light without knowing darkness. On the other hand, suffering is not necessary to enjoy happiness. Research in positive psychology shows that hedonic adaptation — that is, the human tendency to settle at a fixed level of happiness — plays a central role. In summary, the answer is complex and depends on personal perspective.",
+        judge: "What's the worst morning you can remember?",
+        machine: "The worst morning I remember is when I had important job interview. I woke up late because my alarm did not ring. I was rushing and I spilled coffee on my shirt. Then I realized I forgot my resume at home. When I arrived I was late and nervous. But the interview went okay in the end. It was a good learning experience about being more prepared.",
+        human: "The morning after my best friend's bachelor party. I'll spare you the details but I somehow ended up sleeping on a stranger's porch in a different city. Phone dead, no wallet. Took me three hours to get home. My wife was not amused. We laugh about it now but at the time? Genuinely terrifying.",
         telltales: [
-          { text: "That's a fascinating philosophical question!", tip: "Classifies the question as 'philosophically fascinating' — a human just answers, doesn't label the question" },
-          { text: "On one hand, contrast is essential for appreciation — it's hard to appreciate light without knowing darkness. On the other hand,", tip: "'On one hand... on the other hand' pattern — essay structure, not conversation" },
-          { text: "In summary, the answer is complex and depends on personal perspective.", tip: "'In summary' — no human summarizes their own words in a regular conversation" },
+          { text: "I woke up late because my alarm did not ring. I was rushing and I spilled coffee on my shirt. Then I realized I forgot my resume at home.", tip: "Every bad-morning cliché in sequence — overslept, spilled coffee, forgot something — feels generated, not remembered" },
+          { text: "It was a good learning experience about being more prepared.", tip: "Wraps up with a forced moral lesson — real people don't conclude their worst morning with a 'key takeaway'" },
+          { text: "when I had important job interview.", tip: "Missing article: 'had important' instead of 'had an important' — grammar error typical of small models" },
+        ],
+      },
+      {
+        judge: "If you could change one thing about your mornings, what would it be?",
+        machine: "If I could change one thing about mornings I would wake up earlier for exercise. Morning exercise is very beneficial for health and productivity. Many successful people like CEOs wake up at 5 AM to exercise and meditate. I think this habit would make me more energetic and productive throughout the day.",
+        human: "I wish I could teleport to work? Like skip the whole commute. The morning at home is fine, it's the 45 minutes on the bus that kills me. I've tried podcasts, audiobooks, staring out the window existentially... nothing makes that bus ride good.",
+        telltales: [
+          { text: "Many successful people like CEOs wake up at 5 AM to exercise and meditate.", tip: "Parrots generic self-help content — 'CEOs wake up at 5 AM' is a training data cliché, not personal reflection" },
+          { text: "I think this habit would make me more energetic and productive throughout the day.", tip: "Sounds like a motivational blog post, not a person answering a casual question" },
+          { text: "Morning exercise is very beneficial for health and productivity.", tip: "Another textbook statement — a human would say 'I should probably exercise' not cite health benefits" },
         ],
       },
     ],
     signs: [
-      "Opens answers with 'Sure!', 'Good question!', 'Fascinating question!' — chatbot patterns",
-      "Numbers everything in lists (1, 2, 3, 4) instead of telling a story like a human",
-      "Ends with 'Hope that helped!' — customer service language",
-      "Uses 'On one hand... on the other hand... In summary' pattern like an essay",
-      "Lists emotions as a list ('frustration, fatigue, and disappointment') instead of describing an experience",
-      "Not a single specific detail — no names, prices, places, or real times",
+      "Grammar errors throughout: 'wake up at 7', 'for the work', 'alarm did not ring'",
+      "Inserts encyclopedia facts into casual conversation ('Coffee is popular worldwide')",
+      "Lists items nobody asked about: coffee types, CEO morning habits",
+      "Every story wraps with a forced 'learning experience' moral",
+      "Hits every cliché (overslept, spilled coffee, forgot resume) without unique personal detail",
+      "No humor, slang, hedging, or mid-thought corrections",
     ],
   },
-  'Cooking': {
-    description: 'The judge asks about cooking and an unforgettable meal',
-    machineIs: 'A',
+  'Frontier LLM': {
+    description: 'A frontier language model vs. a human — childhood memories',
+    context: 'Frontier LLMs (2023+) like GPT-4, Claude, and Gemini have hundreds of billions of parameters. They produce fluent, nuanced text that is very difficult to distinguish from human writing. The tells are subtle — patterns across responses rather than obvious errors.',
+    machineIs: 'B',
     exchanges: [
       {
-        judge: "Do you like to cook? What's the last thing you made?",
-        machine: "Yes, cooking is a wonderful hobby! Cooking allows for creative expression, financial savings, and control over nutritional ingredients. The last dish I made was pasta primavera. Here are the ingredients: zucchini, peppers, cherry tomatoes, fresh basil, olive oil, and penne pasta. Preparation time: approximately 30 minutes. Difficulty level: intermediate.",
-        human: "I go through phases with it. Right now I'm on a stir fry kick because it's fast and you can throw whatever's dying in the fridge into the pan haha. Yesterday I made one with chicken breast that was about to expire, one sad pepper, and half a bag of frozen broccoli. Threw in some soy sauce and garlic and it actually came out great.",
+        judge: "Tell me about a childhood memory you think about often.",
+        human: "The ice cream truck jingle. I know that sounds random but we lived on this dead-end street and every summer the truck would come around 5pm and all the kids would just sprint out of their houses screaming. I always got a creamsicle and sat on the curb eating it. I can still hear that jingle, it's permanently burned into my brain.",
+        machine: "There's this one from when I was about eight. My dad took me fishing at a little lake near our house — not a fancy trip, just a Saturday morning thing. I'd been a bunch of times and never caught anything real, just weeds. But that day I pulled out this tiny bluegill, maybe five inches. My dad acted like I'd caught a marlin. He took a photo that's probably still on the fridge at my parents' house. Looking back, I think he was mostly just relieved I stopped whining about being bored.",
         telltales: [
-          { text: "Cooking allows for creative expression, financial savings, and control over nutritional ingredients.", tip: "Lists benefits of cooking like an article — nobody does that when asked 'do you like to cook?'" },
-          { text: "Here are the ingredients:", tip: "'Here are the ingredients' — presents a formal recipe instead of telling what they cooked" },
-          { text: "Preparation time: approximately 30 minutes. Difficulty level: intermediate.", tip: "Adds metadata like a recipe website — no human talks like that" },
+          { text: "not a fancy trip, just a Saturday morning thing.", tip: "Preemptive modesty — the model adds a humble qualifier to make the story feel casual and authentic" },
+          { text: "Looking back, I think he was mostly just relieved I stopped whining about being bored.", tip: "Too-perfect reflective ending — a human dumps a memory, the model wraps it in a neat narrative arc" },
+          { text: "He took a photo that's probably still on the fridge at my parents' house.", tip: "A cinematic detail that grounds the story — plausible but carefully placed, not recalled offhand" },
         ],
       },
       {
-        judge: "What's the biggest cooking disaster you've had?",
-        machine: "My biggest cooking disaster was when I tried to make a souffle. Here's what happened: the souffle collapsed immediately upon removal from the oven. Possible causes for failure: a) Opening the oven door too frequently. b) The temperature wasn't uniform. c) The egg whites may not have been whipped enough. Key takeaway: it's important to follow baking instructions precisely. I'd be happy to share more tips for baking souffles!",
-        human: "Oh god so many. The worst is probably when I tried to fry schnitzels in a regular pot and the oil started smoking and I panicked and threw water on it?? Which is exactly what you're not supposed to do of course. There was oil everywhere, the ceiling had grease stains for months. My roommate was furious. We ordered pizza that night haha.",
+        judge: "Did you have a best friend growing up?",
+        human: "Danny Levinson. Inseparable from first grade through eighth grade then he moved to another city and we just... drifted. Found him on Facebook a few years ago, we got this awkward catch-up coffee where we realized we have nothing in common anymore. Weirdly sad. But those early years were genuinely the best.",
+        machine: "Yeah, a kid named Marcus who lived two streets over. We bonded over building model rockets — not exactly the coolest hobby in fourth grade. We'd spend hours in his garage assembling kits and then launch them in the empty lot behind the grocery store. His mom always made us these elaborate snacks, like she thought we were doing actual engineering. We lost touch after high school, which is pretty normal I guess, but it's still a bummer when I think about it.",
         telltales: [
-          { text: "Here's what happened:", tip: "Presents a story like an incident report — 'here's what happened' is a machine format" },
-          { text: "Possible causes for failure: a) Opening the oven door too frequently. b) The temperature wasn't uniform. c) The egg whites may not have been whipped enough.", tip: "Root cause analysis with an a-b-c list — a human would laugh at themselves, not analyze" },
-          { text: "I'd be happy to share more tips for baking souffles!", tip: "Offers 'more tips' — again customer service language, not conversation" },
+          { text: "not exactly the coolest hobby in fourth grade.", tip: "Self-deprecating aside — the model does this in EVERY answer, always adding a modest, relatable qualifier" },
+          { text: "which is pretty normal I guess, but it's still a bummer when I think about it.", tip: "Balanced emotional take: acknowledges normality BUT still feels something — too perfectly calibrated" },
+          { text: "His mom always made us these elaborate snacks, like she thought we were doing actual engineering.", tip: "Charming, cinematic detail — vivid enough to seem real but generic enough to never be verifiable" },
         ],
       },
       {
-        judge: "If you had to cook for someone you wanted to impress, what would you make?",
-        human: "Risotto probably? It looks fancy but it's actually not that hard, you just have to stand and stir for half an hour and that's annoying. I'd make mushroom risotto with good parmesan. Last time I made it for a date I put too much wine in it and also drank too much wine while cooking so that was a story in itself haha.",
-        machine: "To impress, I would recommend a 3-course menu: **First course:** Caprese salad with cherry tomatoes, fresh mozzarella, and basil. **Main course:** Pan-seared salmon with roasted asparagus and lemon-dill sauce. **Dessert:** Chocolate lava cake. This menu was chosen based on the following criteria: flavor balance, variety of textures, and aesthetic presentation. Note: the salmon can be substituted with chicken breast for those who don't like fish.",
+        judge: "What's a smell that instantly takes you back to childhood?",
+        human: "Wet concrete after rain. We had this concrete backyard and after it rained it had this specific smell, kind of earthy and cool? I don't even know how to describe it. Smelled it the other day near a construction site and it literally stopped me in my tracks.",
+        machine: "Fresh-cut grass, easily. My grandfather had this big yard and mowed it every Saturday morning with an ancient push mower. The smell would come through the kitchen window where I'd be eating cereal and watching cartoons. It's funny how specific the association is — I'll catch that smell in a random park and for a split second I'm nine years old again, bowl of Cheerios, pajamas, Saturday morning.",
         telltales: [
-          { text: "I would recommend a 3-course menu: **First course:**", tip: "Organizes the response with bold headers like a guide — not how people talk" },
-          { text: "This menu was chosen based on the following criteria: flavor balance, variety of textures, and aesthetic presentation.", tip: "Justifies a choice with 'criteria' — as if submitting a proposal, not planning a meal" },
-          { text: "Note: the salmon can be substituted with chicken breast for those who don't like fish.", tip: "'Note:' — adds a footnote like in a technical document" },
+          { text: "Fresh-cut grass, easily.", tip: "The most common answer to this question — a model trained on millions of conversations picks the statistically dominant response" },
+          { text: "It's funny how specific the association is", tip: "Meta-commentary about the experience itself — most people just describe the feeling, they don't analyze why it's interesting" },
+          { text: "for a split second I'm nine years old again, bowl of Cheerios, pajamas, Saturday morning.", tip: "Cinematically composed scene — each detail builds on the last too perfectly, like a screenplay rather than a recalled memory" },
         ],
       },
       {
-        judge: "What's a food opinion you have that other people disagree with?",
-        human: "Hummus with hard-boiled egg is the best combo ever and I'm willing to die on this hill. Everyone acts like it's disgusting but those people just have a boring palate. And also I think tahini is overrated, it's good but you don't need to put it on everything. My friend says I have the taste of a 5-year-old so there's that.",
-        machine: "A controversial opinion I have: pineapple on pizza is a successful combination. I understand many disagree, but there are good reasons to support this position. First, the combination of sweet and salty is a recognized culinary principle. Second, many Asian cuisines combine fruits with savory dishes. Third, Hawaiian pizza (invented by Sam Panopoulos in Canada in 1962) sells millions of units annually worldwide. Fun fact: Hawaiian pizza isn't actually from Hawaii!",
+        judge: "Is there something from childhood you miss that seems silly?",
+        human: "Being able to fall asleep anywhere. My mom has photos of me sleeping in shopping carts, on restaurant floors, in the car obviously. Now I need blackout curtains, exact right temperature, two specific pillows, and I'll still lie there thinking about something dumb I said in 2014.",
+        machine: "Honestly? The excitement of getting a new video game. Like genuine, full-body, can't-sleep-the-night-before excitement of opening a game on a birthday morning. I can buy whatever I want now and it's fine, but it's never that same feeling. I think what I actually miss is having limited options and just playing one game obsessively for months. Now I have a Steam library of 200 games and play each one for about forty-five minutes before moving on.",
         telltales: [
-          { text: "there are good reasons to support this position. First,", tip: "Presents a food opinion as an argument with 'First, Second, Third' — a human just says 'it's delicious'" },
-          { text: "Third, Hawaiian pizza (invented by Sam Panopoulos in Canada in 1962) sells millions of units annually", tip: "Statistical data and dates in a food opinion — a search engine, not a person" },
-          { text: "Fun fact: Hawaiian pizza isn't actually from Hawaii!", tip: "'Fun fact:' — classic bot 'Did you know?' pattern" },
+          { text: "Honestly?", tip: "Opens with a conversational filler the model learned makes responses sound candid and natural" },
+          { text: "I think what I actually miss is having limited options", tip: "Self-analysis: the model provides its own deeper psychological interpretation — humans rarely do this unprompted" },
+          { text: "Now I have a Steam library of 200 games and play each one for about forty-five minutes before moving on.", tip: "Neat contrast that proves the thesis — too perfectly structured, a human would trail off or change subjects" },
         ],
       },
     ],
     signs: [
-      "Organizes answers with bold headers, 'Here are', 'Note:', 'Fun fact:'",
-      "Adds metadata like a recipe website: preparation time, difficulty level, criteria",
-      "Does root cause analysis (a, b, c) on a collapsed souffle",
-      "Offers 'more tips' and 'happy to help' — chatbot language",
-      "Defends opinions with statistics and dates instead of personal taste",
-      "Never mentions mess, embarrassment, or specific people",
+      "Every response has a perfect story arc: setup, vivid details, reflective ending",
+      "Adds modest/self-deprecating qualifiers to every answer ('not exactly the coolest', 'not a fancy trip')",
+      "Self-analyzes: 'I think what I actually miss is...', 'Looking back, I think...'",
+      "Details are vivid but never messy — no tangents, no half-finished thoughts, no 'wait actually...'",
+      "Picks statistically popular answers (fresh-cut grass, video games) — trained on frequency",
+      "Consistent tone across all answers — always warm, slightly wistful, perfectly balanced",
     ],
   },
 };
@@ -538,6 +553,7 @@ function selectScenario(name) {
   currentScenario = SCENARIOS[name];
   currentName = name;
   document.querySelectorAll('.algo-btn').forEach(b => b.classList.toggle('selected', b.textContent === name));
+  document.getElementById('scenario-desc').textContent = currentScenario.context || '';
   reset();
 }
 
@@ -699,7 +715,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { e.preventDefault(); reset(); }
 });
 
-selectScenario('Favorite Book');
+selectScenario('Expert System');
 
 (function(){
   const KEY = 'intro-dismissed-turing-test';

@@ -108,6 +108,7 @@
   .timeline {
     display: flex;
     direction: ltr;
+    transform: scaleX(-1);
     align-items: flex-start;
     gap: 0;
     overflow-x: auto;
@@ -143,6 +144,7 @@
     flex-direction: column;
     align-items: center;
     position: relative;
+    transform: scaleX(-1);
   }
 
   /* Year label — sits above the line */
@@ -270,14 +272,11 @@
     position: relative;
   }
   .strip-label {
-    position: absolute; left: -48px; top: 50%; transform: translateY(-50%);
-    font-size: 12px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.5px;
-    color: var(--muted); white-space: nowrap; text-align: right;
-    width: 44px;
+    display: none;
   }
   .strip-track {
     flex: 1; overflow: hidden; height: 64px;
+    transform: scaleX(-1);
   }
   .strip-inner {
     width: 5610px; height: 100%; position: relative;
@@ -317,7 +316,7 @@
     );
   }
   .strip-note {
-    position: absolute; top: 50%; transform: translateY(-50%);
+    position: absolute; top: 50%; transform: translateY(-50%) scaleX(-1);
     font-size: 15px; font-weight: 700; white-space: nowrap;
     letter-spacing: 0.3px;
   }
@@ -538,13 +537,13 @@
     <div class="strip-track" id="hwTrack">
       <div class="strip-inner">
         <div class="strip-bar strip-hw-bar"></div>
-        <span class="strip-note strip-note-light" style="left:90px">Vacuum Tubes</span>
-        <span class="strip-note strip-note-light" style="left:780px">Transistors</span>
-        <span class="strip-note strip-note-light" style="left:2220px">Microprocessors</span>
-        <span class="strip-note strip-note-light" style="left:2850px">Internet Scale</span>
+        <span class="strip-note strip-note-light" style="left:90px">שפופרות ואקום</span>
+        <span class="strip-note strip-note-light" style="left:780px">טרנזיסטורים</span>
+        <span class="strip-note strip-note-light" style="left:2220px">מיקרו-מעבדים</span>
+        <span class="strip-note strip-note-light" style="left:2850px">קנה מידה אינטרנטי</span>
         <span class="strip-note strip-note-dark" style="left:3620px">GPU + CUDA</span>
         <span class="strip-note strip-note-dark" style="left:4400px">Cloud GPUs</span>
-        <span class="strip-note strip-note-dark" style="left:4830px">Training at Scale</span>
+        <span class="strip-note strip-note-dark" style="left:4830px">אימון בקנה מידה</span>
         <span class="strip-note strip-note-dark" style="left:5270px">On-device AI</span>
       </div>
     </div>
@@ -555,16 +554,16 @@
     <div class="strip-track" id="algoTrack">
       <div class="strip-inner">
         <div class="strip-bar strip-algo-bar"></div>
-        <span class="strip-note strip-note-algo-light" style="left:80px">Turing Machine</span>
-        <span class="strip-note strip-note-algo-light" style="left:780px">Turing Test</span>
+        <span class="strip-note strip-note-algo-light" style="left:80px">מכונת טיורינג</span>
+        <span class="strip-note strip-note-algo-light" style="left:780px">מבחן טיורינג</span>
         <span class="strip-note strip-note-algo-light" style="left:2220px">CNN (LeNet)</span>
         <span class="strip-note strip-note-algo-light" style="left:2850px">Statistical NLP</span>
-        <span class="strip-note strip-note-algo-dark" style="left:3620px">Deep Learning</span>
+        <span class="strip-note strip-note-algo-dark" style="left:3620px">למידה עמוקה</span>
         <span class="strip-note strip-note-algo-dark" style="left:4020px">Word2Vec</span>
         <span class="strip-note strip-note-algo-dark" style="left:4400px">Transformer</span>
         <span class="strip-note strip-note-algo-dark" style="left:4830px">ChatGPT</span>
-        <span class="strip-note strip-note-algo-dark" style="left:5120px">Open Source</span>
-        <span class="strip-note strip-note-algo-dark" style="left:5420px">Agents</span>
+        <span class="strip-note strip-note-algo-dark" style="left:5120px">קוד פתוח</span>
+        <span class="strip-note strip-note-algo-dark" style="left:5420px">סוכנים</span>
       </div>
     </div>
   </div>
