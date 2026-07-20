@@ -883,7 +883,7 @@
     if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
     const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     if (delta === 0) return;
-    wheelTarget = timeline.scrollLeft + delta * 2;
+    wheelTarget = timeline.scrollLeft - delta * 2;
     wheelTarget = Math.max(0, Math.min(wheelTarget, timeline.scrollWidth - timeline.clientWidth));
     if (!wheelRAF) wheelRAF = requestAnimationFrame(wheelStep);
   }, { passive: false });
@@ -911,10 +911,10 @@
     if (!dragging) return;
     const now = Date.now();
     const dt = now - lastTime;
-    if (dt > 0) velocity = (lastX - e.pageX) / dt;
+    if (dt > 0) velocity = (e.pageX - lastX) / dt;
     lastX = e.pageX;
     lastTime = now;
-    timeline.scrollLeft = startScroll - (e.pageX - startX);
+    timeline.scrollLeft = startScroll + (e.pageX - startX);
   });
 
   document.addEventListener('mouseup', function() {
